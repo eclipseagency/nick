@@ -14,8 +14,8 @@ export default function Booking() {
   const [sel, setSel] = useState<string[]>([]);
   const [form, setForm] = useState({ name: "", phone: "", notes: "" });
 
-  const ref = useReveal();
   const { t, locale, dir } = useLanguage();
+  const ref = useReveal([locale]);
   const isAr = locale === "ar";
   const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
 

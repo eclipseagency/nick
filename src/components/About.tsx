@@ -5,8 +5,8 @@ import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function About() {
-  const ref = useReveal();
   const { t, locale, dir } = useLanguage();
+  const ref = useReveal([locale]);
   const isAr = locale === "ar";
   const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
 
@@ -52,8 +52,8 @@ export default function About() {
             </p>
 
             <div className="grid grid-cols-2 gap-5">
-              {features.map((i) => (
-                <div key={i.t} style={{ display: "flex", gap: 12 }}>
+              {features.map((i, idx) => (
+                <div key={idx} style={{ display: "flex", gap: 12 }}>
                   <div style={{ width: 3, borderRadius: 2, background: "rgba(246,190,0,0.3)", flexShrink: 0, transition: "background 0.3s" }} />
                   <div>
                     <div style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>{i.t}</div>

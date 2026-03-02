@@ -5,8 +5,8 @@ import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Services() {
-  const ref = useReveal();
   const { t, locale, dir } = useLanguage();
+  const ref = useReveal([locale]);
   const isAr = locale === "ar";
   const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
 
@@ -31,7 +31,7 @@ export default function Services() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {services.map((s, i) => (
-            <div key={s.title} className={`card group reveal reveal-delay-${i + 1}`}>
+            <div key={s.image} className={`card group reveal reveal-delay-${i + 1}`}>
               <div style={{ position: "relative", height: 240, overflow: "hidden" }}>
                 <Image src={s.image} alt={s.title} fill className="object-cover" style={{ transition: "transform 0.6s" }} />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #111, rgba(17,17,17,0.3), transparent)" }} />

@@ -6,8 +6,8 @@ import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Contact() {
-  const ref = useReveal();
   const { t, locale, dir } = useLanguage();
+  const ref = useReveal([locale]);
   const isAr = locale === "ar";
   const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
 

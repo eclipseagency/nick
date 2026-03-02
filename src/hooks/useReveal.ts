@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-export function useReveal() {
+export function useReveal(deps?: unknown[]) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,7 +24,8 @@ export function useReveal() {
 
     targets.forEach((t) => observer.observe(t));
     return () => observer.disconnect();
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps ?? []);
 
   return ref;
 }

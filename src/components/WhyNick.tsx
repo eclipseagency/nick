@@ -5,8 +5,8 @@ import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function WhyNick() {
-  const ref = useReveal();
   const { t, locale, dir } = useLanguage();
+  const ref = useReveal([locale]);
   const isAr = locale === "ar";
   const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
 
@@ -33,7 +33,7 @@ export default function WhyNick() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               {items.map((r, i) => (
-                <div key={r.t} className={`reveal reveal-delay-${i + 1}`} style={{ cursor: "default" }}>
+                <div key={i} className={`reveal reveal-delay-${i + 1}`} style={{ cursor: "default" }}>
                   <div style={{ width: 42, height: 42, borderRadius: 10, background: "rgba(246,190,0,0.08)", border: "1px solid rgba(246,190,0,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12, transition: "all 0.3s" }}
                     onMouseEnter={e => { e.currentTarget.style.background = "rgba(246,190,0,0.15)"; e.currentTarget.style.transform = "scale(1.1)"; }}
                     onMouseLeave={e => { e.currentTarget.style.background = "rgba(246,190,0,0.08)"; e.currentTarget.style.transform = "scale(1)"; }}
