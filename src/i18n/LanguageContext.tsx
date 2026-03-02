@@ -66,6 +66,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLocale((prev) => {
       const next = prev === "en" ? "ar" : "en";
       localStorage.setItem("nick-lang", next);
+
+      // Update URL so the user can copy/share the Arabic link
+      const url = new URL(window.location.href);
+      if (next === "ar") {
+        url.searchParams.set("lang", "ar");
+      } else {
+        url.searchParams.delete("lang");
+      }
+      window.history.replaceState({}, "", url.toString());
+
       return next;
     });
   }, []);
