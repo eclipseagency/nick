@@ -27,11 +27,18 @@ const dictionaries: Record<Locale, Dictionary> = { en, ar };
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState<Locale>("en");
 
-  // Read localStorage on mount
+  // Read URL param (priority) or localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem("nick-lang") as Locale | null;
-    if (saved === "ar" || saved === "en") {
-      setLocale(saved);
+    const params = new URLSearchParams(window.location.search);
+    const urlLang = params.get("lang");
+    if (urlLang === "ar" || urlLang === "en") {
+      setLocale(urlLang);
+      localStorage.setItem("nick-lang", urlLang);
+    } else {
+      const saved = localStorage.getItem("nick-lang") as Locale | null;
+      if (saved === "ar" || saved === "en") {
+        setLocale(saved);
+      }
     }
   }, []);
 
