@@ -78,8 +78,8 @@ export const ar: Dictionary = {
   },
   gallery: {
     badge: "أعمالنا",
-    heading1: "من المصنع ",
-    heading2: "إلى الإنجاز",
+    heading1: "من ورش التصنيع ",
+    heading2: "إلى كمال التنفيذ",
     alt1: "الفريق مع أودي",
     alt2: "تظليل النوافذ",
     alt3: "تركيب PPF",
