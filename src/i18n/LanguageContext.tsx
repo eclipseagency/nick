@@ -63,22 +63,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, [locale]);
 
   const toggleLocale = useCallback(() => {
-    setLocale((prev) => {
-      const next = prev === "en" ? "ar" : "en";
-      localStorage.setItem("nick-lang", next);
+    const next: Locale = locale === "en" ? "ar" : "en";
+    setLocale(next);
+    localStorage.setItem("nick-lang", next);
 
-      // Update URL so the user can copy/share the Arabic link
-      const url = new URL(window.location.href);
-      if (next === "ar") {
-        url.searchParams.set("lang", "ar");
-      } else {
-        url.searchParams.delete("lang");
-      }
-      window.history.replaceState({}, "", url.toString());
-
-      return next;
-    });
-  }, []);
+    // Update URL so the user can copy/share the Arabic link
+    const url = new URL(window.location.href);
+    if (next === "ar") {
+      url.searchParams.set("lang", "ar");
+    } else {
+      url.searchParams.delete("lang");
+    }
+    window.history.replaceState({}, "", url.toString());
+  }, [locale]);
 
   const dir: Dir = locale === "ar" ? "rtl" : "ltr";
   const t = dictionaries[locale];
