@@ -2,27 +2,31 @@
 
 import Image from "next/image";
 import { useReveal } from "@/hooks/useReveal";
-
-const imgs = [
-  { src: "/images/DSC03261.jpg", alt: "Team with Audi", cls: "md:col-span-2 md:row-span-2" },
-  { src: "/images/DSC03095.jpg", alt: "Window tint", cls: "" },
-  { src: "/images/DSC03292.jpg", alt: "PPF application", cls: "" },
-  { src: "/images/DSC03174.jpg", alt: "Tint work", cls: "md:row-span-2" },
-  { src: "/images/DSC03038.jpg", alt: "Detailing", cls: "" },
-  { src: "/images/0a9b9f31-91ea-4064-bab3-8d3c780e3878.jpg", alt: "NICK factory", cls: "" },
-];
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Gallery() {
   const ref = useReveal();
+  const { t, locale } = useLanguage();
+  const isAr = locale === "ar";
+  const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
+
+  const imgs = [
+    { src: "/images/DSC03261.jpg", alt: t.gallery.alt1, cls: "md:col-span-2 md:row-span-2" },
+    { src: "/images/DSC03095.jpg", alt: t.gallery.alt2, cls: "" },
+    { src: "/images/DSC03292.jpg", alt: t.gallery.alt3, cls: "" },
+    { src: "/images/DSC03174.jpg", alt: t.gallery.alt4, cls: "md:row-span-2" },
+    { src: "/images/DSC03038.jpg", alt: t.gallery.alt5, cls: "" },
+    { src: "/images/0a9b9f31-91ea-4064-bab3-8d3c780e3878.jpg", alt: t.gallery.alt6, cls: "" },
+  ];
 
   return (
     <section id="gallery" ref={ref} style={{ padding: "96px 0" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
         <div className="reveal" style={{ textAlign: "center", maxWidth: 560, margin: "0 auto 56px" }}>
-          <span className="section-badge">Our Work</span>
-          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 700, marginBottom: 12 }}>
-            <span style={{ color: "#fff" }}>From Factory </span>
-            <span className="gold-text">To Finish</span>
+          <span className="section-badge">{t.gallery.badge}</span>
+          <h2 style={{ fontFamily: fontDisplay, fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 700, marginBottom: 12 }}>
+            <span style={{ color: "#fff" }}>{t.gallery.heading1}</span>
+            <span className="gold-text">{t.gallery.heading2}</span>
           </h2>
         </div>
 

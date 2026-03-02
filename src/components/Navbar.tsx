@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const { t, locale, toggleLocale } = useLanguage();
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 50);
@@ -15,13 +17,16 @@ export default function Navbar() {
   }, []);
 
   const links = [
-    { t: "Home", h: "#hero" },
-    { t: "About", h: "#about" },
-    { t: "Services", h: "#services" },
-    { t: "Gallery", h: "#gallery" },
-    { t: "Book", h: "#booking" },
-    { t: "Contact", h: "#contact" },
+    { t: t.nav.home, h: "#hero" },
+    { t: t.nav.about, h: "#about" },
+    { t: t.nav.services, h: "#services" },
+    { t: t.nav.gallery, h: "#gallery" },
+    { t: t.nav.book, h: "#booking" },
+    { t: t.nav.contact, h: "#contact" },
   ];
+
+  const isAr = locale === "ar";
+  const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
 
   return (
     <nav style={{
@@ -40,12 +45,24 @@ export default function Navbar() {
         {/* Desktop */}
         <div className="hidden lg:flex" style={{ alignItems: "center", gap: 32 }}>
           {links.map((l) => (
-            <Link key={l.t} href={l.h} style={{ color: "rgba(255,255,255,0.6)", fontSize: 13, fontWeight: 500, letterSpacing: "0.05em", textTransform: "uppercase" as const, textDecoration: "none", transition: "color 0.3s" }}
+            <Link key={l.h} href={l.h} style={{ color: "rgba(255,255,255,0.6)", fontSize: 13, fontWeight: 500, letterSpacing: isAr ? "0" : "0.05em", textTransform: isAr ? "none" : "uppercase" as const, textDecoration: "none", transition: "color 0.3s", fontFamily: isAr ? fontDisplay : undefined }}
               onMouseEnter={e => (e.currentTarget.style.color = "#F6BE00")}
               onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
             >{l.t}</Link>
           ))}
-          <Link href="https://nick.sa" target="_blank" className="btn-gold" style={{ padding: "10px 20px", fontSize: 12 }}>Shop</Link>
+          {/* Language toggle */}
+          <button onClick={toggleLocale} style={{
+            background: "none", border: "1px solid rgba(246,190,0,0.3)", borderRadius: 8,
+            padding: "6px 14px", color: "#F6BE00", fontSize: 12, fontWeight: 700,
+            cursor: "pointer", transition: "all 0.3s", letterSpacing: "0.03em",
+            fontFamily: isAr ? "var(--font-sans)" : "var(--font-ar)",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(246,190,0,0.1)"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "none"; }}
+          >
+            {isAr ? "EN" : "عربي"}
+          </button>
+          <Link href="https://nick.sa" target="_blank" className="btn-gold" style={{ padding: "10px 20px", fontSize: 12 }}>{t.nav.shop}</Link>
         </div>
 
         {/* Mobile toggle */}
@@ -58,13 +75,22 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       <div style={{
-        maxHeight: open ? 400 : 0, overflow: "hidden", transition: "max-height 0.4s",
+        maxHeight: open ? 500 : 0, overflow: "hidden", transition: "max-height 0.4s",
         background: "rgba(5,5,5,0.98)", borderTop: open ? "1px solid rgba(246,190,0,0.08)" : "none",
       }} className="lg:hidden">
         <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column" as const, gap: 16 }}>
           {links.map((l) => (
-            <Link key={l.t} href={l.h} onClick={() => setOpen(false)} style={{ color: "rgba(255,255,255,0.6)", fontSize: 16, textDecoration: "none" }}>{l.t}</Link>
+            <Link key={l.h} href={l.h} onClick={() => setOpen(false)} style={{ color: "rgba(255,255,255,0.6)", fontSize: 16, textDecoration: "none", fontFamily: isAr ? fontDisplay : undefined }}>{l.t}</Link>
           ))}
+          {/* Mobile language toggle */}
+          <button onClick={() => { toggleLocale(); setOpen(false); }} style={{
+            background: "none", border: "1px solid rgba(246,190,0,0.3)", borderRadius: 8,
+            padding: "10px 18px", color: "#F6BE00", fontSize: 14, fontWeight: 700,
+            cursor: "pointer", alignSelf: "flex-start",
+            fontFamily: isAr ? "var(--font-sans)" : "var(--font-ar)",
+          }}>
+            {isAr ? "EN — English" : "عربي — Arabic"}
+          </button>
         </div>
       </div>
     </nav>

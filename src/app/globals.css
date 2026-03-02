@@ -6,6 +6,7 @@
   --color-gold-light: #FFD54F;
   --font-sans: var(--font-inter);
   --font-display: var(--font-space-grotesk);
+  --font-ar: var(--font-tajawal);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -138,3 +139,14 @@ body {
   50% { box-shadow: 0 0 24px rgba(246,190,0,0.25); }
 }
 .gold-pulse { animation: goldPulse 2s ease-in-out infinite; }
+
+/* RTL overrides */
+[dir="rtl"] body {
+  font-family: var(--font-ar), system-ui, sans-serif;
+}
+[dir="rtl"] .btn-gold,
+[dir="rtl"] .btn-outline,
+[dir="rtl"] .section-badge {
+  letter-spacing: 0;
+  text-transform: none;
+}
