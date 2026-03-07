@@ -7,7 +7,7 @@ import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 type Size = "small" | "large" | null;
-type Category = "all" | "ppf" | "tint" | "ceramic";
+type Category = "ppf" | "tint" | "ceramic";
 
 interface Addon { id: string; name: string; p: { small: number; large: number }; icon: React.ReactNode }
 interface Svc {
@@ -30,6 +30,7 @@ export default function Booking() {
   const ref = useReveal([locale]);
   const isAr = locale === "ar";
   const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
+  const cur = isAr ? "ر.س" : "SAR";
 
   const toggleSvc = (id: string) => {
     if (sel.includes(id)) {
@@ -127,7 +128,7 @@ export default function Booking() {
       const svcAddons = (selAddons[id] || []).map(aid => addons.find(a => a.id === aid)?.name).filter(Boolean);
       return s.name + (svcAddons.length ? ` + ${svcAddons.join(", ")}` : "");
     });
-    const msg = `${t.booking.waGreeting}\n\n${t.booking.waVehicle}: ${carLabel}\n${t.booking.waServices}:\n${lines.join("\n")}\n${t.booking.waTotal}: ${total.toLocaleString()} SAR\n\n${t.booking.waName}: ${form.name}\n${t.booking.waPhone}: ${form.phone}${form.notes ? "\n" + t.booking.waNotes + ": " + form.notes : ""}`;
+    const msg = `${t.booking.waGreeting}\n\n${t.booking.waVehicle}: ${carLabel}\n${t.booking.waServices}:\n${lines.join("\n")}\n${t.booking.waTotal}: ${total.toLocaleString()} ${cur}\n\n${t.booking.waName}: ${form.name}\n${t.booking.waPhone}: ${form.phone}${form.notes ? "\n" + t.booking.waNotes + ": " + form.notes : ""}`;
     return `https://wa.me/966?text=${encodeURIComponent(msg)}`;
   };
 
@@ -144,11 +145,14 @@ export default function Booking() {
           <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 16 }}>{t.booking.subtitle}</p>
         </div>
 
-        {/* Steps */}
+        {/* Steps — clickable to go back */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 48 }}>
           {[{ n: 1, l: t.booking.step1 }, { n: 2, l: t.booking.step2 }, { n: 3, l: t.booking.step3 }].map((s, i) => (
             <div key={s.n} style={{ display: "flex", alignItems: "center" }}>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <button onClick={() => { if (step > s.n) setStep(s.n); }} style={{
+                display: "flex", flexDirection: "column", alignItems: "center", background: "none", border: "none", padding: 0,
+                cursor: step > s.n ? "pointer" : "default",
+              }}>
                 <div style={{
                   width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 14, fontWeight: 700, transition: "all 0.3s",
@@ -158,7 +162,7 @@ export default function Booking() {
                   {step > s.n ? "\u2713" : s.n}
                 </div>
                 <span style={{ fontSize: 11, marginTop: 6, color: step >= s.n ? "#F6BE00" : "rgba(255,255,255,0.25)" }}>{s.l}</span>
-              </div>
+              </button>
               {i < 2 && <div style={{ width: 60, height: 2, margin: "0 10px", marginBottom: 20, background: step > s.n ? "#F6BE00" : "rgba(255,255,255,0.08)" }} />}
             </div>
           ))}
@@ -235,178 +239,183 @@ export default function Booking() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredSvcs.map((s) => {
                 const isSelected = sel.includes(s.id);
-                const isDetail = detailId === s.id;
                 const svcAddons = selAddons[s.id] || [];
                 return (
-                  <div key={s.id} style={{ gridColumn: isDetail ? "1 / -1" : undefined }}>
-                    {/* Service card */}
-                    <button onClick={() => toggleSvc(s.id)} style={{
-                      width: "100%", padding: 0, cursor: "pointer", background: "none", border: "none",
-                      borderRadius: isDetail ? "14px 14px 0 0" : 14,
-                      overflow: "hidden", transition: "all 0.3s",
-                      outline: isSelected ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
-                      outlineOffset: -2,
-                      boxShadow: isSelected ? "0 0 20px rgba(246,190,0,0.1)" : "none",
-                      textAlign: dir === "rtl" ? "right" : "left",
-                    }}>
-                      {/* Image */}
-                      <div style={{ position: "relative", height: 140 }}>
-                        <Image src={s.img} alt={s.name} fill className="object-cover" style={{ transition: "transform 0.5s" }} />
-                        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #111 0%, rgba(17,17,17,0.3) 50%, transparent 100%)" }} />
-                        {/* Category pill */}
-                        <span style={{
-                          position: "absolute", top: 10, ...(dir === "rtl" ? { right: 10 } : { left: 10 }),
-                          padding: "3px 10px", fontSize: 10, fontWeight: 700, borderRadius: 100,
-                          background: "rgba(246,190,0,0.15)", color: "#F6BE00", backdropFilter: "blur(8px)",
-                          border: "1px solid rgba(246,190,0,0.2)",
-                          textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.05em",
-                        }}>
-                          {categories.find(c => c.id === s.cat)?.label}
-                        </span>
-                        {/* Price badge */}
-                        <span style={{
-                          position: "absolute", bottom: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
-                          padding: "5px 12px", background: "#F6BE00", color: "#000", fontSize: 13, fontWeight: 700, borderRadius: 8,
-                        }}>
-                          {size ? s.p[size].toLocaleString() : "—"} SAR
-                        </span>
-                        {/* Checkmark */}
-                        {isSelected && (
-                          <div style={{
-                            position: "absolute", top: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
-                            width: 26, height: 26, borderRadius: "50%", background: "#F6BE00",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                          }}>
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 7L5.75 9.25L10.5 4.5" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                          </div>
-                        )}
-                      </div>
-                      {/* Info */}
-                      <div style={{ padding: "14px 16px", background: "#111" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                          <span style={{ color: isSelected ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 14 }}>{s.name}</span>
-                          <span style={{ fontSize: 10, color: "#F6BE00", border: "1px solid rgba(246,190,0,0.2)", padding: "2px 8px", borderRadius: 100 }}>{s.w}</span>
-                        </div>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                          {s.parts.slice(0, 4).map(p => (
-                            <span key={p} style={{ padding: "3px 9px", fontSize: 10, borderRadius: 100, background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.06)" }}>{p}</span>
-                          ))}
-                          {s.parts.length > 4 && <span style={{ padding: "3px 9px", fontSize: 10, borderRadius: 100, color: "rgba(246,190,0,0.5)" }}>+{s.parts.length - 4}</span>}
-                        </div>
-                      </div>
-                    </button>
-
-                    {/* Detail panel — slides down below the selected card */}
-                    {isSelected && isDetail && (
-                      <div style={{
-                        background: "#0d0d0d", borderRadius: "0 0 14px 14px",
-                        border: "2px solid #F6BE00", borderTop: "1px solid rgba(246,190,0,0.15)",
-                        padding: 20, animation: "fadeUp 0.3s ease-out",
+                  <button key={s.id} onClick={() => toggleSvc(s.id)} style={{
+                    width: "100%", padding: 0, cursor: "pointer", background: "none", border: "none",
+                    borderRadius: 14, overflow: "hidden", transition: "all 0.3s",
+                    outline: isSelected ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
+                    outlineOffset: -2,
+                    boxShadow: isSelected ? "0 0 20px rgba(246,190,0,0.1)" : "none",
+                    textAlign: dir === "rtl" ? "right" : "left",
+                  }}
+                    onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.4)"; e.currentTarget.style.outlineColor = "rgba(246,190,0,0.3)"; } }}
+                    onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.outlineColor = "rgba(255,255,255,0.06)"; } }}
+                  >
+                    {/* Image */}
+                    <div style={{ position: "relative", height: 140 }}>
+                      <Image src={s.img} alt={s.name} fill className="object-cover" />
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #111 0%, rgba(17,17,17,0.3) 50%, transparent 100%)" }} />
+                      {/* Category pill */}
+                      <span style={{
+                        position: "absolute", top: 10, ...(dir === "rtl" ? { right: 10 } : { left: 10 }),
+                        padding: "3px 10px", fontSize: 10, fontWeight: 700, borderRadius: 100,
+                        background: "rgba(246,190,0,0.15)", color: "#F6BE00", backdropFilter: "blur(8px)",
+                        border: "1px solid rgba(246,190,0,0.2)",
+                        textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.05em",
                       }}>
-                        {/* Coverage areas */}
-                        {s.parts.length > 1 && (
-                          <div style={{ marginBottom: 20 }}>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: "#F6BE00", marginBottom: 10, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
-                              {t.booking.coverageAreas}
-                            </div>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                              {s.parts.map(p => (
-                                <span key={p} style={{
-                                  display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 10,
-                                  background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.15)",
-                                  color: "rgba(255,255,255,0.7)", fontSize: 12,
-                                }}>
-                                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3.5 6L5.25 7.75L8.5 4.5" stroke="#F6BE00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                  {p}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Additional services — visual grid */}
-                        <div>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: "#F6BE00", marginBottom: 12, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
-                            {t.booking.additionalServices}
-                          </div>
-                          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
-                            {addons.map(addon => {
-                              const price = getAddonPrice(addon, s.addonTier);
-                              const isChecked = svcAddons.includes(addon.id);
-                              return (
-                                <button key={addon.id}
-                                  onClick={(e) => { e.stopPropagation(); toggleAddon(s.id, addon.id); }}
-                                  style={{
-                                    display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
-                                    padding: "16px 12px", borderRadius: 12, cursor: "pointer",
-                                    background: isChecked ? "rgba(246,190,0,0.1)" : "rgba(255,255,255,0.02)",
-                                    border: isChecked ? "1.5px solid rgba(246,190,0,0.4)" : "1.5px solid rgba(255,255,255,0.06)",
-                                    transition: "all 0.25s", textAlign: "center", position: "relative",
-                                  }}
-                                  onMouseEnter={e => { if (!isChecked) e.currentTarget.style.borderColor = "rgba(246,190,0,0.2)"; }}
-                                  onMouseLeave={e => { if (!isChecked) e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
-                                >
-                                  {/* Check indicator */}
-                                  {isChecked && (
-                                    <div style={{ position: "absolute", top: 6, ...(dir === "rtl" ? { left: 6 } : { right: 6 }), width: 18, height: 18, borderRadius: "50%", background: "#F6BE00", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                      <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 6L5 8L9 4" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                    </div>
-                                  )}
-                                  {/* Icon */}
-                                  <div style={{
-                                    width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
-                                    background: isChecked ? "rgba(246,190,0,0.15)" : "rgba(255,255,255,0.04)",
-                                    color: isChecked ? "#F6BE00" : "rgba(255,255,255,0.3)",
-                                    transition: "all 0.25s",
-                                  }}>
-                                    {addon.icon}
-                                  </div>
-                                  {/* Name */}
-                                  <span style={{ color: isChecked ? "#fff" : "rgba(255,255,255,0.45)", fontSize: 11, lineHeight: 1.3 }}>{addon.name}</span>
-                                  {/* Price */}
-                                  <span style={{ color: "#F6BE00", fontSize: 12, fontWeight: 700 }}>+{price} SAR</span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* Close detail */}
-                        <button onClick={() => setDetailId(null)} style={{
-                          marginTop: 16, width: "100%", padding: "8px", borderRadius: 8, cursor: "pointer",
-                          background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
-                          color: "rgba(255,255,255,0.3)", fontSize: 18, textAlign: "center",
-                        }}>
-                          ▲
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Collapsed hint for selected items not currently expanded */}
-                    {isSelected && !isDetail && (
-                      <button onClick={() => setDetailId(s.id)} style={{
-                        width: "100%", padding: "6px 16px", cursor: "pointer",
-                        background: "rgba(246,190,0,0.04)", border: "none",
-                        borderRadius: "0 0 14px 14px",
-                        outline: "2px solid #F6BE00", outlineOffset: -2,
-                        color: "#F6BE00", fontSize: 11, textAlign: "center",
-                        display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                        {categories.find(c => c.id === s.cat)?.label}
+                      </span>
+                      {/* Price badge */}
+                      <span style={{
+                        position: "absolute", bottom: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
+                        padding: "5px 12px", background: "#F6BE00", color: "#000", fontSize: 13, fontWeight: 700, borderRadius: 8,
                       }}>
-                        {t.booking.additionalServices} {svcAddons.length > 0 && <span style={{ background: "#F6BE00", color: "#000", width: 16, height: 16, borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700 }}>{svcAddons.length}</span>} ▼
-                      </button>
-                    )}
-                  </div>
+                        {size ? s.p[size].toLocaleString() : "—"} {cur}
+                      </span>
+                      {/* Checkmark */}
+                      {isSelected && (
+                        <div style={{
+                          position: "absolute", top: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
+                          width: 26, height: 26, borderRadius: "50%", background: "#F6BE00",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 7L5.75 9.25L10.5 4.5" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        </div>
+                      )}
+                    </div>
+                    {/* Info */}
+                    <div style={{ padding: "14px 16px", background: "#111" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                        <span style={{ color: isSelected ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 14 }}>{s.name}</span>
+                        <span style={{ fontSize: 10, color: "#F6BE00", border: "1px solid rgba(246,190,0,0.2)", padding: "2px 8px", borderRadius: 100 }}>{s.w}</span>
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                        {s.parts.slice(0, 4).map(p => (
+                          <span key={p} style={{ padding: "3px 9px", fontSize: 10, borderRadius: 100, background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.06)" }}>{p}</span>
+                        ))}
+                        {s.parts.length > 4 && <span style={{ padding: "3px 9px", fontSize: 10, borderRadius: 100, color: "rgba(246,190,0,0.5)" }}>+{s.parts.length - 4}</span>}
+                      </div>
+                      {/* Selected addons count badge */}
+                      {isSelected && svcAddons.length > 0 && (
+                        <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                          <span style={{ fontSize: 10, color: "rgba(246,190,0,0.7)" }}>+{svcAddons.length} {t.booking.additionalServices.toLowerCase()}</span>
+                        </div>
+                      )}
+                    </div>
+                  </button>
                 );
               })}
             </div>
 
+            {/* Detail panel — rendered below grid for the expanded service */}
+            {detailSvc && sel.includes(detailSvc.id) && (() => {
+              const s = detailSvc;
+              const svcAddons = selAddons[s.id] || [];
+              return (
+                <div style={{
+                  marginTop: 16, background: "#0d0d0d", borderRadius: 14,
+                  border: "2px solid #F6BE00",
+                  padding: 24, animation: "fadeUp 0.3s ease-out",
+                }}>
+                  {/* Header */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <span style={{ color: "#F6BE00", fontWeight: 700, fontSize: 16 }}>{s.name}</span>
+                      <span style={{ fontSize: 11, color: "#F6BE00", border: "1px solid rgba(246,190,0,0.2)", padding: "2px 10px", borderRadius: 100 }}>{s.w}</span>
+                    </div>
+                    <button onClick={() => setDetailId(null)} style={{
+                      width: 32, height: 32, borderRadius: "50%", cursor: "pointer",
+                      background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                      color: "rgba(255,255,255,0.4)", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>✕</button>
+                  </div>
+
+                  {/* Coverage areas */}
+                  {s.parts.length > 1 && (
+                    <div style={{ marginBottom: 20 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#F6BE00", marginBottom: 10, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
+                        {t.booking.coverageAreas}
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                        {s.parts.map(p => (
+                          <span key={p} style={{
+                            display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 10,
+                            background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.15)",
+                            color: "rgba(255,255,255,0.7)", fontSize: 12,
+                          }}>
+                            <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3.5 6L5.25 7.75L8.5 4.5" stroke="#F6BE00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            {p}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Additional services — visual grid */}
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#F6BE00", marginBottom: 12, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
+                      {t.booking.additionalServices}
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 10 }}>
+                      {addons.map(addon => {
+                        const price = getAddonPrice(addon, s.addonTier);
+                        const isChecked = svcAddons.includes(addon.id);
+                        return (
+                          <button key={addon.id}
+                            onClick={(e) => { e.stopPropagation(); toggleAddon(s.id, addon.id); }}
+                            style={{
+                              display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+                              padding: "16px 12px", borderRadius: 12, cursor: "pointer",
+                              background: isChecked ? "rgba(246,190,0,0.1)" : "rgba(255,255,255,0.02)",
+                              border: isChecked ? "1.5px solid rgba(246,190,0,0.4)" : "1.5px solid rgba(255,255,255,0.06)",
+                              transition: "all 0.25s", textAlign: "center", position: "relative",
+                            }}
+                            onMouseEnter={e => { if (!isChecked) e.currentTarget.style.borderColor = "rgba(246,190,0,0.2)"; }}
+                            onMouseLeave={e => { if (!isChecked) e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
+                          >
+                            {isChecked && (
+                              <div style={{ position: "absolute", top: 6, ...(dir === "rtl" ? { left: 6 } : { right: 6 }), width: 18, height: 18, borderRadius: "50%", background: "#F6BE00", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 6L5 8L9 4" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              </div>
+                            )}
+                            <div style={{
+                              width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
+                              background: isChecked ? "rgba(246,190,0,0.15)" : "rgba(255,255,255,0.04)",
+                              color: isChecked ? "#F6BE00" : "rgba(255,255,255,0.3)",
+                              transition: "all 0.25s",
+                            }}>
+                              {addon.icon}
+                            </div>
+                            <span style={{ color: isChecked ? "#fff" : "rgba(255,255,255,0.45)", fontSize: 11, lineHeight: 1.3 }}>{addon.name}</span>
+                            <span style={{ color: "#F6BE00", fontSize: 12, fontWeight: 700 }}>+{price} {cur}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Sticky floating total bar */}
             {sel.length > 0 && (
-              <div style={{ marginTop: 24, padding: 20, borderRadius: 14, background: "#111", border: "1px solid rgba(246,190,0,0.2)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{
+                position: "sticky", bottom: 16, zIndex: 20, marginTop: 24,
+                padding: "16px 24px", borderRadius: 16,
+                background: "rgba(17,17,17,0.95)", backdropFilter: "blur(12px)",
+                border: "1px solid rgba(246,190,0,0.25)",
+                boxShadow: "0 -4px 24px rgba(0,0,0,0.5)",
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+              }}>
                 <div>
                   <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{t.booking.estimatedTotal}</div>
-                  <div className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 26, fontWeight: 700 }}>{total.toLocaleString()} SAR</div>
+                  <div className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 24, fontWeight: 700 }}>{total.toLocaleString()} {cur}</div>
                 </div>
-                <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>{sel.length} {sel.length > 1 ? t.booking.servicesCount : t.booking.serviceCount}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                  <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>{sel.length} {sel.length > 1 ? t.booking.servicesCount : t.booking.serviceCount}</span>
+                  <button onClick={() => setStep(3)} className="btn-gold" style={{ margin: 0, padding: "10px 28px" }}>{t.booking.continue}</button>
+                </div>
               </div>
             )}
 
@@ -448,7 +457,7 @@ export default function Booking() {
                           <div key={id}>
                             <div style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", fontSize: 14 }}>
                               <span style={{ color: "rgba(255,255,255,0.65)" }}>{s.name}</span>
-                              <span style={{ color: "#F6BE00", fontWeight: 600 }}>{size ? s.p[size].toLocaleString() : 0} SAR</span>
+                              <span style={{ color: "#F6BE00", fontWeight: 600 }}>{size ? s.p[size].toLocaleString() : 0} {cur}</span>
                             </div>
                             {svcAddonList.map(aid => {
                               const addon = addons.find(a => a.id === aid)!;
@@ -456,7 +465,7 @@ export default function Booking() {
                               return (
                                 <div key={aid} style={{ display: "flex", justifyContent: "space-between", padding: "2px 0 2px 16px", fontSize: 12 }}>
                                   <span style={{ color: "rgba(255,255,255,0.35)" }}>+ {addon.name}</span>
-                                  <span style={{ color: "rgba(246,190,0,0.6)" }}>{price} SAR</span>
+                                  <span style={{ color: "rgba(246,190,0,0.6)" }}>{price} {cur}</span>
                                 </div>
                               );
                             })}
@@ -469,7 +478,7 @@ export default function Booking() {
               </div>
               <div style={{ padding: 20, background: "rgba(246,190,0,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>{t.booking.totalLabel}</span>
-                <span className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 22, fontWeight: 700 }}>{total.toLocaleString()} SAR</span>
+                <span className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 22, fontWeight: 700 }}>{total.toLocaleString()} {cur}</span>
               </div>
             </div>
 
@@ -480,10 +489,15 @@ export default function Booking() {
               ].map(f => (
                 <input key={f.k} type={f.tp} value={form[f.k]} onChange={e => setForm({...form, [f.k]: e.target.value})}
                   placeholder={f.ph} dir={f.k === "phone" ? "ltr" : undefined}
-                  style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", textAlign: f.k === "phone" ? ("left" as const) : undefined }} />
+                  onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
+                  onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
+                  style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s", textAlign: f.k === "phone" ? ("left" as const) : undefined }} />
               ))}
               <textarea value={form.notes} onChange={e => setForm({...form, notes: e.target.value})}
-                placeholder={t.booking.notesPh} rows={3} style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", resize: "none" as const }} />
+                placeholder={t.booking.notesPh} rows={3}
+                onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
+                onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
+                style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", resize: "none" as const, transition: "border-color 0.2s, box-shadow 0.2s" }} />
             </div>
 
             <div style={{ marginBottom: 24 }}>
@@ -492,13 +506,13 @@ export default function Booking() {
                 <Link href={`https://nick.sa/checkout?amount=${total}&name=${encodeURIComponent(form.name)}&phone=${encodeURIComponent(form.phone)}`} target="_blank" className="btn-gold"
                   style={(!form.name || !form.phone) ? { opacity: 0.3, pointerEvents: "none", width: "100%", justifyContent: "center" } : { width: "100%", justifyContent: "center" }}>
                   <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg>
-                  {t.booking.payOnline} &mdash; {total.toLocaleString()} SAR
+                  {t.booking.payOnline} &mdash; {total.toLocaleString()} {cur}
                 </Link>
                 <Link href={`https://nick.sa/checkout?method=tabby&amount=${total}&name=${encodeURIComponent(form.name)}&phone=${encodeURIComponent(form.phone)}`} target="_blank"
                   style={(!form.name || !form.phone) ? { ...bnplBase, background: "#003227", opacity: 0.3, pointerEvents: "none" } : { ...bnplBase, background: "#003227" }}>
                   <span><svg width="60" height="20" viewBox="0 0 60 20" fill="none"><text x="0" y="16" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="18" letterSpacing="-0.5" fill="#3bff9d">tabby</text></svg></span>
                   <span style={{ display: "flex", flexDirection: "column" as const, alignItems: dir === "rtl" ? "flex-start" : "flex-end" }}>
-                    <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>{Math.ceil(total / 4).toLocaleString()} SAR<span style={{ fontWeight: 400, opacity: 0.6 }}>{t.booking.perMonth}</span></span>
+                    <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>{Math.ceil(total / 4).toLocaleString()} {cur}<span style={{ fontWeight: 400, opacity: 0.6 }}>{t.booking.perMonth}</span></span>
                     <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{t.booking.splitIn4}</span>
                   </span>
                 </Link>
@@ -506,7 +520,7 @@ export default function Booking() {
                   style={(!form.name || !form.phone) ? { ...bnplBase, background: "#250155", opacity: 0.3, pointerEvents: "none" } : { ...bnplBase, background: "#250155" }}>
                   <span><svg width="72" height="20" viewBox="0 0 72 20" fill="none"><text x="0" y="16" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="18" letterSpacing="-0.5" fill="#c77dff">tamara</text></svg></span>
                   <span style={{ display: "flex", flexDirection: "column" as const, alignItems: dir === "rtl" ? "flex-start" : "flex-end" }}>
-                    <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>{Math.ceil(total / 3).toLocaleString()} SAR<span style={{ fontWeight: 400, opacity: 0.6 }}>{t.booking.perMonth}</span></span>
+                    <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>{Math.ceil(total / 3).toLocaleString()} {cur}<span style={{ fontWeight: 400, opacity: 0.6 }}>{t.booking.perMonth}</span></span>
                     <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{t.booking.splitIn3}</span>
                   </span>
                 </Link>
