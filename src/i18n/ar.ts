@@ -223,7 +223,7 @@ export const ar: Dictionary = {
     packEssentialDesc: "حماية مقدمة + عازل حراري",
     packPremium: "المميزة",
     packPremiumDesc: "حماية كامل + عازل + سيراميك",
-    packUltimate: "الشاملة",
+    packUltimate: "VIP",
     packUltimateDesc: "حماية كامل 8.5 + عازل + سيراميك 5 سنوات",
     packSave: "وفّر",
     packSelect: "اختر الباقة",

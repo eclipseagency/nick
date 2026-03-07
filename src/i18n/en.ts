@@ -223,7 +223,7 @@ export const en: Dictionary = {
     packEssentialDesc: "Front protection + tint",
     packPremium: "Premium",
     packPremiumDesc: "Full PPF + tint + ceramic",
-    packUltimate: "Ultimate",
+    packUltimate: "VIP",
     packUltimateDesc: "Full PPF 8.5mm + tint + 5yr ceramic",
     packSave: "Save",
     packSelect: "Select Package",
