@@ -7,10 +7,12 @@ import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 type Size = "small" | "medium" | "large" | "suv" | null;
+type Category = "all" | "ppf" | "tint" | "ceramic";
 
 export default function Booking() {
   const [step, setStep] = useState(1);
   const [size, setSize] = useState<Size>(null);
+  const [category, setCategory] = useState<Category>("all");
   const [sel, setSel] = useState<string[]>([]);
   const [form, setForm] = useState({ name: "", phone: "", notes: "" });
 
@@ -28,20 +30,29 @@ export default function Booking() {
     { id: "suv" as const, label: t.booking.carSuv, ex: "Tahoe, Land Cruiser", img: "/images/DSC03064.jpg" },
   ];
 
+  const categories: { id: Category; label: string; icon: React.ReactNode }[] = [
+    { id: "all", label: t.booking.catAll, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> },
+    { id: "ppf", label: t.booking.catPpf, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
+    { id: "tint", label: t.booking.catTint, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> },
+    { id: "ceramic", label: t.booking.catCeramic, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg> },
+  ];
+
   const svcs = [
-    { id: "ppf-full", name: t.booking.svcPpfFull, desc: t.booking.svcPpfFullDesc, p: { small: 14000, medium: 16000, large: 18500, suv: 22000 }, w: "10yr", img: "/images/DSC03279.jpg",
+    { id: "ppf-full", cat: "ppf" as const, name: t.booking.svcPpfFull, desc: t.booking.svcPpfFullDesc, p: { small: 14000, medium: 16000, large: 18500, suv: 22000 }, w: "10yr", img: "/images/DSC03279.jpg",
       benefits: [t.booking.b_selfHealing, t.booking.b_rockChip, t.booking.b_uvYellowing, t.booking.b_resaleValue] },
-    { id: "ppf-front", name: t.booking.svcPpfFront, desc: t.booking.svcPpfFrontDesc, p: { small: 5500, medium: 6500, large: 7500, suv: 9000 }, w: "10yr", img: "/images/DSC03292.jpg",
+    { id: "ppf-front", cat: "ppf" as const, name: t.booking.svcPpfFront, desc: t.booking.svcPpfFrontDesc, p: { small: 5500, medium: 6500, large: 7500, suv: 9000 }, w: "10yr", img: "/images/DSC03292.jpg",
       benefits: [t.booking.b_highImpact, t.booking.b_invisibleFilm, t.booking.b_selfHealTech, t.booking.b_factoryPaint] },
-    { id: "tint-full", name: t.booking.svcTintFull, desc: t.booking.svcTintFullDesc, p: { small: 2400, medium: 2600, large: 2800, suv: 3200 }, w: "10yr", img: "/images/DSC03136.jpg",
+    { id: "tint-full", cat: "tint" as const, name: t.booking.svcTintFull, desc: t.booking.svcTintFullDesc, p: { small: 2400, medium: 2600, large: 2800, suv: 3200 }, w: "10yr", img: "/images/DSC03136.jpg",
       benefits: [t.booking.b_uvRejection, t.booking.b_heatReduction, t.booking.b_glareFree, t.booking.b_fadeProtection] },
-    { id: "tint-front", name: t.booking.svcTintFront, desc: t.booking.svcTintFrontDesc, p: { small: 1160, medium: 1200, large: 1300, suv: 1400 }, w: "10yr", img: "/images/DSC03174.jpg",
+    { id: "tint-front", cat: "tint" as const, name: t.booking.svcTintFront, desc: t.booking.svcTintFrontDesc, p: { small: 1160, medium: 1200, large: 1300, suv: 1400 }, w: "10yr", img: "/images/DSC03174.jpg",
       benefits: [t.booking.b_dashboardHeat, t.booking.b_antiGlare, t.booking.b_uvProtection99, t.booking.b_crystalClear] },
-    { id: "ceramic", name: t.booking.svcCeramic, desc: t.booking.svcCeramicDesc, p: { small: 1350, medium: 1650, large: 1950, suv: 2400 }, w: "5yr", img: "/images/DSC03018.jpg",
+    { id: "ceramic", cat: "ceramic" as const, name: t.booking.svcCeramic, desc: t.booking.svcCeramicDesc, p: { small: 1350, medium: 1650, large: 1950, suv: 2400 }, w: "5yr", img: "/images/DSC03018.jpg",
       benefits: [t.booking.b_hydrophobic, t.booking.b_mirrorGloss, t.booking.b_dustRepellent, t.booking.b_easyWash] },
-    { id: "ceramic-int", name: t.booking.svcCeramicInt, desc: t.booking.svcCeramicIntDesc, p: { small: 2300, medium: 2800, large: 3400, suv: 3800 }, w: "3yr", img: "/images/DSC02995.jpg",
+    { id: "ceramic-int", cat: "ceramic" as const, name: t.booking.svcCeramicInt, desc: t.booking.svcCeramicIntDesc, p: { small: 2300, medium: 2800, large: 3400, suv: 3800 }, w: "3yr", img: "/images/DSC02995.jpg",
       benefits: [t.booking.b_leatherStain, t.booking.b_dashboardUv, t.booking.b_spillRepellent, t.booking.b_interiorNew] },
   ];
+
+  const filteredSvcs = category === "all" ? svcs : svcs.filter(s => s.cat === category);
 
   const bnplBase: React.CSSProperties = {
     display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -57,6 +68,12 @@ export default function Booking() {
     const svcNames = sel.map(id => svcs.find(s => s.id === id)?.name).join(", ");
     const msg = `${t.booking.waGreeting}\n\n${t.booking.waVehicle}: ${carLabel}\n${t.booking.waServices}: ${svcNames}\n${t.booking.waTotal}: ${total.toLocaleString()} SAR\n\n${t.booking.waName}: ${form.name}\n${t.booking.waPhone}: ${form.phone}${form.notes ? "\n" + t.booking.waNotes + ": " + form.notes : ""}`;
     return `https://wa.me/966?text=${encodeURIComponent(msg)}`;
+  };
+
+  // Count selected per category
+  const selCount = (cat: Category) => {
+    if (cat === "all") return sel.length;
+    return sel.filter(id => svcs.find(s => s.id === id)?.cat === cat).length;
   };
 
   return (
@@ -133,11 +150,54 @@ export default function Booking() {
         {/* STEP 2 */}
         {step === 2 && (
           <div>
-            <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: 14, marginBottom: 32 }}>
+            <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: 14, marginBottom: 24 }}>
               {t.booking.pricesFor} <strong style={{ color: "#F6BE00" }}>{cars.find(c => c.id === size)?.label}</strong> {t.booking.selectOneOrMore}
             </p>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {svcs.map((s) => (
+
+            {/* Category Tabs */}
+            <div style={{
+              display: "flex", gap: 8, justifyContent: "center", marginBottom: 32,
+              flexWrap: "wrap",
+            }}>
+              {categories.map((cat) => {
+                const isActive = category === cat.id;
+                const count = selCount(cat.id);
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setCategory(cat.id)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 8,
+                      padding: "10px 20px", borderRadius: 100, cursor: "pointer",
+                      fontSize: 13, fontWeight: 600, transition: "all 0.3s",
+                      background: isActive ? "#F6BE00" : "rgba(255,255,255,0.04)",
+                      color: isActive ? "#000" : "rgba(255,255,255,0.5)",
+                      border: isActive ? "1.5px solid #F6BE00" : "1.5px solid rgba(255,255,255,0.08)",
+                      transform: isActive ? "scale(1.03)" : "scale(1)",
+                      boxShadow: isActive ? "0 4px 20px rgba(246,190,0,0.2)" : "none",
+                    }}
+                    onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)"; e.currentTarget.style.color = "#F6BE00"; } }}
+                    onMouseLeave={e => { if (!isActive) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "rgba(255,255,255,0.5)"; } }}
+                  >
+                    {cat.icon}
+                    <span>{cat.label}</span>
+                    {count > 0 && (
+                      <span style={{
+                        width: 20, height: 20, borderRadius: "50%", fontSize: 11, fontWeight: 700,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        background: isActive ? "rgba(0,0,0,0.2)" : "#F6BE00",
+                        color: isActive ? "#000" : "#000",
+                        marginInlineStart: 2,
+                      }}>{count}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Service Cards */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4" style={{ minHeight: 200 }}>
+              {filteredSvcs.map((s) => (
                 <button key={s.id} onClick={() => toggle(s.id)} style={{
                   position: "relative", borderRadius: 14, overflow: "hidden", textAlign: dir === "rtl" ? "right" : "left", cursor: "pointer", background: "none", padding: 0,
                   border: sel.includes(s.id) ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
@@ -147,6 +207,18 @@ export default function Booking() {
                   <div style={{ position: "relative", height: 130 }}>
                     <Image src={s.img} alt={s.name} fill className="object-cover" />
                     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #111, rgba(17,17,17,0.4), transparent)" }} />
+                    {/* Category pill on image */}
+                    <span style={{
+                      position: "absolute", top: 10,
+                      ...(dir === "rtl" ? { right: 10 } : { left: 10 }),
+                      padding: "3px 10px", fontSize: 10, fontWeight: 700, borderRadius: 100,
+                      background: "rgba(246,190,0,0.15)", color: "#F6BE00", backdropFilter: "blur(8px)",
+                      border: "1px solid rgba(246,190,0,0.2)",
+                      textTransform: isAr ? "none" : "uppercase" as const,
+                      letterSpacing: isAr ? "0" : "0.05em",
+                    }}>
+                      {categories.find(c => c.id === s.cat)?.label}
+                    </span>
                     <span style={{
                       position: "absolute", bottom: 10,
                       ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
@@ -218,12 +290,29 @@ export default function Booking() {
                   <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>{t.booking.servicesLabel}</span>
                   <button onClick={() => setStep(2)} style={{ color: "#F6BE00", fontSize: 12, background: "none", border: "none", cursor: "pointer" }}>{t.booking.change}</button>
                 </div>
-                {sel.map(id => {
-                  const s = svcs.find(x => x.id === id)!;
+                {/* Group selected services by category */}
+                {(["ppf", "tint", "ceramic"] as const).map(cat => {
+                  const catSvcs = sel.filter(id => svcs.find(s => s.id === id)?.cat === cat);
+                  if (catSvcs.length === 0) return null;
                   return (
-                    <div key={id} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: 14 }}>
-                      <span style={{ color: "rgba(255,255,255,0.65)" }}>{s.name}</span>
-                      <span style={{ color: "#F6BE00", fontWeight: 600 }}>{size ? s.p[size].toLocaleString() : 0} SAR</span>
+                    <div key={cat} style={{ marginBottom: 8 }}>
+                      <div style={{
+                        fontSize: 10, fontWeight: 700, color: "#F6BE00", opacity: 0.6,
+                        textTransform: isAr ? "none" : "uppercase" as const,
+                        letterSpacing: isAr ? "0" : "0.08em",
+                        marginBottom: 4,
+                      }}>
+                        {categories.find(c => c.id === cat)?.label}
+                      </div>
+                      {catSvcs.map(id => {
+                        const s = svcs.find(x => x.id === id)!;
+                        return (
+                          <div key={id} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", fontSize: 14 }}>
+                            <span style={{ color: "rgba(255,255,255,0.65)" }}>{s.name}</span>
+                            <span style={{ color: "#F6BE00", fontWeight: 600 }}>{size ? s.p[size].toLocaleString() : 0} SAR</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   );
                 })}

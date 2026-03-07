@@ -169,6 +169,11 @@ export interface Dictionary {
     or: string;
     confirmWhatsapp: string;
     perMonth: string;
+    // Service categories
+    catAll: string;
+    catPpf: string;
+    catTint: string;
+    catCeramic: string;
     // Car categories
     carSmall: string;
     carMedium: string;
