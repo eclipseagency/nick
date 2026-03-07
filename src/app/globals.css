@@ -133,6 +133,13 @@ body {
 .anim-3 { animation: fadeUp 0.7s ease-out 0.3s both; }
 .anim-4 { animation: fadeUp 0.7s ease-out 0.4s both; }
 
+/* Booking step transition */
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.step-enter { animation: stepIn 0.4s ease-out both; }
+
 /* Subtle gold pulse for selected items */
 @keyframes goldPulse {
   0%, 100% { box-shadow: 0 0 16px rgba(246,190,0,0.12); }

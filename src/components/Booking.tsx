@@ -176,7 +176,7 @@ export default function Booking() {
 
         {/* STEP 1 */}
         {step === 1 && (
-          <div>
+          <div className="step-enter">
             <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: 14, marginBottom: 32 }}>{t.booking.step1instruction}</p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, maxWidth: 600, margin: "0 auto" }}>
               {cars.map((c) => (
@@ -211,7 +211,7 @@ export default function Booking() {
 
         {/* STEP 2 */}
         {step === 2 && (
-          <div>
+          <div className="step-enter">
             <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: 14, marginBottom: 24 }}>
               {t.booking.pricesFor} <strong style={{ color: "#F6BE00" }}>{cars.find(c => c.id === size)?.label}</strong> {t.booking.selectOneOrMore}
             </p>
@@ -449,7 +449,7 @@ export default function Booking() {
 
         {/* STEP 3 */}
         {step === 3 && (
-          <div style={{ maxWidth: 600, margin: "0 auto" }}>
+          <div className="step-enter" style={{ maxWidth: 600, margin: "0 auto" }}>
             <div style={{ borderRadius: 14, background: "#111", border: "1px solid rgba(255,255,255,0.08)", overflow: "hidden", marginBottom: 32 }}>
               <div style={{ padding: 20, borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between" }}>
                 <div>

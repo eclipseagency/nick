@@ -1,8 +1,49 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/i18n/LanguageContext";
+
+function AnimatedStat({ end, suffix, label, fontDisplay }: { end: number; suffix: string; label: string; fontDisplay: string }) {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setStarted(true); obs.disconnect(); } },
+      { threshold: 0.5 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!started) return;
+    const duration = 2000;
+    const steps = 60;
+    const inc = end / steps;
+    let current = 0;
+    const timer = setInterval(() => {
+      current += inc;
+      if (current >= end) { setCount(end); clearInterval(timer); }
+      else setCount(Math.floor(current));
+    }, duration / steps);
+    return () => clearInterval(timer);
+  }, [started, end]);
+
+  return (
+    <div ref={ref} style={{ textAlign: "center" }}>
+      <div className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 26, fontWeight: 700 }}>
+        {started ? count.toLocaleString() : "0"}{suffix}
+      </div>
+      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 4 }}>{label}</div>
+    </div>
+  );
+}
 
 export default function Hero() {
   const { t, locale } = useLanguage();
@@ -53,18 +94,11 @@ export default function Hero() {
           <Link href="#services" className="btn-outline">{t.hero.cta2}</Link>
         </div>
 
-        {/* Stats */}
+        {/* Stats — animated count up */}
         <div className="anim-4" style={{ display: "flex", justifyContent: "center", gap: 40, paddingTop: 32, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-          {[
-            { n: t.hero.stat1n, l: t.hero.stat1l },
-            { n: t.hero.stat2n, l: t.hero.stat2l },
-            { n: t.hero.stat3n, l: t.hero.stat3l },
-          ].map((s) => (
-            <div key={s.l} style={{ textAlign: "center" }}>
-              <div className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 26, fontWeight: 700 }}>{s.n}</div>
-              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 4 }}>{s.l}</div>
-            </div>
-          ))}
+          <AnimatedStat end={27} suffix="+" label={t.hero.stat1l} fontDisplay={fontDisplay} />
+          <AnimatedStat end={50} suffix="K+" label={t.hero.stat2l} fontDisplay={fontDisplay} />
+          <AnimatedStat end={10} suffix={isAr ? " سنوات" : "yr"} label={t.hero.stat3l} fontDisplay={fontDisplay} />
         </div>
       </div>
     </section>
