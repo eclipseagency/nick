@@ -180,12 +180,22 @@ export default function Booking() {
       setSel(prev => prev.filter(id => !pack.svcIds.includes(id)));
       setActivePack(null);
     } else {
-      // Select package services (add without removing other manual selections)
+      // Remove previous package services, then add new ones
+      const prevPack = packages.find(p => p.id === activePack);
+      const prevIds = prevPack ? prevPack.svcIds : [];
       setSel(prev => {
-        const newSel = [...prev];
-        pack.svcIds.forEach(id => { if (!newSel.includes(id)) newSel.push(id); });
-        return newSel;
+        const cleaned = prev.filter(id => !prevIds.includes(id));
+        pack.svcIds.forEach(id => { if (!cleaned.includes(id)) cleaned.push(id); });
+        return cleaned;
       });
+      // Clean addons from removed services
+      if (prevPack) {
+        setSelAddons(a => {
+          const n = { ...a };
+          prevIds.forEach(id => { if (!pack.svcIds.includes(id)) delete n[id]; });
+          return n;
+        });
+      }
       setActivePack(pack.id);
       setDetailId(null);
     }
