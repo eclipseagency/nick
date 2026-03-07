@@ -174,70 +174,55 @@ export interface Dictionary {
     catPpf: string;
     catTint: string;
     catCeramic: string;
-    catWrap: string;
     // Car categories
     carSmall: string;
     carLarge: string;
-    // Service names & descriptions
+    // PPF services
     svcPpfColor: string;
-    svcPpfColorDesc: string;
     svcPpfClear75: string;
-    svcPpfClear75Desc: string;
     svcPpfClear85: string;
-    svcPpfClear85Desc: string;
     svcPpfMatte: string;
-    svcPpfMatteDesc: string;
-    svcTintFront: string;
-    svcTintFrontDesc: string;
+    svcPpfFrontRear: string;
+    svcPpfFront: string;
+    svcPpfPartialRear: string;
+    svcPpfPartial: string;
+    svcPpfWindshield: string;
+    // Tint services
     svcTintFull: string;
-    svcTintFullDesc: string;
+    svcTintFront: string;
+    // Ceramic services
     svcCeramicInt1: string;
-    svcCeramicInt1Desc: string;
     svcCeramicInt3: string;
-    svcCeramicInt3Desc: string;
     svcCeramicInt5: string;
-    svcCeramicInt5Desc: string;
-    svcCeramicExt: string;
-    svcCeramicExtDesc: string;
-    // Benefits
-    b_selfHealing: string;
-    b_rockChip: string;
-    b_uvYellowing: string;
-    b_resaleValue: string;
-    b_colorChange: string;
-    b_reversible: string;
-    b_paintSafe: string;
-    b_5yrWarranty: string;
-    b_clearFilm75: string;
-    b_glossFinish: string;
-    b_10yrWarranty: string;
-    b_stoneChip: string;
-    b_clearFilm85: string;
-    b_thickerFilm: string;
-    b_premiumClarity: string;
-    b_matteFinish: string;
-    b_matteStyle: string;
-    b_noGlare: string;
-    b_uvRejection: string;
-    b_heatReduction: string;
-    b_glareFree: string;
-    b_fadeProtection: string;
-    b_dashboardHeat: string;
-    b_antiGlare: string;
-    b_uvProtection99: string;
-    b_crystalClear: string;
-    b_leatherStain: string;
-    b_dashboardUv: string;
-    b_spillRepellent: string;
-    b_interiorNew: string;
-    b_3yrProtection: string;
-    b_deeperShield: string;
-    b_5yrProtection: string;
-    b_maxDurability: string;
-    b_hydrophobic: string;
-    b_mirrorGloss: string;
-    b_dustRepellent: string;
-    b_easyWash: string;
+    svcCeramicExt1: string;
+    svcCeramicExt3: string;
+    svcCeramicExt5: string;
+    // Detail panel
+    coverageAreas: string;
+    additionalServices: string;
+    fullBody: string;
+    fullHood: string;
+    halfHood: string;
+    fullFenders: string;
+    halfFenders: string;
+    frontBumper: string;
+    frontLights: string;
+    sideMirrors: string;
+    frontPillars: string;
+    doorEdges: string;
+    rearBumper: string;
+    frontWindshield: string;
+    allGlass: string;
+    interiorSurfaces: string;
+    exteriorBody: string;
+    // Add-ons
+    addonOzone: string;
+    addonRimCeramic: string;
+    addonEngineClean: string;
+    addonRemoveTint: string;
+    addonRemovePartial: string;
+    addonRemoveFront: string;
+    addonRemoveFull: string;
     // WhatsApp message
     waGreeting: string;
     waVehicle: string;
