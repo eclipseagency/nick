@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-type Size = "small" | "medium" | "large" | "suv" | null;
+type Size = "small" | "large" | null;
 type Category = "all" | "ppf" | "tint" | "ceramic";
 
 export default function Booking() {
@@ -24,10 +24,8 @@ export default function Booking() {
   const toggle = (id: string) => setSel(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
 
   const cars = [
-    { id: "small" as const, label: t.booking.carSmall, ex: "Civic, Corolla, Elantra", img: "/images/DSC03060.jpg" },
-    { id: "medium" as const, label: t.booking.carMedium, ex: "Camry, Accord, Sonata", img: "/images/DSC03235.jpg" },
-    { id: "large" as const, label: t.booking.carLarge, ex: "S-Class, 7 Series", img: "/images/IMG_9912.JPG" },
-    { id: "suv" as const, label: t.booking.carSuv, ex: "Tahoe, Land Cruiser", img: "/images/DSC03064.jpg" },
+    { id: "small" as const, label: t.booking.carSmall, ex: "Civic, Corolla, Elantra, Camry", img: "/images/DSC03060.jpg" },
+    { id: "large" as const, label: t.booking.carLarge, ex: "Tahoe, Land Cruiser, S-Class", img: "/images/IMG_9912.JPG" },
   ];
 
   const categories: { id: Category; label: string; icon: React.ReactNode }[] = [
@@ -38,18 +36,29 @@ export default function Booking() {
   ];
 
   const svcs = [
-    { id: "ppf-full", cat: "ppf" as const, name: t.booking.svcPpfFull, desc: t.booking.svcPpfFullDesc, p: { small: 14000, medium: 16000, large: 18500, suv: 22000 }, w: "10yr", img: "/images/DSC03279.jpg",
-      benefits: [t.booking.b_selfHealing, t.booking.b_rockChip, t.booking.b_uvYellowing, t.booking.b_resaleValue] },
-    { id: "ppf-front", cat: "ppf" as const, name: t.booking.svcPpfFront, desc: t.booking.svcPpfFrontDesc, p: { small: 5500, medium: 6500, large: 7500, suv: 9000 }, w: "10yr", img: "/images/DSC03292.jpg",
-      benefits: [t.booking.b_highImpact, t.booking.b_invisibleFilm, t.booking.b_selfHealTech, t.booking.b_factoryPaint] },
-    { id: "tint-full", cat: "tint" as const, name: t.booking.svcTintFull, desc: t.booking.svcTintFullDesc, p: { small: 2400, medium: 2600, large: 2800, suv: 3200 }, w: "10yr", img: "/images/DSC03136.jpg",
-      benefits: [t.booking.b_uvRejection, t.booking.b_heatReduction, t.booking.b_glareFree, t.booking.b_fadeProtection] },
-    { id: "tint-front", cat: "tint" as const, name: t.booking.svcTintFront, desc: t.booking.svcTintFrontDesc, p: { small: 1160, medium: 1200, large: 1300, suv: 1400 }, w: "10yr", img: "/images/DSC03174.jpg",
+    // PPF — Protection Films
+    { id: "ppf-color", cat: "ppf" as const, name: t.booking.svcPpfColor, desc: t.booking.svcPpfColorDesc, p: { small: 16500, large: 18500 }, w: "5yr", img: "/images/DSC03279.jpg",
+      benefits: [t.booking.b_colorChange, t.booking.b_reversible, t.booking.b_paintSafe, t.booking.b_5yrWarranty] },
+    { id: "ppf-clear75", cat: "ppf" as const, name: t.booking.svcPpfClear75, desc: t.booking.svcPpfClear75Desc, p: { small: 12000, large: 14500 }, w: "10yr", img: "/images/DSC03292.jpg",
+      benefits: [t.booking.b_clearFilm75, t.booking.b_glossFinish, t.booking.b_10yrWarranty, t.booking.b_stoneChip] },
+    { id: "ppf-clear85", cat: "ppf" as const, name: t.booking.svcPpfClear85, desc: t.booking.svcPpfClear85Desc, p: { small: 14000, large: 15500 }, w: "10yr", img: "/images/DSC03235.jpg",
+      benefits: [t.booking.b_clearFilm85, t.booking.b_thickerFilm, t.booking.b_premiumClarity, t.booking.b_10yrWarranty] },
+    { id: "ppf-matte", cat: "ppf" as const, name: t.booking.svcPpfMatte, desc: t.booking.svcPpfMatteDesc, p: { small: 13450, large: 15450 }, w: "10yr", img: "/images/DSC03064.jpg",
+      benefits: [t.booking.b_matteFinish, t.booking.b_selfHealing, t.booking.b_matteStyle, t.booking.b_noGlare] },
+    // Tint — Thermal Insulation
+    { id: "tint-front", cat: "tint" as const, name: t.booking.svcTintFront, desc: t.booking.svcTintFrontDesc, p: { small: 1160, large: 1300 }, w: "10yr", img: "/images/DSC03174.jpg",
       benefits: [t.booking.b_dashboardHeat, t.booking.b_antiGlare, t.booking.b_uvProtection99, t.booking.b_crystalClear] },
-    { id: "ceramic", cat: "ceramic" as const, name: t.booking.svcCeramic, desc: t.booking.svcCeramicDesc, p: { small: 1350, medium: 1650, large: 1950, suv: 2400 }, w: "5yr", img: "/images/DSC03018.jpg",
-      benefits: [t.booking.b_hydrophobic, t.booking.b_mirrorGloss, t.booking.b_dustRepellent, t.booking.b_easyWash] },
-    { id: "ceramic-int", cat: "ceramic" as const, name: t.booking.svcCeramicInt, desc: t.booking.svcCeramicIntDesc, p: { small: 2300, medium: 2800, large: 3400, suv: 3800 }, w: "3yr", img: "/images/DSC02995.jpg",
+    { id: "tint-full", cat: "tint" as const, name: t.booking.svcTintFull, desc: t.booking.svcTintFullDesc, p: { small: 2400, large: 2800 }, w: "10yr", img: "/images/DSC03136.jpg",
+      benefits: [t.booking.b_uvRejection, t.booking.b_heatReduction, t.booking.b_glareFree, t.booking.b_fadeProtection] },
+    // Ceramic — Nano Ceramic
+    { id: "ceramic-int-1", cat: "ceramic" as const, name: t.booking.svcCeramicInt1, desc: t.booking.svcCeramicInt1Desc, p: { small: 2300, large: 2500 }, w: "1yr", img: "/images/DSC02995.jpg",
       benefits: [t.booking.b_leatherStain, t.booking.b_dashboardUv, t.booking.b_spillRepellent, t.booking.b_interiorNew] },
+    { id: "ceramic-int-3", cat: "ceramic" as const, name: t.booking.svcCeramicInt3, desc: t.booking.svcCeramicInt3Desc, p: { small: 2900, large: 3100 }, w: "3yr", img: "/images/DSC02995.jpg",
+      benefits: [t.booking.b_leatherStain, t.booking.b_3yrProtection, t.booking.b_deeperShield, t.booking.b_interiorNew] },
+    { id: "ceramic-int-5", cat: "ceramic" as const, name: t.booking.svcCeramicInt5, desc: t.booking.svcCeramicInt5Desc, p: { small: 3200, large: 3400 }, w: "5yr", img: "/images/DSC02995.jpg",
+      benefits: [t.booking.b_leatherStain, t.booking.b_5yrProtection, t.booking.b_maxDurability, t.booking.b_interiorNew] },
+    { id: "ceramic-ext", cat: "ceramic" as const, name: t.booking.svcCeramicExt, desc: t.booking.svcCeramicExtDesc, p: { small: 1350, large: 1950 }, w: "1yr", img: "/images/DSC03018.jpg",
+      benefits: [t.booking.b_hydrophobic, t.booking.b_mirrorGloss, t.booking.b_dustRepellent, t.booking.b_easyWash] },
   ];
 
   const filteredSvcs = category === "all" ? svcs : svcs.filter(s => s.cat === category);
@@ -70,7 +79,6 @@ export default function Booking() {
     return `https://wa.me/966?text=${encodeURIComponent(msg)}`;
   };
 
-  // Count selected per category
   const selCount = (cat: Category) => {
     if (cat === "all") return sel.length;
     return sel.filter(id => svcs.find(s => s.id === id)?.cat === cat).length;
@@ -111,7 +119,7 @@ export default function Booking() {
         {step === 1 && (
           <div>
             <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: 14, marginBottom: 32 }}>{t.booking.step1instruction}</p>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, maxWidth: 600, margin: "0 auto" }}>
               {cars.map((c) => (
                 <button key={c.id} onClick={() => setSize(c.id)} className={size === c.id ? "gold-pulse" : ""} style={{
                   position: "relative", borderRadius: 16, overflow: "hidden", textAlign: dir === "rtl" ? "right" : "left", cursor: "pointer", background: "none", padding: 0,
@@ -123,7 +131,7 @@ export default function Booking() {
                   onMouseEnter={e => { if (size !== c.id) e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)"; }}
                   onMouseLeave={e => { if (size !== c.id) e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
                 >
-                  <div style={{ position: "relative", height: 180 }}>
+                  <div style={{ position: "relative", height: 200 }}>
                     <Image src={c.img} alt={c.label} fill className="object-cover" style={{ transition: "transform 0.5s" }} />
                     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 100%)" }} />
                     {size === c.id && (
@@ -134,9 +142,9 @@ export default function Booking() {
                       }}>&#10003;</div>
                     )}
                   </div>
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 14 }}>
-                    <div style={{ color: size === c.id ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 14 }}>{c.label}</div>
-                    <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, marginTop: 4 }}>{c.ex}</div>
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 16 }}>
+                    <div style={{ color: size === c.id ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 16 }}>{c.label}</div>
+                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 12, marginTop: 4 }}>{c.ex}</div>
                   </div>
                 </button>
               ))}
@@ -186,7 +194,7 @@ export default function Booking() {
                         width: 20, height: 20, borderRadius: "50%", fontSize: 11, fontWeight: 700,
                         display: "flex", alignItems: "center", justifyContent: "center",
                         background: isActive ? "rgba(0,0,0,0.2)" : "#F6BE00",
-                        color: isActive ? "#000" : "#000",
+                        color: "#000",
                         marginInlineStart: 2,
                       }}>{count}</span>
                     )}
@@ -207,7 +215,7 @@ export default function Booking() {
                   <div style={{ position: "relative", height: 130 }}>
                     <Image src={s.img} alt={s.name} fill className="object-cover" />
                     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #111, rgba(17,17,17,0.4), transparent)" }} />
-                    {/* Category pill on image */}
+                    {/* Category pill */}
                     <span style={{
                       position: "absolute", top: 10,
                       ...(dir === "rtl" ? { right: 10 } : { left: 10 }),
@@ -219,6 +227,7 @@ export default function Booking() {
                     }}>
                       {categories.find(c => c.id === s.cat)?.label}
                     </span>
+                    {/* Price badge */}
                     <span style={{
                       position: "absolute", bottom: 10,
                       ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
@@ -290,7 +299,6 @@ export default function Booking() {
                   <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>{t.booking.servicesLabel}</span>
                   <button onClick={() => setStep(2)} style={{ color: "#F6BE00", fontSize: 12, background: "none", border: "none", cursor: "pointer" }}>{t.booking.change}</button>
                 </div>
-                {/* Group selected services by category */}
                 {(["ppf", "tint", "ceramic"] as const).map(cat => {
                   const catSvcs = sel.filter(id => svcs.find(s => s.id === id)?.cat === cat);
                   if (catSvcs.length === 0) return null;
@@ -341,7 +349,6 @@ export default function Booking() {
             <div style={{ marginBottom: 24 }}>
               <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em", marginBottom: 16 }}>{t.booking.paymentMethod}</div>
               <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
-                {/* Pay Online */}
                 <Link
                   href={`https://nick.sa/checkout?amount=${total}&name=${encodeURIComponent(form.name)}&phone=${encodeURIComponent(form.phone)}`}
                   target="_blank"
@@ -354,7 +361,6 @@ export default function Booking() {
                   {t.booking.payOnline} &mdash; {total.toLocaleString()} SAR
                 </Link>
 
-                {/* Tabby */}
                 <Link
                   href={`https://nick.sa/checkout?method=tabby&amount=${total}&name=${encodeURIComponent(form.name)}&phone=${encodeURIComponent(form.phone)}`}
                   target="_blank"
@@ -373,7 +379,6 @@ export default function Booking() {
                   </span>
                 </Link>
 
-                {/* Tamara */}
                 <Link
                   href={`https://nick.sa/checkout?method=tamara&amount=${total}&name=${encodeURIComponent(form.name)}&phone=${encodeURIComponent(form.phone)}`}
                   target="_blank"
