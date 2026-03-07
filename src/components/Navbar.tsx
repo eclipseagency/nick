@@ -38,9 +38,9 @@ export default function Navbar() {
       transition: "all 0.4s",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Link href="#hero">
+        <a href="#hero" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} style={{ cursor: "pointer" }}>
           <Image src="/images/logo-white.png" alt="NICK" width={110} height={36} priority style={{ opacity: 0.95 }} />
-        </Link>
+        </a>
 
         {/* Desktop */}
         <div className="hidden lg:flex" style={{ alignItems: "center", gap: 32 }}>

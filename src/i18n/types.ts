@@ -223,6 +223,10 @@ export interface Dictionary {
     addonRemovePartial: string;
     addonRemoveFront: string;
     addonRemoveFull: string;
+    // UI labels
+    popular: string;
+    orderSent: string;
+    orderSentSub: string;
     // WhatsApp message
     waGreeting: string;
     waVehicle: string;
