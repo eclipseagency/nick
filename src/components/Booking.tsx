@@ -9,7 +9,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 type Size = "small" | "large" | null;
 type Category = "all" | "ppf" | "tint" | "ceramic";
 
-interface Addon { id: string; name: string; p: { small: number; large: number } }
+interface Addon { id: string; name: string; p: { small: number; large: number }; icon: React.ReactNode }
 interface Svc {
   id: string; cat: "ppf" | "tint" | "ceramic"; name: string; w: string; img: string;
   p: { small: number; large: number };
@@ -22,7 +22,7 @@ export default function Booking() {
   const [size, setSize] = useState<Size>(null);
   const [category, setCategory] = useState<Category>("all");
   const [sel, setSel] = useState<string[]>([]);
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [selAddons, setSelAddons] = useState<Record<string, string[]>>({});
   const [form, setForm] = useState({ name: "", phone: "", notes: "" });
 
@@ -32,16 +32,14 @@ export default function Booking() {
   const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
 
   const toggleSvc = (id: string) => {
-    setSel(p => {
-      if (p.includes(id)) {
-        const next = p.filter(x => x !== id);
-        setSelAddons(a => { const n = { ...a }; delete n[id]; return n; });
-        if (expanded === id) setExpanded(null);
-        return next;
-      }
-      setExpanded(id);
-      return [...p, id];
-    });
+    if (sel.includes(id)) {
+      setSel(p => p.filter(x => x !== id));
+      setSelAddons(a => { const n = { ...a }; delete n[id]; return n; });
+      if (detailId === id) setDetailId(null);
+    } else {
+      setSel(p => [...p, id]);
+      setDetailId(id);
+    }
   };
 
   const toggleAddon = (svcId: string, addonId: string) => {
@@ -63,28 +61,28 @@ export default function Booking() {
     { id: "ceramic", label: t.booking.catCeramic, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg> },
   ];
 
-  // Add-on pricing tiers (low = small car default, high = large car / premium products)
   const addons: Addon[] = [
-    { id: "ozone", name: t.booking.addonOzone, p: { small: 100, large: 150 } },
-    { id: "rim-ceramic", name: t.booking.addonRimCeramic, p: { small: 600, large: 700 } },
-    { id: "engine-clean", name: t.booking.addonEngineClean, p: { small: 150, large: 200 } },
-    { id: "remove-tint", name: t.booking.addonRemoveTint, p: { small: 200, large: 300 } },
-    { id: "remove-partial", name: t.booking.addonRemovePartial, p: { small: 350, large: 450 } },
-    { id: "remove-front", name: t.booking.addonRemoveFront, p: { small: 550, large: 650 } },
-    { id: "remove-full", name: t.booking.addonRemoveFull, p: { small: 1250, large: 1450 } },
+    { id: "ozone", name: t.booking.addonOzone, p: { small: 100, large: 150 },
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2c0 0-3 4-3 7a3 3 0 0 0 6 0c0-3-3-7-3-7z"/><path d="M16 6c0 0-2 3-2 5a2 2 0 0 0 4 0c0-2-2-5-2-5z"/><path d="M12 14v4"/><path d="M8 18h8"/><path d="M6 22h12"/></svg> },
+    { id: "rim-ceramic", name: t.booking.addonRimCeramic, p: { small: 600, large: 700 },
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="2" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="22" y2="12"/></svg> },
+    { id: "engine-clean", name: t.booking.addonEngineClean, p: { small: 150, large: 200 },
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> },
+    { id: "remove-tint", name: t.booking.addonRemoveTint, p: { small: 200, large: 300 },
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> },
+    { id: "remove-partial", name: t.booking.addonRemovePartial, p: { small: 350, large: 450 },
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="8" y1="12" x2="16" y2="12"/></svg> },
+    { id: "remove-front", name: t.booking.addonRemoveFront, p: { small: 550, large: 650 },
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> },
+    { id: "remove-full", name: t.booking.addonRemoveFull, p: { small: 1250, large: 1450 },
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="22" height="12" rx="3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><line x1="8" y1="10" x2="16" y2="14"/><line x1="16" y1="10" x2="8" y2="14"/></svg> },
   ];
 
   const svcs: Svc[] = [
-    // PPF — Full body
-    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: { small: 16500, large: 18500 }, w: "5yr", img: "/images/DSC03279.jpg", addonTier: "high",
-      parts: [t.booking.fullBody] },
-    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: { small: 12000, large: 14500 }, w: "10yr", img: "/images/DSC03292.jpg", addonTier: "low",
-      parts: [t.booking.fullBody] },
-    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: { small: 14000, large: 15500 }, w: "10yr", img: "/images/DSC03235.jpg", addonTier: "low",
-      parts: [t.booking.fullBody] },
-    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: { small: 13450, large: 15450 }, w: "10yr", img: "/images/DSC03064.jpg", addonTier: "low",
-      parts: [t.booking.fullBody] },
-    // PPF — Front / Partial
+    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: { small: 16500, large: 18500 }, w: "5yr", img: "/images/DSC03279.jpg", addonTier: "high", parts: [t.booking.fullBody] },
+    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: { small: 12000, large: 14500 }, w: "10yr", img: "/images/DSC03292.jpg", addonTier: "low", parts: [t.booking.fullBody] },
+    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: { small: 14000, large: 15500 }, w: "10yr", img: "/images/DSC03235.jpg", addonTier: "low", parts: [t.booking.fullBody] },
+    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: { small: 13450, large: 15450 }, w: "10yr", img: "/images/DSC03064.jpg", addonTier: "low", parts: [t.booking.fullBody] },
     { id: "ppf-front-rear", cat: "ppf", name: t.booking.svcPpfFrontRear, p: { small: 4770, large: 5500 }, w: "10yr", img: "/images/DSC03279.jpg", addonTier: "high",
       parts: [t.booking.fullHood, t.booking.fullFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges, t.booking.rearBumper] },
     { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: { small: 3660, large: 5600 }, w: "10yr", img: "/images/DSC03292.jpg", addonTier: "high",
@@ -93,29 +91,19 @@ export default function Booking() {
       parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges, t.booking.rearBumper] },
     { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: { small: 1850, large: 2900 }, w: "10yr", img: "/images/DSC03064.jpg", addonTier: "low",
       parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges] },
-    { id: "ppf-windshield", cat: "ppf", name: t.booking.svcPpfWindshield, p: { small: 1000, large: 1000 }, w: "10yr", img: "/images/DSC03174.jpg", addonTier: "low",
-      parts: [t.booking.frontWindshield] },
-    // Tint
-    { id: "tint-full", cat: "tint", name: t.booking.svcTintFull, p: { small: 2400, large: 2800 }, w: "10yr", img: "/images/DSC03136.jpg", addonTier: "low",
-      parts: [t.booking.allGlass] },
-    { id: "tint-front", cat: "tint", name: t.booking.svcTintFront, p: { small: 1160, large: 1300 }, w: "10yr", img: "/images/DSC03174.jpg", addonTier: "high",
-      parts: [t.booking.frontWindshield] },
-    // Ceramic
-    { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: { small: 2300, large: 2500 }, w: "1yr", img: "/images/DSC02995.jpg", addonTier: "low",
-      parts: [t.booking.interiorSurfaces] },
-    { id: "ceramic-int-3", cat: "ceramic", name: t.booking.svcCeramicInt3, p: { small: 2900, large: 3100 }, w: "3yr", img: "/images/DSC02995.jpg", addonTier: "low",
-      parts: [t.booking.interiorSurfaces] },
-    { id: "ceramic-int-5", cat: "ceramic", name: t.booking.svcCeramicInt5, p: { small: 3200, large: 3400 }, w: "5yr", img: "/images/DSC02995.jpg", addonTier: "low",
-      parts: [t.booking.interiorSurfaces] },
-    { id: "ceramic-ext-1", cat: "ceramic", name: t.booking.svcCeramicExt1, p: { small: 1350, large: 1950 }, w: "1yr", img: "/images/DSC03018.jpg", addonTier: "high",
-      parts: [t.booking.exteriorBody] },
-    { id: "ceramic-ext-3", cat: "ceramic", name: t.booking.svcCeramicExt3, p: { small: 2250, large: 2850 }, w: "3yr", img: "/images/DSC03018.jpg", addonTier: "low",
-      parts: [t.booking.exteriorBody] },
-    { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: { small: 3050, large: 3750 }, w: "5yr", img: "/images/DSC03018.jpg", addonTier: "low",
-      parts: [t.booking.exteriorBody] },
+    { id: "ppf-windshield", cat: "ppf", name: t.booking.svcPpfWindshield, p: { small: 1000, large: 1000 }, w: "10yr", img: "/images/DSC03174.jpg", addonTier: "low", parts: [t.booking.frontWindshield] },
+    { id: "tint-full", cat: "tint", name: t.booking.svcTintFull, p: { small: 2400, large: 2800 }, w: "10yr", img: "/images/DSC03136.jpg", addonTier: "low", parts: [t.booking.allGlass] },
+    { id: "tint-front", cat: "tint", name: t.booking.svcTintFront, p: { small: 1160, large: 1300 }, w: "10yr", img: "/images/DSC03174.jpg", addonTier: "high", parts: [t.booking.frontWindshield] },
+    { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: { small: 2300, large: 2500 }, w: "1yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
+    { id: "ceramic-int-3", cat: "ceramic", name: t.booking.svcCeramicInt3, p: { small: 2900, large: 3100 }, w: "3yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
+    { id: "ceramic-int-5", cat: "ceramic", name: t.booking.svcCeramicInt5, p: { small: 3200, large: 3400 }, w: "5yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
+    { id: "ceramic-ext-1", cat: "ceramic", name: t.booking.svcCeramicExt1, p: { small: 1350, large: 1950 }, w: "1yr", img: "/images/DSC03018.jpg", addonTier: "high", parts: [t.booking.exteriorBody] },
+    { id: "ceramic-ext-3", cat: "ceramic", name: t.booking.svcCeramicExt3, p: { small: 2250, large: 2850 }, w: "3yr", img: "/images/DSC03018.jpg", addonTier: "low", parts: [t.booking.exteriorBody] },
+    { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: { small: 3050, large: 3750 }, w: "5yr", img: "/images/DSC03018.jpg", addonTier: "low", parts: [t.booking.exteriorBody] },
   ];
 
   const filteredSvcs = category === "all" ? svcs : svcs.filter(s => s.cat === category);
+  const detailSvc = detailId ? svcs.find(s => s.id === detailId) : null;
 
   const getAddonPrice = (addon: Addon, tier: "low" | "high") => tier === "high" ? addon.p.large : addon.p.small;
 
@@ -123,10 +111,7 @@ export default function Booking() {
   const addonTotal = Object.entries(selAddons).reduce((s, [svcId, addonIds]) => {
     const svc = svcs.find(x => x.id === svcId);
     if (!svc) return s;
-    return s + addonIds.reduce((a, aid) => {
-      const addon = addons.find(x => x.id === aid);
-      return a + (addon ? getAddonPrice(addon, svc.addonTier) : 0);
-    }, 0);
+    return s + addonIds.reduce((a, aid) => { const addon = addons.find(x => x.id === aid); return a + (addon ? getAddonPrice(addon, svc.addonTier) : 0); }, 0);
   }, 0);
   const total = svcTotal + addonTotal;
 
@@ -135,8 +120,6 @@ export default function Booking() {
     width: "100%", padding: "16px 20px", borderRadius: 12,
     textDecoration: "none", transition: "all 0.3s", border: "none",
   };
-  const tabbyStyle: React.CSSProperties = { ...bnplBase, background: "#003227" };
-  const tamaraStyle: React.CSSProperties = { ...bnplBase, background: "#250155" };
 
   const buildWhatsApp = () => {
     const carLabel = cars.find(c => c.id === size)?.label ?? "";
@@ -245,93 +228,85 @@ export default function Booking() {
                     onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)"; e.currentTarget.style.color = "#F6BE00"; } }}
                     onMouseLeave={e => { if (!isActive) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "rgba(255,255,255,0.5)"; } }}
                   >
-                    {cat.icon}
-                    <span>{cat.label}</span>
-                    {count > 0 && (
-                      <span style={{ width: 20, height: 20, borderRadius: "50%", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", background: isActive ? "rgba(0,0,0,0.2)" : "#F6BE00", color: "#000", marginInlineStart: 2 }}>{count}</span>
-                    )}
+                    {cat.icon}<span>{cat.label}</span>
+                    {count > 0 && <span style={{ width: 20, height: 20, borderRadius: "50%", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", background: isActive ? "rgba(0,0,0,0.2)" : "#F6BE00", color: "#000" }}>{count}</span>}
                   </button>
                 );
               })}
             </div>
 
-            {/* Service Cards */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4" style={{ minHeight: 200 }}>
+            {/* Service Cards — compact list */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {filteredSvcs.map((s) => {
                 const isSelected = sel.includes(s.id);
-                const isExpanded = expanded === s.id;
+                const isDetail = detailId === s.id;
                 const svcAddons = selAddons[s.id] || [];
                 return (
-                  <div key={s.id} style={{
-                    borderRadius: 14, overflow: "hidden", transition: "all 0.3s",
-                    border: isSelected ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
-                    boxShadow: isSelected ? "0 0 16px rgba(246,190,0,0.12)" : "none",
-                    gridColumn: isExpanded ? "1 / -1" : undefined,
-                  }}>
-                    {/* Card header — clickable */}
+                  <div key={s.id}>
+                    {/* Service row */}
                     <button onClick={() => toggleSvc(s.id)} style={{
-                      width: "100%", textAlign: dir === "rtl" ? "right" : "left", cursor: "pointer", background: "none", padding: 0, border: "none",
-                      display: isExpanded ? "grid" : "block",
-                      gridTemplateColumns: isExpanded ? "280px 1fr" : undefined,
+                      width: "100%", display: "flex", alignItems: "center", gap: 14,
+                      padding: 0, cursor: "pointer", background: "#111", border: "none",
+                      borderRadius: isDetail ? "14px 14px 0 0" : 14,
+                      outline: isSelected ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
+                      outlineOffset: -2, transition: "all 0.3s",
+                      boxShadow: isSelected ? "0 0 20px rgba(246,190,0,0.1)" : "none",
+                      textAlign: dir === "rtl" ? "right" : "left",
                     }}>
-                      <div style={{ position: "relative", height: isExpanded ? 200 : 130 }}>
+                      {/* Thumbnail */}
+                      <div style={{ position: "relative", width: 90, height: 80, flexShrink: 0, borderRadius: dir === "rtl" ? "0 12px 12px 0" : "12px 0 0 12px", overflow: "hidden" }}>
                         <Image src={s.img} alt={s.name} fill className="object-cover" />
-                        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #111, rgba(17,17,17,0.4), transparent)" }} />
-                        <span style={{
-                          position: "absolute", top: 10, ...(dir === "rtl" ? { right: 10 } : { left: 10 }),
-                          padding: "3px 10px", fontSize: 10, fontWeight: 700, borderRadius: 100,
-                          background: "rgba(246,190,0,0.15)", color: "#F6BE00", backdropFilter: "blur(8px)",
-                          border: "1px solid rgba(246,190,0,0.2)",
-                          textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.05em",
-                        }}>
-                          {categories.find(c => c.id === s.cat)?.label}
-                        </span>
-                        <span style={{
-                          position: "absolute", bottom: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
-                          padding: "4px 10px", background: "#F6BE00", color: "#000", fontSize: 12, fontWeight: 700, borderRadius: 6,
-                        }}>
-                          {size ? s.p[size].toLocaleString() : "—"} SAR
-                        </span>
-                        {isSelected && (
-                          <div style={{
-                            position: "absolute", top: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
-                            width: 24, height: 24, borderRadius: "50%", background: "#F6BE00", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#000", fontWeight: 700,
-                          }}>&#10003;</div>
-                        )}
+                        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, transparent, rgba(17,17,17,0.5))" }} />
                       </div>
-                      <div style={{ padding: "14px 16px", background: "#111" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                          <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>{s.name}</span>
-                          <span style={{ fontSize: 10, color: "#F6BE00", border: "1px solid rgba(246,190,0,0.2)", padding: "2px 8px", borderRadius: 100 }}>{s.w}</span>
+                      {/* Info */}
+                      <div style={{ flex: 1, padding: "10px 0", minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+                          <span style={{ color: isSelected ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 13 }}>{s.name}</span>
+                          <span style={{ fontSize: 9, color: "#F6BE00", border: "1px solid rgba(246,190,0,0.2)", padding: "1px 7px", borderRadius: 100 }}>{s.w}</span>
                         </div>
-                        {/* Coverage parts as pills */}
-                        <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 5, marginTop: 8 }}>
-                          {s.parts.map(p => (
-                            <span key={p} style={{
-                              padding: "3px 10px", fontSize: 10, borderRadius: 100,
-                              background: "rgba(246,190,0,0.08)", color: "rgba(246,190,0,0.7)",
-                              border: "1px solid rgba(246,190,0,0.15)",
-                            }}>{p}</span>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                          {s.parts.slice(0, 4).map(p => (
+                            <span key={p} style={{ padding: "2px 8px", fontSize: 9, borderRadius: 100, background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.35)", border: "1px solid rgba(255,255,255,0.06)" }}>{p}</span>
                           ))}
+                          {s.parts.length > 4 && <span style={{ padding: "2px 8px", fontSize: 9, borderRadius: 100, color: "rgba(246,190,0,0.5)" }}>+{s.parts.length - 4}</span>}
+                        </div>
+                      </div>
+                      {/* Price + check */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "0 16px 0 0", flexShrink: 0 }}>
+                        <div style={{ textAlign: dir === "rtl" ? "left" : "right" }}>
+                          <div style={{ color: "#F6BE00", fontWeight: 700, fontSize: 14 }}>{size ? s.p[size].toLocaleString() : "—"}</div>
+                          <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10 }}>SAR</div>
+                        </div>
+                        <div style={{
+                          width: 24, height: 24, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center",
+                          background: isSelected ? "#F6BE00" : "transparent",
+                          border: isSelected ? "none" : "2px solid rgba(255,255,255,0.15)",
+                          transition: "all 0.2s", flexShrink: 0,
+                        }}>
+                          {isSelected && <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 7L5.75 9.25L10.5 4.5" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
                         </div>
                       </div>
                     </button>
 
-                    {/* Expanded detail panel */}
-                    {isSelected && isExpanded && (
-                      <div style={{ padding: "0 16px 16px", background: "#111", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                    {/* Detail panel — slides down below the selected card */}
+                    {isSelected && isDetail && (
+                      <div style={{
+                        background: "#0d0d0d", borderRadius: "0 0 14px 14px",
+                        border: "2px solid #F6BE00", borderTop: "1px solid rgba(246,190,0,0.15)",
+                        padding: 20, animation: "fadeUp 0.3s ease-out",
+                      }}>
                         {/* Coverage areas */}
                         {s.parts.length > 1 && (
-                          <div style={{ marginTop: 14, marginBottom: 14 }}>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: "#F6BE00", marginBottom: 8, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
+                          <div style={{ marginBottom: 20 }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "#F6BE00", marginBottom: 10, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
                               {t.booking.coverageAreas}
                             </div>
-                            <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                               {s.parts.map(p => (
                                 <span key={p} style={{
-                                  display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", fontSize: 12, borderRadius: 8,
-                                  background: "rgba(246,190,0,0.06)", color: "rgba(255,255,255,0.6)",
-                                  border: "1px solid rgba(246,190,0,0.12)",
+                                  display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 10,
+                                  background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.15)",
+                                  color: "rgba(255,255,255,0.7)", fontSize: 12,
                                 }}>
                                   <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3.5 6L5.25 7.75L8.5 4.5" stroke="#F6BE00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                   {p}
@@ -341,12 +316,12 @@ export default function Booking() {
                           </div>
                         )}
 
-                        {/* Additional services */}
+                        {/* Additional services — visual grid */}
                         <div>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: "#F6BE00", marginBottom: 10, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "#F6BE00", marginBottom: 12, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
                             {t.booking.additionalServices}
                           </div>
-                          <div style={{ display: "flex", flexDirection: "column" as const, gap: 6 }}>
+                          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
                             {addons.map(addon => {
                               const price = getAddonPrice(addon, s.addonTier);
                               const isChecked = svcAddons.includes(addon.id);
@@ -354,51 +329,62 @@ export default function Booking() {
                                 <button key={addon.id}
                                   onClick={(e) => { e.stopPropagation(); toggleAddon(s.id, addon.id); }}
                                   style={{
-                                    display: "flex", alignItems: "center", justifyContent: "space-between",
-                                    padding: "10px 14px", borderRadius: 10, cursor: "pointer",
-                                    background: isChecked ? "rgba(246,190,0,0.08)" : "rgba(255,255,255,0.02)",
-                                    border: isChecked ? "1px solid rgba(246,190,0,0.3)" : "1px solid rgba(255,255,255,0.06)",
-                                    transition: "all 0.2s", textAlign: dir === "rtl" ? "right" : "left",
+                                    display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+                                    padding: "16px 12px", borderRadius: 12, cursor: "pointer",
+                                    background: isChecked ? "rgba(246,190,0,0.1)" : "rgba(255,255,255,0.02)",
+                                    border: isChecked ? "1.5px solid rgba(246,190,0,0.4)" : "1.5px solid rgba(255,255,255,0.06)",
+                                    transition: "all 0.25s", textAlign: "center", position: "relative",
                                   }}
+                                  onMouseEnter={e => { if (!isChecked) e.currentTarget.style.borderColor = "rgba(246,190,0,0.2)"; }}
+                                  onMouseLeave={e => { if (!isChecked) e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
                                 >
-                                  <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                    <span style={{
-                                      width: 18, height: 18, borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center",
-                                      background: isChecked ? "#F6BE00" : "transparent",
-                                      border: isChecked ? "none" : "1.5px solid rgba(255,255,255,0.2)",
-                                      transition: "all 0.2s", flexShrink: 0,
-                                    }}>
-                                      {isChecked && <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 6L5 8L9 4" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-                                    </span>
-                                    <span style={{ color: isChecked ? "#fff" : "rgba(255,255,255,0.5)", fontSize: 13 }}>{addon.name}</span>
-                                  </span>
-                                  <span style={{ color: "#F6BE00", fontSize: 12, fontWeight: 600, flexShrink: 0 }}>+{price} SAR</span>
+                                  {/* Check indicator */}
+                                  {isChecked && (
+                                    <div style={{ position: "absolute", top: 6, ...(dir === "rtl" ? { left: 6 } : { right: 6 }), width: 18, height: 18, borderRadius: "50%", background: "#F6BE00", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                      <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 6L5 8L9 4" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                    </div>
+                                  )}
+                                  {/* Icon */}
+                                  <div style={{
+                                    width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
+                                    background: isChecked ? "rgba(246,190,0,0.15)" : "rgba(255,255,255,0.04)",
+                                    color: isChecked ? "#F6BE00" : "rgba(255,255,255,0.3)",
+                                    transition: "all 0.25s",
+                                  }}>
+                                    {addon.icon}
+                                  </div>
+                                  {/* Name */}
+                                  <span style={{ color: isChecked ? "#fff" : "rgba(255,255,255,0.45)", fontSize: 11, lineHeight: 1.3 }}>{addon.name}</span>
+                                  {/* Price */}
+                                  <span style={{ color: "#F6BE00", fontSize: 12, fontWeight: 700 }}>+{price} SAR</span>
                                 </button>
                               );
                             })}
                           </div>
                         </div>
 
-                        {/* Collapse button */}
-                        <button onClick={() => setExpanded(null)} style={{
-                          marginTop: 12, width: "100%", padding: "8px", borderRadius: 8, cursor: "pointer",
-                          background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-                          color: "rgba(255,255,255,0.4)", fontSize: 12, textAlign: "center",
+                        {/* Close detail */}
+                        <button onClick={() => setDetailId(null)} style={{
+                          marginTop: 16, width: "100%", padding: "8px", borderRadius: 8, cursor: "pointer",
+                          background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+                          color: "rgba(255,255,255,0.3)", fontSize: 18, textAlign: "center",
                         }}>
                           ▲
                         </button>
                       </div>
                     )}
 
-                    {/* Collapsed: show expand hint if selected but not expanded */}
-                    {isSelected && !isExpanded && (
-                      <button onClick={() => setExpanded(s.id)} style={{
-                        width: "100%", padding: "8px", cursor: "pointer",
-                        background: "rgba(246,190,0,0.04)", border: "none", borderTop: "1px solid rgba(255,255,255,0.06)",
+                    {/* Collapsed hint for selected items not currently expanded */}
+                    {isSelected && !isDetail && (
+                      <button onClick={() => setDetailId(s.id)} style={{
+                        width: "100%", padding: "6px 16px", cursor: "pointer",
+                        background: "rgba(246,190,0,0.04)", border: "none",
+                        borderRadius: "0 0 14px 14px",
+                        outline: "2px solid #F6BE00", outlineOffset: -2,
                         color: "#F6BE00", fontSize: 11, textAlign: "center",
                         display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                       }}>
-                        {t.booking.additionalServices} {svcAddons.length > 0 && `(${svcAddons.length})`} ▼
+                        {t.booking.additionalServices} {svcAddons.length > 0 && <span style={{ background: "#F6BE00", color: "#000", width: 16, height: 16, borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700 }}>{svcAddons.length}</span>} ▼
                       </button>
                     )}
                   </div>
@@ -426,7 +412,6 @@ export default function Booking() {
         {/* STEP 3 */}
         {step === 3 && (
           <div style={{ maxWidth: 600, margin: "0 auto" }}>
-            {/* Summary */}
             <div style={{ borderRadius: 14, background: "#111", border: "1px solid rgba(255,255,255,0.08)", overflow: "hidden", marginBottom: 32 }}>
               <div style={{ padding: 20, borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between" }}>
                 <div>
@@ -480,7 +465,6 @@ export default function Booking() {
               </div>
             </div>
 
-            {/* Form */}
             <div style={{ display: "flex", flexDirection: "column" as const, gap: 14, marginBottom: 32 }}>
               {[
                 { k: "name" as const, ph: t.booking.namePh, tp: "text" },
@@ -494,7 +478,6 @@ export default function Booking() {
                 placeholder={t.booking.notesPh} rows={3} style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", resize: "none" as const }} />
             </div>
 
-            {/* Payment */}
             <div style={{ marginBottom: 24 }}>
               <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em", marginBottom: 16 }}>{t.booking.paymentMethod}</div>
               <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
@@ -504,20 +487,16 @@ export default function Booking() {
                   {t.booking.payOnline} &mdash; {total.toLocaleString()} SAR
                 </Link>
                 <Link href={`https://nick.sa/checkout?method=tabby&amount=${total}&name=${encodeURIComponent(form.name)}&phone=${encodeURIComponent(form.phone)}`} target="_blank"
-                  style={(!form.name || !form.phone) ? { ...tabbyStyle, opacity: 0.3, pointerEvents: "none" } : tabbyStyle}>
-                  <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <svg width="60" height="20" viewBox="0 0 60 20" fill="none"><text x="0" y="16" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="18" letterSpacing="-0.5" fill="#3bff9d">tabby</text></svg>
-                  </span>
+                  style={(!form.name || !form.phone) ? { ...bnplBase, background: "#003227", opacity: 0.3, pointerEvents: "none" } : { ...bnplBase, background: "#003227" }}>
+                  <span><svg width="60" height="20" viewBox="0 0 60 20" fill="none"><text x="0" y="16" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="18" letterSpacing="-0.5" fill="#3bff9d">tabby</text></svg></span>
                   <span style={{ display: "flex", flexDirection: "column" as const, alignItems: dir === "rtl" ? "flex-start" : "flex-end" }}>
                     <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>{Math.ceil(total / 4).toLocaleString()} SAR<span style={{ fontWeight: 400, opacity: 0.6 }}>{t.booking.perMonth}</span></span>
                     <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{t.booking.splitIn4}</span>
                   </span>
                 </Link>
                 <Link href={`https://nick.sa/checkout?method=tamara&amount=${total}&name=${encodeURIComponent(form.name)}&phone=${encodeURIComponent(form.phone)}`} target="_blank"
-                  style={(!form.name || !form.phone) ? { ...tamaraStyle, opacity: 0.3, pointerEvents: "none" } : tamaraStyle}>
-                  <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <svg width="72" height="20" viewBox="0 0 72 20" fill="none"><text x="0" y="16" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="18" letterSpacing="-0.5" fill="#c77dff">tamara</text></svg>
-                  </span>
+                  style={(!form.name || !form.phone) ? { ...bnplBase, background: "#250155", opacity: 0.3, pointerEvents: "none" } : { ...bnplBase, background: "#250155" }}>
+                  <span><svg width="72" height="20" viewBox="0 0 72 20" fill="none"><text x="0" y="16" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="18" letterSpacing="-0.5" fill="#c77dff">tamara</text></svg></span>
                   <span style={{ display: "flex", flexDirection: "column" as const, alignItems: dir === "rtl" ? "flex-start" : "flex-end" }}>
                     <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>{Math.ceil(total / 3).toLocaleString()} SAR<span style={{ fontWeight: 400, opacity: 0.6 }}>{t.booking.perMonth}</span></span>
                     <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{t.booking.splitIn3}</span>
