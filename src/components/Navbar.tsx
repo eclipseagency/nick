@@ -17,12 +17,12 @@ export default function Navbar() {
   }, []);
 
   const links = [
-    { t: t.nav.home, h: "#hero" },
-    { t: t.nav.about, h: "#about" },
-    { t: t.nav.services, h: "#services" },
-    { t: t.nav.gallery, h: "#gallery" },
-    { t: t.nav.book, h: "#booking" },
-    { t: t.nav.contact, h: "#contact" },
+    { t: t.nav.home, h: "/" },
+    { t: t.nav.about, h: "/about" },
+    { t: t.nav.services, h: "/services" },
+    { t: t.nav.gallery, h: "/gallery" },
+    { t: t.nav.book, h: "/booking" },
+    { t: t.nav.contact, h: "/contact" },
   ];
 
   const isAr = locale === "ar";
@@ -38,9 +38,9 @@ export default function Navbar() {
       transition: "all 0.4s",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <a href="#hero" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} style={{ cursor: "pointer" }}>
+        <Link href="/" style={{ cursor: "pointer" }}>
           <Image src="/images/logo-white.png" alt="NICK" width={110} height={36} priority style={{ opacity: 0.95 }} />
-        </a>
+        </Link>
 
         {/* Desktop */}
         <div className="hidden lg:flex" style={{ alignItems: "center", gap: 32 }}>
