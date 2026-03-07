@@ -20,7 +20,7 @@ interface Svc {
 export default function Booking() {
   const [step, setStep] = useState(1);
   const [size, setSize] = useState<Size>(null);
-  const [category, setCategory] = useState<Category>("all");
+  const [category, setCategory] = useState<Category>("ppf");
   const [sel, setSel] = useState<string[]>([]);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [selAddons, setSelAddons] = useState<Record<string, string[]>>({});
@@ -55,7 +55,6 @@ export default function Booking() {
   ];
 
   const categories: { id: Category; label: string; icon: React.ReactNode }[] = [
-    { id: "all", label: t.booking.catAll, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> },
     { id: "ppf", label: t.booking.catPpf, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
     { id: "tint", label: t.booking.catTint, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> },
     { id: "ceramic", label: t.booking.catCeramic, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg> },
@@ -102,7 +101,7 @@ export default function Booking() {
     { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: { small: 3050, large: 3750 }, w: "5yr", img: "/images/DSC03018.jpg", addonTier: "low", parts: [t.booking.exteriorBody] },
   ];
 
-  const filteredSvcs = category === "all" ? svcs : svcs.filter(s => s.cat === category);
+  const filteredSvcs = svcs.filter(s => s.cat === category);
   const detailSvc = detailId ? svcs.find(s => s.id === detailId) : null;
 
   const getAddonPrice = (addon: Addon, tier: "low" | "high") => tier === "high" ? addon.p.large : addon.p.small;
@@ -132,10 +131,7 @@ export default function Booking() {
     return `https://wa.me/966?text=${encodeURIComponent(msg)}`;
   };
 
-  const selCount = (cat: Category) => {
-    if (cat === "all") return sel.length;
-    return sel.filter(id => svcs.find(s => s.id === id)?.cat === cat).length;
-  };
+  const selCount = (cat: Category) => sel.filter(id => svcs.find(s => s.id === id)?.cat === cat).length;
 
   return (
     <section id="booking" ref={ref} style={{ padding: "96px 0", background: "linear-gradient(180deg, #050505, #0a0a0a, #050505)" }}>
@@ -235,55 +231,67 @@ export default function Booking() {
               })}
             </div>
 
-            {/* Service Cards — compact list */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {/* Service Cards — 3 column grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredSvcs.map((s) => {
                 const isSelected = sel.includes(s.id);
                 const isDetail = detailId === s.id;
                 const svcAddons = selAddons[s.id] || [];
                 return (
-                  <div key={s.id}>
-                    {/* Service row */}
+                  <div key={s.id} style={{ gridColumn: isDetail ? "1 / -1" : undefined }}>
+                    {/* Service card */}
                     <button onClick={() => toggleSvc(s.id)} style={{
-                      width: "100%", display: "flex", alignItems: "center", gap: 14,
-                      padding: 0, cursor: "pointer", background: "#111", border: "none",
+                      width: "100%", padding: 0, cursor: "pointer", background: "none", border: "none",
                       borderRadius: isDetail ? "14px 14px 0 0" : 14,
+                      overflow: "hidden", transition: "all 0.3s",
                       outline: isSelected ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
-                      outlineOffset: -2, transition: "all 0.3s",
+                      outlineOffset: -2,
                       boxShadow: isSelected ? "0 0 20px rgba(246,190,0,0.1)" : "none",
                       textAlign: dir === "rtl" ? "right" : "left",
                     }}>
-                      {/* Thumbnail */}
-                      <div style={{ position: "relative", width: 90, height: 80, flexShrink: 0, borderRadius: dir === "rtl" ? "0 12px 12px 0" : "12px 0 0 12px", overflow: "hidden" }}>
-                        <Image src={s.img} alt={s.name} fill className="object-cover" />
-                        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, transparent, rgba(17,17,17,0.5))" }} />
+                      {/* Image */}
+                      <div style={{ position: "relative", height: 140 }}>
+                        <Image src={s.img} alt={s.name} fill className="object-cover" style={{ transition: "transform 0.5s" }} />
+                        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #111 0%, rgba(17,17,17,0.3) 50%, transparent 100%)" }} />
+                        {/* Category pill */}
+                        <span style={{
+                          position: "absolute", top: 10, ...(dir === "rtl" ? { right: 10 } : { left: 10 }),
+                          padding: "3px 10px", fontSize: 10, fontWeight: 700, borderRadius: 100,
+                          background: "rgba(246,190,0,0.15)", color: "#F6BE00", backdropFilter: "blur(8px)",
+                          border: "1px solid rgba(246,190,0,0.2)",
+                          textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.05em",
+                        }}>
+                          {categories.find(c => c.id === s.cat)?.label}
+                        </span>
+                        {/* Price badge */}
+                        <span style={{
+                          position: "absolute", bottom: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
+                          padding: "5px 12px", background: "#F6BE00", color: "#000", fontSize: 13, fontWeight: 700, borderRadius: 8,
+                        }}>
+                          {size ? s.p[size].toLocaleString() : "—"} SAR
+                        </span>
+                        {/* Checkmark */}
+                        {isSelected && (
+                          <div style={{
+                            position: "absolute", top: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
+                            width: 26, height: 26, borderRadius: "50%", background: "#F6BE00",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                          }}>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 7L5.75 9.25L10.5 4.5" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          </div>
+                        )}
                       </div>
                       {/* Info */}
-                      <div style={{ flex: 1, padding: "10px 0", minWidth: 0 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
-                          <span style={{ color: isSelected ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 13 }}>{s.name}</span>
-                          <span style={{ fontSize: 9, color: "#F6BE00", border: "1px solid rgba(246,190,0,0.2)", padding: "1px 7px", borderRadius: 100 }}>{s.w}</span>
+                      <div style={{ padding: "14px 16px", background: "#111" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                          <span style={{ color: isSelected ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 14 }}>{s.name}</span>
+                          <span style={{ fontSize: 10, color: "#F6BE00", border: "1px solid rgba(246,190,0,0.2)", padding: "2px 8px", borderRadius: 100 }}>{s.w}</span>
                         </div>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
                           {s.parts.slice(0, 4).map(p => (
-                            <span key={p} style={{ padding: "2px 8px", fontSize: 9, borderRadius: 100, background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.35)", border: "1px solid rgba(255,255,255,0.06)" }}>{p}</span>
+                            <span key={p} style={{ padding: "3px 9px", fontSize: 10, borderRadius: 100, background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.06)" }}>{p}</span>
                           ))}
-                          {s.parts.length > 4 && <span style={{ padding: "2px 8px", fontSize: 9, borderRadius: 100, color: "rgba(246,190,0,0.5)" }}>+{s.parts.length - 4}</span>}
-                        </div>
-                      </div>
-                      {/* Price + check */}
-                      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "0 16px 0 0", flexShrink: 0 }}>
-                        <div style={{ textAlign: dir === "rtl" ? "left" : "right" }}>
-                          <div style={{ color: "#F6BE00", fontWeight: 700, fontSize: 14 }}>{size ? s.p[size].toLocaleString() : "—"}</div>
-                          <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10 }}>SAR</div>
-                        </div>
-                        <div style={{
-                          width: 24, height: 24, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center",
-                          background: isSelected ? "#F6BE00" : "transparent",
-                          border: isSelected ? "none" : "2px solid rgba(255,255,255,0.15)",
-                          transition: "all 0.2s", flexShrink: 0,
-                        }}>
-                          {isSelected && <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 7L5.75 9.25L10.5 4.5" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+                          {s.parts.length > 4 && <span style={{ padding: "3px 9px", fontSize: 10, borderRadius: 100, color: "rgba(246,190,0,0.5)" }}>+{s.parts.length - 4}</span>}
                         </div>
                       </div>
                     </button>
