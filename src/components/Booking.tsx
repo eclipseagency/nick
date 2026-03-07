@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useReveal } from "@/hooks/useReveal";
@@ -27,6 +27,8 @@ export default function Booking() {
   const [selAddons, setSelAddons] = useState<Record<string, string[]>>({});
   const [form, setForm] = useState({ name: "", phone: "", notes: "" });
   const [orderSent, setOrderSent] = useState(false);
+  const [displayTotal, setDisplayTotal] = useState(0);
+  const [activePack, setActivePack] = useState<string | null>(null);
   const detailRef = useRef<HTMLDivElement>(null);
 
   const { t, locale, dir } = useLanguage();
@@ -120,6 +122,74 @@ export default function Booking() {
     return s + addonIds.reduce((a, aid) => { const addon = addons.find(x => x.id === aid); return a + (addon ? getAddonPrice(addon, svc.addonTier) : 0); }, 0);
   }, 0);
   const total = svcTotal + addonTotal;
+
+  // Animated total count
+  useEffect(() => {
+    if (displayTotal === total) return;
+    const diff = total - displayTotal;
+    const steps = 20;
+    const inc = diff / steps;
+    let current = displayTotal;
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      if (step >= steps) {
+        setDisplayTotal(total);
+        clearInterval(timer);
+      } else {
+        current += inc;
+        setDisplayTotal(Math.round(current));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [total]);
+
+  // Quick packages
+  interface Pack { id: string; name: string; desc: string; svcIds: string[]; discount: number; icon: string }
+  const packages: Pack[] = [
+    {
+      id: "essential", name: t.booking.packEssential, desc: t.booking.packEssentialDesc,
+      svcIds: ["ppf-front", "tint-full"], discount: 5, icon: "🛡️",
+    },
+    {
+      id: "premium", name: t.booking.packPremium, desc: t.booking.packPremiumDesc,
+      svcIds: ["ppf-clear75", "tint-full", "ceramic-ext-3"], discount: 8, icon: "⭐",
+    },
+    {
+      id: "ultimate", name: t.booking.packUltimate, desc: t.booking.packUltimateDesc,
+      svcIds: ["ppf-clear85", "tint-full", "ceramic-ext-5"], discount: 12, icon: "👑",
+    },
+  ];
+
+  const getPackPrice = (pack: Pack) => {
+    if (!size) return 0;
+    const raw = pack.svcIds.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v ? v.p[size] : 0); }, 0);
+    return Math.round(raw * (1 - pack.discount / 100));
+  };
+
+  const getPackSaving = (pack: Pack) => {
+    if (!size) return 0;
+    const raw = pack.svcIds.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v ? v.p[size] : 0); }, 0);
+    return raw - getPackPrice(pack);
+  };
+
+  const selectPack = (pack: Pack) => {
+    if (activePack === pack.id) {
+      // Deselect
+      setSel(prev => prev.filter(id => !pack.svcIds.includes(id)));
+      setActivePack(null);
+    } else {
+      // Select package services (add without removing other manual selections)
+      setSel(prev => {
+        const newSel = [...prev];
+        pack.svcIds.forEach(id => { if (!newSel.includes(id)) newSel.push(id); });
+        return newSel;
+      });
+      setActivePack(pack.id);
+      setDetailId(null);
+    }
+  };
 
   const bnplBase: React.CSSProperties = {
     display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -215,6 +285,82 @@ export default function Booking() {
             <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: 14, marginBottom: 24 }}>
               {t.booking.pricesFor} <strong style={{ color: "#F6BE00" }}>{cars.find(c => c.id === size)?.label}</strong> {t.booking.selectOneOrMore}
             </p>
+
+            {/* Quick Packages */}
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ textAlign: "center", marginBottom: 16 }}>
+                <span style={{ color: "#F6BE00", fontSize: 12, fontWeight: 700, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
+                  {t.booking.packagesTitle}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {packages.map((pack, i) => {
+                  const isActive = activePack === pack.id;
+                  const price = getPackPrice(pack);
+                  const saving = getPackSaving(pack);
+                  return (
+                    <button key={pack.id} onClick={() => selectPack(pack)} style={{
+                      position: "relative", padding: "20px 16px", borderRadius: 14, cursor: "pointer",
+                      background: isActive ? "rgba(246,190,0,0.08)" : "rgba(255,255,255,0.02)",
+                      border: isActive ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
+                      transition: "all 0.3s", textAlign: "center",
+                      boxShadow: isActive ? "0 0 24px rgba(246,190,0,0.12)" : "none",
+                      transform: isActive ? "scale(1.02)" : "scale(1)",
+                    }}
+                      onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)"; e.currentTarget.style.transform = "translateY(-2px)"; } }}
+                      onMouseLeave={e => { if (!isActive) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.transform = "scale(1)"; } }}
+                    >
+                      {/* Best value badge on premium */}
+                      {i === 1 && (
+                        <div style={{
+                          position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)",
+                          padding: "3px 14px", borderRadius: 100, fontSize: 10, fontWeight: 700,
+                          background: "#F6BE00", color: "#000",
+                          textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.05em",
+                          whiteSpace: "nowrap",
+                        }}>
+                          ★ {t.booking.popular}
+                        </div>
+                      )}
+                      {/* Icon */}
+                      <div style={{ fontSize: 28, marginBottom: 8 }}>{pack.icon}</div>
+                      {/* Name */}
+                      <div style={{ color: isActive ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 16, marginBottom: 4 }}>{pack.name}</div>
+                      {/* Description */}
+                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 12, lineHeight: 1.4 }}>{pack.desc}</div>
+                      {/* Price */}
+                      <div style={{ fontFamily: fontDisplay, fontSize: 22, fontWeight: 700, color: "#F6BE00", marginBottom: 4 }}>
+                        {size ? price.toLocaleString() : "—"} {cur}
+                      </div>
+                      {/* Saving */}
+                      {size && saving > 0 && (
+                        <div style={{
+                          display: "inline-flex", alignItems: "center", gap: 4,
+                          padding: "3px 10px", borderRadius: 100, fontSize: 10, fontWeight: 700,
+                          background: "rgba(76,175,80,0.15)", color: "#4CAF50",
+                          border: "1px solid rgba(76,175,80,0.2)",
+                        }}>
+                          {t.booking.packSave} {saving.toLocaleString()} {cur}
+                        </div>
+                      )}
+                      {/* Select indicator */}
+                      {isActive && (
+                        <div style={{
+                          position: "absolute", top: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
+                          width: 22, height: 22, borderRadius: "50%", background: "#F6BE00",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3.5 7L5.75 9.25L10.5 4.5" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              <div style={{ textAlign: "center", marginTop: 16 }}>
+                <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>— {t.booking.orPickIndividual} —</span>
+              </div>
+            </div>
 
             {/* Category Tabs */}
             <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 32, flexWrap: "wrap" }}>
@@ -431,7 +577,7 @@ export default function Booking() {
               }}>
                 <div>
                   <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{t.booking.estimatedTotal}</div>
-                  <div className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 24, fontWeight: 700 }}>{total.toLocaleString()} {cur}</div>
+                  <div className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 24, fontWeight: 700, transition: "all 0.3s" }}>{displayTotal.toLocaleString()} {cur}</div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                   <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>{sel.length} {sel.length > 1 ? t.booking.servicesCount : t.booking.serviceCount}</span>
@@ -499,7 +645,7 @@ export default function Booking() {
               </div>
               <div style={{ padding: 20, background: "rgba(246,190,0,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>{t.booking.totalLabel}</span>
-                <span className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 22, fontWeight: 700 }}>{total.toLocaleString()} {cur}</span>
+                <span className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 22, fontWeight: 700 }}>{displayTotal.toLocaleString()} {cur}</span>
               </div>
             </div>
 
@@ -528,7 +674,7 @@ export default function Booking() {
                   onClick={() => setTimeout(() => setOrderSent(true), 500)}
                   style={(!form.name || !form.phone) ? { opacity: 0.3, pointerEvents: "none", width: "100%", justifyContent: "center" } : { width: "100%", justifyContent: "center" }}>
                   <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg>
-                  {t.booking.payOnline} &mdash; {total.toLocaleString()} {cur}
+                  {t.booking.payOnline} &mdash; {displayTotal.toLocaleString()} {cur}
                 </Link>
                 <Link href={`https://nick.sa/checkout?method=tabby&amount=${total}&name=${encodeURIComponent(form.name)}&phone=${encodeURIComponent(form.phone)}`} target="_blank"
                   style={(!form.name || !form.phone) ? { ...bnplBase, background: "#003227", opacity: 0.3, pointerEvents: "none" } : { ...bnplBase, background: "#003227" }}>

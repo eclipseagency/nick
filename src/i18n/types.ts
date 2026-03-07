@@ -223,6 +223,18 @@ export interface Dictionary {
     addonRemovePartial: string;
     addonRemoveFront: string;
     addonRemoveFull: string;
+    // Packages
+    packagesTitle: string;
+    packEssential: string;
+    packEssentialDesc: string;
+    packPremium: string;
+    packPremiumDesc: string;
+    packUltimate: string;
+    packUltimateDesc: string;
+    packSave: string;
+    packSelect: string;
+    packSelected: string;
+    orPickIndividual: string;
     // UI labels
     popular: string;
     orderSent: string;
