@@ -215,7 +215,7 @@ export default function Booking() {
       return s.name + (svcAddons.length ? ` + ${svcAddons.join(", ")}` : "");
     });
     const msg = `${t.booking.waGreeting}\n\n${t.booking.waVehicle}: ${carLabel}\n${t.booking.waServices}:\n${lines.join("\n")}\n${t.booking.waTotal}: ${total.toLocaleString()} ${cur}\n\n${t.booking.waName}: ${form.name}\n${t.booking.waPhone}: ${form.phone}${form.notes ? "\n" + t.booking.waNotes + ": " + form.notes : ""}`;
-    return `https://wa.me/966?text=${encodeURIComponent(msg)}`;
+    return `https://wa.me/966543000055?text=${encodeURIComponent(msg)}`;
   };
 
   const selCount = (cat: Category) => sel.filter(id => svcs.find(s => s.id === id)?.cat === cat).length;

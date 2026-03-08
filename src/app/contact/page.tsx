@@ -37,7 +37,7 @@ export default function ContactPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const msg = `Name: ${form.name}%0AEmail: ${form.email}%0APhone: ${form.phone}%0AService: ${form.service}%0AMessage: ${form.message}`;
-    window.open(`https://wa.me/966?text=${msg}`, "_blank");
+    window.open(`https://wa.me/966543000055?text=${msg}`, "_blank");
     setSubmitted(true);
   };
 
@@ -80,6 +80,9 @@ export default function ContactPage() {
                 {t.contact.locationLabel}
               </div>
               <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 15 }}>
+                {t.contact.addressValue}
+              </div>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, marginTop: 4 }}>
                 {t.contact.locationValue}
               </div>
             </div>
@@ -96,9 +99,9 @@ export default function ContactPage() {
               <div style={{ color: "#F6BE00", fontSize: 11, fontWeight: 600, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em", marginBottom: 8 }}>
                 {isAr ? "الهاتف" : "Phone"}
               </div>
-              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 15 }} dir="ltr">
-                +966
-              </div>
+              <a href="tel:+966543000055" style={{ color: "rgba(255,255,255,0.7)", fontSize: 15, textDecoration: "none" }} dir="ltr">
+                +966 54 300 0055
+              </a>
             </div>
 
             {/* Working Hours */}
@@ -248,7 +251,7 @@ export default function ContactPage() {
             </p>
             <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap" }}>
               {/* WhatsApp */}
-              <Link href="https://wa.me/966" target="_blank"
+              <Link href="https://wa.me/966543000055" target="_blank"
                 style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.3s", color: "rgba(255,255,255,0.5)" }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = "#25D366"; e.currentTarget.style.color = "#25D366"; e.currentTarget.style.background = "rgba(37,211,102,0.08)"; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "rgba(255,255,255,0.5)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}>
@@ -256,11 +259,27 @@ export default function ContactPage() {
               </Link>
 
               {/* Instagram */}
-              <Link href="https://instagram.com/nick" target="_blank"
+              <Link href="https://www.instagram.com/nick_saudi" target="_blank"
                 style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.3s", color: "rgba(255,255,255,0.5)" }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = "#E4405F"; e.currentTarget.style.color = "#E4405F"; e.currentTarget.style.background = "rgba(228,64,95,0.08)"; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "rgba(255,255,255,0.5)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}>
                 <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" /></svg>
+              </Link>
+
+              {/* X / Twitter */}
+              <Link href="https://x.com/nick__saudi" target="_blank"
+                style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.3s", color: "rgba(255,255,255,0.5)" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "#fff"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "rgba(255,255,255,0.5)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}>
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </Link>
+
+              {/* TikTok */}
+              <Link href="https://www.tiktok.com/@nick_saudi" target="_blank"
+                style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.3s", color: "rgba(255,255,255,0.5)" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "#00f2ea"; e.currentTarget.style.color = "#00f2ea"; e.currentTarget.style.background = "rgba(0,242,234,0.08)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "rgba(255,255,255,0.5)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}>
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.46V13a8.28 8.28 0 005.58 2.15v-3.44a4.85 4.85 0 01-1.99-.43 4.83 4.83 0 01-1.79-1.38V6.69h3.78z"/></svg>
               </Link>
 
               {/* nick.sa Website */}

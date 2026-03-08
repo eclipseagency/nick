@@ -15,7 +15,7 @@ export default function FloatingButtons() {
     <>
       {/* WhatsApp floating button */}
       <a
-        href="https://wa.me/966"
+        href="https://wa.me/966543000055"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="WhatsApp"

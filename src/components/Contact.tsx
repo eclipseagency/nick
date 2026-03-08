@@ -33,15 +33,21 @@ export default function Contact() {
                 <Link href="https://nick.sa" target="_blank" className="btn-gold">{t.contact.cta1}</Link>
                 <Link href="#booking" className="btn-outline">{t.contact.cta2}</Link>
               </div>
-              <div className="grid grid-cols-3 gap-4" style={{ paddingTop: 24, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4" style={{ paddingTop: 24, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
                 {[
-                  { l: t.contact.locationLabel, v: t.contact.locationValue },
+                  { l: t.contact.locationLabel, v: t.contact.addressValue },
+                  { l: t.contact.phoneLabel, v: t.contact.phoneValue, href: "tel:+966543000055" },
+                  { l: t.contact.emailLabel, v: t.contact.emailValue, href: "mailto:info@nick.sa" },
                   { l: t.contact.websiteLabel, v: "nick.sa" },
                   { l: t.contact.sinceLabel, v: "1999" },
                 ].map(c => (
                   <div key={c.l}>
                     <div style={{ color: "#F6BE00", fontSize: 11, fontWeight: 600, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em", marginBottom: 4 }}>{c.l}</div>
-                    <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 13 }}>{c.v}</div>
+                    {"href" in c && c.href ? (
+                      <a href={c.href} style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, textDecoration: "none" }} dir={c.href.startsWith("tel") ? "ltr" : undefined}>{c.v}</a>
+                    ) : (
+                      <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 13 }}>{c.v}</div>
+                    )}
                   </div>
                 ))}
               </div>

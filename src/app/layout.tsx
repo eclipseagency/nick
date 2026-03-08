@@ -56,6 +56,97 @@ export default function RootLayout({
             __html: `(function(){try{var p=new URLSearchParams(location.search).get("lang");var l=p==="ar"||p==="en"?p:localStorage.getItem("nick-lang");if(l==="ar"){document.documentElement.lang="ar";document.documentElement.dir="rtl"}}catch(e){}})();`,
           }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "AutoRepair",
+                  name: "NICK",
+                  description:
+                    "High performance automotive protection films. PPF, ceramic coating, thermal insulation, and color wrapping.",
+                  url: "https://nick-fawn.vercel.app",
+                  image: "https://nick-fawn.vercel.app/images/DSC03279.jpg",
+                  telephone: "+966543000055",
+                  email: "info@nick.sa",
+                  address: {
+                    "@type": "PostalAddress",
+                    streetAddress: "Anas Ibn Malik Road, Al-Nargis District",
+                    addressLocality: "Riyadh",
+                    addressCountry: "SA",
+                  },
+                  geo: {
+                    "@type": "GeoCoordinates",
+                    latitude: 24.7136,
+                    longitude: 46.6753,
+                  },
+                  foundingDate: "1999",
+                  priceRange: "$$$$",
+                  openingHoursSpecification: {
+                    "@type": "OpeningHoursSpecification",
+                    dayOfWeek: [
+                      "Sunday",
+                      "Monday",
+                      "Tuesday",
+                      "Wednesday",
+                      "Thursday",
+                    ],
+                    opens: "09:00",
+                    closes: "21:00",
+                  },
+                  aggregateRating: {
+                    "@type": "AggregateRating",
+                    ratingValue: "4.9",
+                    reviewCount: "500",
+                  },
+                },
+                {
+                  "@type": "WebSite",
+                  name: "NICK",
+                  url: "https://nick-fawn.vercel.app",
+                },
+                {
+                  "@type": "Service",
+                  name: "Paint Protection Film (PPF)",
+                  provider: {
+                    "@type": "AutoRepair",
+                    name: "NICK",
+                  },
+                  areaServed: "Saudi Arabia",
+                },
+                {
+                  "@type": "Service",
+                  name: "Thermal Insulation (Tint)",
+                  provider: {
+                    "@type": "AutoRepair",
+                    name: "NICK",
+                  },
+                  areaServed: "Saudi Arabia",
+                },
+                {
+                  "@type": "Service",
+                  name: "Nano Ceramic Coating",
+                  provider: {
+                    "@type": "AutoRepair",
+                    name: "NICK",
+                  },
+                  areaServed: "Saudi Arabia",
+                },
+                {
+                  "@type": "Service",
+                  name: "Color Wrapping",
+                  provider: {
+                    "@type": "AutoRepair",
+                    name: "NICK",
+                  },
+                  areaServed: "Saudi Arabia",
+                },
+              ],
+            }),
+          }}
+        />
       </head>
       <body
         className={`${inter.variable} ${spaceGrotesk.variable} ${tajawal.variable} antialiased`}
