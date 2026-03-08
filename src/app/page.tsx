@@ -7,6 +7,7 @@ import BeforeAfter from "@/components/BeforeAfter";
 import Booking from "@/components/Booking";
 import WhyNick from "@/components/WhyNick";
 import Testimonials from "@/components/Testimonials";
+import FAQ from "@/components/FAQ";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import CursorGlow from "@/components/CursorGlow";
@@ -26,6 +27,7 @@ export default function Home() {
       <Booking />
       <WhyNick />
       <Testimonials />
+      <FAQ />
       <Contact />
       <Footer />
     </main>
