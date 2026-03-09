@@ -539,10 +539,24 @@ export default function Booking() {
                   );
                 })()}
 
-                {/* Divider to individual services */}
-                <div style={{ textAlign: "center", marginTop: 24 }}>
-                  <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>— {t.booking.orPickIndividual} —</span>
-                </div>
+                {/* Customize Your Own */}
+                <button onClick={() => { setActivePack(null); setSel([]); setSelAddons({}); setCategory("ppf"); }} style={{
+                  marginTop: 20, width: "100%", padding: "24px 20px", borderRadius: 16, cursor: "pointer",
+                  background: activePack === null ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.02)",
+                  border: activePack === null ? "2px dashed #F6BE00" : "2px dashed rgba(255,255,255,0.12)",
+                  transition: "all 0.3s", display: "flex", alignItems: "center", justifyContent: "center", gap: 14,
+                }}
+                  onMouseEnter={e => { if (activePack !== null) { e.currentTarget.style.borderColor = "rgba(246,190,0,0.4)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; } }}
+                  onMouseLeave={e => { if (activePack !== null) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; e.currentTarget.style.background = "rgba(255,255,255,0.02)"; } }}
+                >
+                  <div style={{ width: 44, height: 44, borderRadius: "50%", background: activePack === null ? "rgba(246,190,0,0.12)" : "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.3s" }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={activePack === null ? "#F6BE00" : "rgba(255,255,255,0.3)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  </div>
+                  <div style={{ textAlign: dir === "rtl" ? "right" : "left" }}>
+                    <div style={{ color: activePack === null ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 16 }}>{t.booking.customPackage}</div>
+                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>{t.booking.customPackageDesc}</div>
+                  </div>
+                </button>
               </div>
             )}
 

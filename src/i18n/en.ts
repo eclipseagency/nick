@@ -238,6 +238,8 @@ export const en: Dictionary = {
     packSelect: "Select Package",
     packSelected: "Selected",
     orPickIndividual: "Or pick individual services below",
+    customPackage: "Customize Your Own",
+    customPackageDesc: "Mix & match services from all categories",
     popular: "Most Popular",
     orderSent: "Order Sent!",
     orderSentSub: "We'll contact you shortly to confirm your booking.",

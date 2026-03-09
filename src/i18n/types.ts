@@ -244,6 +244,8 @@ export interface Dictionary {
     packSelect: string;
     packSelected: string;
     orPickIndividual: string;
+    customPackage: string;
+    customPackageDesc: string;
     // UI labels
     popular: string;
     orderSent: string;

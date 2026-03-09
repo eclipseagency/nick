@@ -238,6 +238,8 @@ export const ar: Dictionary = {
     packSelect: "اختر الباقة",
     packSelected: "تم الاختيار",
     orPickIndividual: "أو اختر الخدمات بشكل فردي",
+    customPackage: "صمّم باقتك",
+    customPackageDesc: "اختر الخدمات التي تناسبك من جميع الفئات",
     popular: "الأكثر طلبًا",
     orderSent: "تم إرسال الطلب!",
     orderSentSub: "سنتواصل معك قريبًا لتأكيد حجزك.",
