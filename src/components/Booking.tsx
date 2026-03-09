@@ -516,15 +516,19 @@ export default function Booking() {
                         )}
                       </div>
 
-                      {/* Service cards grid */}
+                      {/* Service cards grid — clickable for add-ons */}
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {packSvcs.map((s) => (
-                          <div key={s.id} style={{
-                            borderRadius: 14, overflow: "hidden",
-                            outline: `2px solid ${tierColor}`,
+                        {packSvcs.map((s) => {
+                          const svcAddons = selAddons[s.id] || [];
+                          return (
+                          <button key={s.id} onClick={() => setDetailId(detailId === s.id ? null : s.id)}
+                            style={{
+                            borderRadius: 14, overflow: "hidden", cursor: "pointer", padding: 0, background: "none", border: "none",
+                            outline: detailId === s.id ? `2px solid #F6BE00` : `2px solid ${tierColor}`,
                             outlineOffset: -2,
-                            boxShadow: `0 0 20px ${tierColor}15`,
+                            boxShadow: detailId === s.id ? `0 0 24px rgba(246,190,0,0.2)` : `0 0 20px ${tierColor}15`,
                             textAlign: dir === "rtl" ? "right" : "left",
+                            transition: "all 0.3s",
                           }}>
                             {/* Image */}
                             <div style={{ position: "relative", height: 140 }}>
@@ -569,10 +573,104 @@ export default function Booking() {
                                 ))}
                                 {s.parts.length > 4 && <span style={{ padding: "3px 9px", fontSize: 10, borderRadius: 100, color: `${tierColor}80` }}>+{s.parts.length - 4}</span>}
                               </div>
+                              {/* Addon count + tap hint */}
+                              <div style={{ marginTop: 8, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                {svcAddons.length > 0 ? (
+                                  <span style={{ fontSize: 10, color: "rgba(246,190,0,0.7)" }}>+{svcAddons.length} {t.booking.additionalServices.toLowerCase()}</span>
+                                ) : (
+                                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.2)" }}>{detailId === s.id ? "▲" : "▼"} {t.booking.additionalServices}</span>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Add-ons panel for selected package service */}
+                      {detailId && packSvcs.find(x => x.id === detailId) && (() => {
+                        const s = packSvcs.find(x => x.id === detailId)!;
+                        const svcAddons = selAddons[s.id] || [];
+                        return (
+                          <div ref={detailRef} style={{
+                            marginTop: 16, background: "#0d0d0d", borderRadius: 14,
+                            border: `2px solid ${tierColor}`,
+                            padding: 24, animation: "fadeUp 0.3s ease-out",
+                          }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                                <span style={{ color: tierColor, fontWeight: 700, fontSize: 16 }}>{s.name}</span>
+                                <span style={{ fontSize: 11, color: tierColor, border: `1px solid ${tierColor}30`, padding: "2px 10px", borderRadius: 100 }}>{s.w}</span>
+                              </div>
+                              <button onClick={() => setDetailId(null)} style={{
+                                width: 32, height: 32, borderRadius: "50%", cursor: "pointer",
+                                background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                                color: "rgba(255,255,255,0.4)", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center",
+                              }}>✕</button>
+                            </div>
+                            {s.parts.length > 1 && (
+                              <div style={{ marginBottom: 20 }}>
+                                <div style={{ fontSize: 11, fontWeight: 700, color: tierColor, marginBottom: 10, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
+                                  {t.booking.coverageAreas}
+                                </div>
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                  {s.parts.map(p => (
+                                    <span key={p} style={{
+                                      display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 10,
+                                      background: `${tierColor}0a`, border: `1px solid ${tierColor}20`,
+                                      color: "rgba(255,255,255,0.7)", fontSize: 12,
+                                    }}>
+                                      <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3.5 6L5.25 7.75L8.5 4.5" stroke={tierColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                      {p}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            <div>
+                              <div style={{ fontSize: 11, fontWeight: 700, color: tierColor, marginBottom: 12, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
+                                {t.booking.additionalServices}
+                              </div>
+                              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 10 }}>
+                                {addons.map(addon => {
+                                  const price = getAddonPrice(addon, s.addonTier);
+                                  const isChecked = svcAddons.includes(addon.id);
+                                  return (
+                                    <button key={addon.id}
+                                      onClick={(e) => { e.stopPropagation(); toggleAddon(s.id, addon.id); }}
+                                      style={{
+                                        display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+                                        padding: "16px 12px", borderRadius: 12, cursor: "pointer",
+                                        background: isChecked ? `${tierColor}15` : "rgba(255,255,255,0.02)",
+                                        border: isChecked ? `1.5px solid ${tierColor}60` : "1.5px solid rgba(255,255,255,0.06)",
+                                        transition: "all 0.25s", textAlign: "center", position: "relative",
+                                      }}
+                                      onMouseEnter={e => { if (!isChecked) e.currentTarget.style.borderColor = `${tierColor}30`; }}
+                                      onMouseLeave={e => { if (!isChecked) e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
+                                    >
+                                      {isChecked && (
+                                        <div style={{ position: "absolute", top: 6, ...(dir === "rtl" ? { left: 6 } : { right: 6 }), width: 18, height: 18, borderRadius: "50%", background: tierColor, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 6L5 8L9 4" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                        </div>
+                                      )}
+                                      <div style={{
+                                        width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
+                                        background: isChecked ? `${tierColor}20` : "rgba(255,255,255,0.04)",
+                                        color: isChecked ? tierColor : "rgba(255,255,255,0.3)",
+                                        transition: "all 0.25s",
+                                      }}>
+                                        {addon.icon}
+                                      </div>
+                                      <span style={{ color: isChecked ? "#fff" : "rgba(255,255,255,0.45)", fontSize: 11, lineHeight: 1.3 }}>{addon.name}</span>
+                                      <span style={{ color: tierColor, fontSize: 12, fontWeight: 700 }}>+{price} {cur}</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
                             </div>
                           </div>
-                        ))}
-                      </div>
+                        );
+                      })()}
 
                       {/* #4 Package total bar with Continue CTA */}
                       {size && (
