@@ -6,13 +6,13 @@ import Link from "next/link";
 import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-type Size = "small" | "medium" | "large" | null;
+type Size = "small" | "large" | null;
 type Category = "packages" | "ppf" | "tint" | "ceramic";
 
-interface Addon { id: string; name: string; p: { small: number; medium: number; large: number }; icon: React.ReactNode }
+interface Addon { id: string; name: string; p: { small: number; large: number }; icon: React.ReactNode }
 interface Svc {
   id: string; cat: "ppf" | "tint" | "ceramic"; name: string; w: string; img: string;
-  p: { small: number; medium: number; large: number };
+  p: { small: number; large: number };
   parts: string[];
   addonTier: "low" | "high";
   popular?: boolean;
@@ -59,8 +59,7 @@ export default function Booking() {
   };
 
   const cars = [
-    { id: "small" as const, label: t.booking.carSmall, ex: "Civic, Corolla, Elantra, Accent", img: "/images/DSC03060.jpg" },
-    { id: "medium" as const, label: t.booking.carMedium, ex: "Camry, Accord, Sonata, Charger", img: "/images/DSC03279.jpg" },
+    { id: "small" as const, label: t.booking.carSmall, ex: "Civic, Corolla, Elantra, Camry", img: "/images/DSC03060.jpg" },
     { id: "large" as const, label: t.booking.carLarge, ex: "Tahoe, Land Cruiser, S-Class", img: "/images/IMG_9912.JPG" },
   ];
 
@@ -72,44 +71,44 @@ export default function Booking() {
   ];
 
   const addons: Addon[] = [
-    { id: "ozone", name: t.booking.addonOzone, p: { small: 100, medium: 125, large: 150 },
+    { id: "ozone", name: t.booking.addonOzone, p: { small: 100, large: 150 },
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2c0 0-3 4-3 7a3 3 0 0 0 6 0c0-3-3-7-3-7z"/><path d="M16 6c0 0-2 3-2 5a2 2 0 0 0 4 0c0-2-2-5-2-5z"/><path d="M12 14v4"/><path d="M8 18h8"/><path d="M6 22h12"/></svg> },
-    { id: "rim-ceramic", name: t.booking.addonRimCeramic, p: { small: 600, medium: 650, large: 700 },
+    { id: "rim-ceramic", name: t.booking.addonRimCeramic, p: { small: 600, large: 700 },
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="2" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="22" y2="12"/></svg> },
-    { id: "engine-clean", name: t.booking.addonEngineClean, p: { small: 150, medium: 175, large: 200 },
+    { id: "engine-clean", name: t.booking.addonEngineClean, p: { small: 150, large: 200 },
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> },
-    { id: "remove-tint", name: t.booking.addonRemoveTint, p: { small: 200, medium: 250, large: 300 },
+    { id: "remove-tint", name: t.booking.addonRemoveTint, p: { small: 200, large: 300 },
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> },
-    { id: "remove-partial", name: t.booking.addonRemovePartial, p: { small: 350, medium: 400, large: 450 },
+    { id: "remove-partial", name: t.booking.addonRemovePartial, p: { small: 350, large: 450 },
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="8" y1="12" x2="16" y2="12"/></svg> },
-    { id: "remove-front", name: t.booking.addonRemoveFront, p: { small: 550, medium: 600, large: 650 },
+    { id: "remove-front", name: t.booking.addonRemoveFront, p: { small: 550, large: 650 },
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> },
-    { id: "remove-full", name: t.booking.addonRemoveFull, p: { small: 1250, medium: 1350, large: 1450 },
+    { id: "remove-full", name: t.booking.addonRemoveFull, p: { small: 1250, large: 1450 },
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="22" height="12" rx="3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><line x1="8" y1="10" x2="16" y2="14"/><line x1="16" y1="10" x2="8" y2="14"/></svg> },
   ];
 
   const svcs: Svc[] = [
-    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: { small: 16500, medium: 17500, large: 18500 }, w: "5yr", img: "/images/DSC03279.jpg", addonTier: "high", parts: [t.booking.fullBody] },
-    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: { small: 12000, medium: 13000, large: 14500 }, w: "10yr", img: "/images/DSC03292.jpg", addonTier: "low", parts: [t.booking.fullBody] },
-    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: { small: 14000, medium: 14750, large: 15500 }, w: "10yr", img: "/images/DSC03235.jpg", addonTier: "low", parts: [t.booking.fullBody], popular: true },
-    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: { small: 13450, medium: 14450, large: 15450 }, w: "10yr", img: "/images/DSC03064.jpg", addonTier: "low", parts: [t.booking.fullBody] },
-    { id: "ppf-front-rear", cat: "ppf", name: t.booking.svcPpfFrontRear, p: { small: 4770, medium: 5100, large: 5500 }, w: "10yr", img: "/images/DSC03279.jpg", addonTier: "high",
+    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: { small: 16500, large: 18500 }, w: "5yr", img: "/images/DSC03279.jpg", addonTier: "high", parts: [t.booking.fullBody] },
+    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: { small: 12000, large: 14500 }, w: "10yr", img: "/images/DSC03292.jpg", addonTier: "low", parts: [t.booking.fullBody] },
+    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: { small: 14000, large: 15500 }, w: "10yr", img: "/images/DSC03235.jpg", addonTier: "low", parts: [t.booking.fullBody], popular: true },
+    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: { small: 13450, large: 15450 }, w: "10yr", img: "/images/DSC03064.jpg", addonTier: "low", parts: [t.booking.fullBody] },
+    { id: "ppf-front-rear", cat: "ppf", name: t.booking.svcPpfFrontRear, p: { small: 4770, large: 5500 }, w: "10yr", img: "/images/DSC03279.jpg", addonTier: "high",
       parts: [t.booking.fullHood, t.booking.fullFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges, t.booking.rearBumper] },
-    { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: { small: 3660, medium: 4500, large: 5600 }, w: "10yr", img: "/images/DSC03292.jpg", addonTier: "high",
+    { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: { small: 3660, large: 5600 }, w: "10yr", img: "/images/DSC03292.jpg", addonTier: "high",
       parts: [t.booking.fullHood, t.booking.fullFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges] },
-    { id: "ppf-partial-rear", cat: "ppf", name: t.booking.svcPpfPartialRear, p: { small: 2770, medium: 3700, large: 4800 }, w: "10yr", img: "/images/DSC03235.jpg", addonTier: "low",
+    { id: "ppf-partial-rear", cat: "ppf", name: t.booking.svcPpfPartialRear, p: { small: 2770, large: 4800 }, w: "10yr", img: "/images/DSC03235.jpg", addonTier: "low",
       parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges, t.booking.rearBumper] },
-    { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: { small: 1850, medium: 2350, large: 2900 }, w: "10yr", img: "/images/DSC03064.jpg", addonTier: "low",
+    { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: { small: 1850, large: 2900 }, w: "10yr", img: "/images/DSC03064.jpg", addonTier: "low",
       parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges] },
-    { id: "ppf-windshield", cat: "ppf", name: t.booking.svcPpfWindshield, p: { small: 1000, medium: 1000, large: 1000 }, w: "10yr", img: "/images/DSC03174.jpg", addonTier: "low", parts: [t.booking.frontWindshield] },
-    { id: "tint-full", cat: "tint", name: t.booking.svcTintFull, p: { small: 2400, medium: 2600, large: 2800 }, w: "10yr", img: "/images/DSC03136.jpg", addonTier: "low", parts: [t.booking.allGlass], popular: true },
-    { id: "tint-front", cat: "tint", name: t.booking.svcTintFront, p: { small: 1160, medium: 1230, large: 1300 }, w: "10yr", img: "/images/DSC03174.jpg", addonTier: "high", parts: [t.booking.frontWindshield] },
-    { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: { small: 2300, medium: 2400, large: 2500 }, w: "1yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
-    { id: "ceramic-int-3", cat: "ceramic", name: t.booking.svcCeramicInt3, p: { small: 2900, medium: 3000, large: 3100 }, w: "3yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
-    { id: "ceramic-int-5", cat: "ceramic", name: t.booking.svcCeramicInt5, p: { small: 3200, medium: 3300, large: 3400 }, w: "5yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
-    { id: "ceramic-ext-1", cat: "ceramic", name: t.booking.svcCeramicExt1, p: { small: 1350, medium: 1650, large: 1950 }, w: "1yr", img: "/images/DSC03018.jpg", addonTier: "high", parts: [t.booking.exteriorBody] },
-    { id: "ceramic-ext-3", cat: "ceramic", name: t.booking.svcCeramicExt3, p: { small: 2250, medium: 2550, large: 2850 }, w: "3yr", img: "/images/DSC03018.jpg", addonTier: "low", parts: [t.booking.exteriorBody], popular: true },
-    { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: { small: 3050, medium: 3400, large: 3750 }, w: "5yr", img: "/images/DSC03018.jpg", addonTier: "low", parts: [t.booking.exteriorBody] },
+    { id: "ppf-windshield", cat: "ppf", name: t.booking.svcPpfWindshield, p: { small: 1000, large: 1000 }, w: "10yr", img: "/images/DSC03174.jpg", addonTier: "low", parts: [t.booking.frontWindshield] },
+    { id: "tint-full", cat: "tint", name: t.booking.svcTintFull, p: { small: 2400, large: 2800 }, w: "10yr", img: "/images/DSC03136.jpg", addonTier: "low", parts: [t.booking.allGlass], popular: true },
+    { id: "tint-front", cat: "tint", name: t.booking.svcTintFront, p: { small: 1160, large: 1300 }, w: "10yr", img: "/images/DSC03174.jpg", addonTier: "high", parts: [t.booking.frontWindshield] },
+    { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: { small: 2300, large: 2500 }, w: "1yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
+    { id: "ceramic-int-3", cat: "ceramic", name: t.booking.svcCeramicInt3, p: { small: 2900, large: 3100 }, w: "3yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
+    { id: "ceramic-int-5", cat: "ceramic", name: t.booking.svcCeramicInt5, p: { small: 3200, large: 3400 }, w: "5yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
+    { id: "ceramic-ext-1", cat: "ceramic", name: t.booking.svcCeramicExt1, p: { small: 1350, large: 1950 }, w: "1yr", img: "/images/DSC03018.jpg", addonTier: "high", parts: [t.booking.exteriorBody] },
+    { id: "ceramic-ext-3", cat: "ceramic", name: t.booking.svcCeramicExt3, p: { small: 2250, large: 2850 }, w: "3yr", img: "/images/DSC03018.jpg", addonTier: "low", parts: [t.booking.exteriorBody], popular: true },
+    { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: { small: 3050, large: 3750 }, w: "5yr", img: "/images/DSC03018.jpg", addonTier: "low", parts: [t.booking.exteriorBody] },
   ];
 
   const filteredSvcs = category === "packages" ? [] : svcs.filter(s => s.cat === category);
@@ -263,7 +262,7 @@ export default function Booking() {
         {step === 1 && (
           <div className="step-enter">
             <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: 14, marginBottom: 32 }}>{t.booking.step1instruction}</p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, maxWidth: 800, margin: "0 auto" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, maxWidth: 600, margin: "0 auto" }}>
               {cars.map((c) => (
                 <button key={c.id} onClick={() => setSize(c.id)} className={size === c.id ? "gold-pulse" : ""} style={{
                   position: "relative", borderRadius: 16, overflow: "hidden", textAlign: dir === "rtl" ? "right" : "left", cursor: "pointer", background: "none", padding: 0,

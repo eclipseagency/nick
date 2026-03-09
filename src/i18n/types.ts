@@ -184,7 +184,6 @@ export interface Dictionary {
     catCeramic: string;
     // Car categories
     carSmall: string;
-    carMedium: string;
     carLarge: string;
     // PPF services
     svcPpfColor: string;
