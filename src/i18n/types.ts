@@ -233,12 +233,13 @@ export interface Dictionary {
     addonRemoveFull: string;
     // Packages
     packagesTitle: string;
-    packEssential: string;
-    packEssentialDesc: string;
+    packBasic: string;
+    packBasicDesc: string;
     packPremium: string;
     packPremiumDesc: string;
-    packUltimate: string;
-    packUltimateDesc: string;
+    packVip: string;
+    packVipDesc: string;
+    packIncludes: string;
     packSave: string;
     packSelect: string;
     packSelected: string;

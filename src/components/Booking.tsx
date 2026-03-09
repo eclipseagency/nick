@@ -7,7 +7,7 @@ import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 type Size = "small" | "large" | null;
-type Category = "ppf" | "tint" | "ceramic";
+type Category = "packages" | "ppf" | "tint" | "ceramic";
 
 interface Addon { id: string; name: string; p: { small: number; large: number }; icon: React.ReactNode }
 interface Svc {
@@ -21,7 +21,7 @@ interface Svc {
 export default function Booking() {
   const [step, setStep] = useState(1);
   const [size, setSize] = useState<Size>(null);
-  const [category, setCategory] = useState<Category>("ppf");
+  const [category, setCategory] = useState<Category>("packages");
   const [sel, setSel] = useState<string[]>([]);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [selAddons, setSelAddons] = useState<Record<string, string[]>>({});
@@ -64,6 +64,7 @@ export default function Booking() {
   ];
 
   const categories: { id: Category; label: string; icon: React.ReactNode }[] = [
+    { id: "packages", label: t.booking.packagesTitle, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg> },
     { id: "ppf", label: t.booking.catPpf, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
     { id: "tint", label: t.booking.catTint, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> },
     { id: "ceramic", label: t.booking.catCeramic, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg> },
@@ -110,7 +111,7 @@ export default function Booking() {
     { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: { small: 3050, large: 3750 }, w: "5yr", img: "/images/DSC03018.jpg", addonTier: "low", parts: [t.booking.exteriorBody] },
   ];
 
-  const filteredSvcs = svcs.filter(s => s.cat === category);
+  const filteredSvcs = category === "packages" ? [] : svcs.filter(s => s.cat === category);
   const detailSvc = detailId ? svcs.find(s => s.id === detailId) : null;
 
   const getAddonPrice = (addon: Addon, tier: "low" | "high") => tier === "high" ? addon.p.large : addon.p.small;
@@ -145,20 +146,20 @@ export default function Booking() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [total]);
 
-  // Quick packages
-  interface Pack { id: string; name: string; desc: string; svcIds: string[]; discount: number; icon: string }
+  // Packages
+  interface Pack { id: string; name: string; desc: string; svcIds: string[]; discount: number; tier: "basic" | "premium" | "vip" }
   const packages: Pack[] = [
     {
-      id: "essential", name: t.booking.packEssential, desc: t.booking.packEssentialDesc,
-      svcIds: ["ppf-front", "tint-full"], discount: 5, icon: "🛡️",
+      id: "basic", name: t.booking.packBasic, desc: t.booking.packBasicDesc,
+      svcIds: ["ppf-partial", "tint-front", "ceramic-ext-1"], discount: 5, tier: "basic",
     },
     {
       id: "premium", name: t.booking.packPremium, desc: t.booking.packPremiumDesc,
-      svcIds: ["ppf-clear75", "tint-full", "ceramic-ext-3"], discount: 8, icon: "⭐",
+      svcIds: ["ppf-clear75", "tint-full", "ceramic-ext-3"], discount: 8, tier: "premium",
     },
     {
-      id: "ultimate", name: t.booking.packUltimate, desc: t.booking.packUltimateDesc,
-      svcIds: ["ppf-clear85", "tint-full", "ceramic-ext-5"], discount: 12, icon: "👑",
+      id: "vip", name: t.booking.packVip, desc: t.booking.packVipDesc,
+      svcIds: ["ppf-clear85", "tint-full", "ceramic-ext-5"], discount: 12, tier: "vip",
     },
   ];
 
@@ -218,7 +219,10 @@ export default function Booking() {
     return `https://wa.me/966543000055?text=${encodeURIComponent(msg)}`;
   };
 
-  const selCount = (cat: Category) => sel.filter(id => svcs.find(s => s.id === id)?.cat === cat).length;
+  const selCount = (cat: Category) => {
+    if (cat === "packages") return activePack ? 1 : 0;
+    return sel.filter(id => svcs.find(s => s.id === id)?.cat === cat).length;
+  };
 
   return (
     <section id="booking" ref={ref} style={{ padding: "96px 0", background: "linear-gradient(180deg, #050505, #0a0a0a, #050505)" }}>
@@ -296,82 +300,6 @@ export default function Booking() {
               {t.booking.pricesFor} <strong style={{ color: "#F6BE00" }}>{cars.find(c => c.id === size)?.label}</strong> {t.booking.selectOneOrMore}
             </p>
 
-            {/* Quick Packages */}
-            <div style={{ marginBottom: 32 }}>
-              <div style={{ textAlign: "center", marginBottom: 16 }}>
-                <span style={{ color: "#F6BE00", fontSize: 12, fontWeight: 700, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
-                  {t.booking.packagesTitle}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {packages.map((pack, i) => {
-                  const isActive = activePack === pack.id;
-                  const price = getPackPrice(pack);
-                  const saving = getPackSaving(pack);
-                  return (
-                    <button key={pack.id} onClick={() => selectPack(pack)} style={{
-                      position: "relative", padding: "20px 16px", borderRadius: 14, cursor: "pointer",
-                      background: isActive ? "rgba(246,190,0,0.08)" : "rgba(255,255,255,0.02)",
-                      border: isActive ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
-                      transition: "all 0.3s", textAlign: "center",
-                      boxShadow: isActive ? "0 0 24px rgba(246,190,0,0.12)" : "none",
-                      transform: isActive ? "scale(1.02)" : "scale(1)",
-                    }}
-                      onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)"; e.currentTarget.style.transform = "translateY(-2px)"; } }}
-                      onMouseLeave={e => { if (!isActive) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.transform = "scale(1)"; } }}
-                    >
-                      {/* Best value badge on premium */}
-                      {i === 1 && (
-                        <div style={{
-                          position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)",
-                          padding: "3px 14px", borderRadius: 100, fontSize: 10, fontWeight: 700,
-                          background: "#F6BE00", color: "#000",
-                          textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.05em",
-                          whiteSpace: "nowrap",
-                        }}>
-                          ★ {t.booking.popular}
-                        </div>
-                      )}
-                      {/* Icon */}
-                      <div style={{ fontSize: 28, marginBottom: 8 }}>{pack.icon}</div>
-                      {/* Name */}
-                      <div style={{ color: isActive ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 16, marginBottom: 4 }}>{pack.name}</div>
-                      {/* Description */}
-                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 12, lineHeight: 1.4 }}>{pack.desc}</div>
-                      {/* Price */}
-                      <div style={{ fontFamily: fontDisplay, fontSize: 22, fontWeight: 700, color: "#F6BE00", marginBottom: 4 }}>
-                        {size ? price.toLocaleString() : "—"} {cur}
-                      </div>
-                      {/* Saving */}
-                      {size && saving > 0 && (
-                        <div style={{
-                          display: "inline-flex", alignItems: "center", gap: 4,
-                          padding: "3px 10px", borderRadius: 100, fontSize: 10, fontWeight: 700,
-                          background: "rgba(76,175,80,0.15)", color: "#4CAF50",
-                          border: "1px solid rgba(76,175,80,0.2)",
-                        }}>
-                          {t.booking.packSave} {saving.toLocaleString()} {cur}
-                        </div>
-                      )}
-                      {/* Select indicator */}
-                      {isActive && (
-                        <div style={{
-                          position: "absolute", top: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
-                          width: 22, height: 22, borderRadius: "50%", background: "#F6BE00",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                        }}>
-                          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3.5 7L5.75 9.25L10.5 4.5" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-              <div style={{ textAlign: "center", marginTop: 16 }}>
-                <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>— {t.booking.orPickIndividual} —</span>
-              </div>
-            </div>
-
             {/* Category Tabs */}
             <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 32, flexWrap: "wrap" }}>
               {categories.map((cat) => {
@@ -397,8 +325,198 @@ export default function Booking() {
               })}
             </div>
 
+            {/* Packages View */}
+            {category === "packages" && (
+              <div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {packages.map((pack, i) => {
+                    const isActive = activePack === pack.id;
+                    const price = getPackPrice(pack);
+                    const saving = getPackSaving(pack);
+                    const tierColors = { basic: "#64B5F6", premium: "#F6BE00", vip: "#E040FB" };
+                    const tierColor = tierColors[pack.tier];
+                    return (
+                      <button key={pack.id} onClick={() => selectPack(pack)} style={{
+                        position: "relative", padding: 0, borderRadius: 16, cursor: "pointer", overflow: "hidden",
+                        background: isActive ? `rgba(${pack.tier === "basic" ? "100,181,246" : pack.tier === "premium" ? "246,190,0" : "224,64,251"},0.06)` : "rgba(255,255,255,0.02)",
+                        border: isActive ? `2px solid ${tierColor}` : "2px solid rgba(255,255,255,0.06)",
+                        transition: "all 0.3s", textAlign: "center",
+                        boxShadow: isActive ? `0 0 30px ${tierColor}20` : "none",
+                        transform: isActive ? "scale(1.02)" : "scale(1)",
+                      }}
+                        onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = `${tierColor}60`; e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = `0 8px 24px rgba(0,0,0,0.4)`; } }}
+                        onMouseLeave={e => { if (!isActive) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "none"; } }}
+                      >
+                        {/* Tier gradient top bar */}
+                        <div style={{ height: 4, background: `linear-gradient(90deg, ${tierColor}, ${tierColor}80)` }} />
+
+                        <div style={{ padding: "24px 20px" }}>
+                          {/* Popular badge on premium */}
+                          {i === 1 && (
+                            <div style={{
+                              position: "absolute", top: 14, left: "50%", transform: "translateX(-50%)",
+                              padding: "3px 14px", borderRadius: 100, fontSize: 10, fontWeight: 700,
+                              background: tierColor, color: "#000",
+                              textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.05em",
+                              whiteSpace: "nowrap",
+                            }}>
+                              ★ {t.booking.popular}
+                            </div>
+                          )}
+
+                          {/* Tier name */}
+                          <div style={{ color: isActive ? tierColor : "#fff", fontWeight: 800, fontSize: 20, marginBottom: 6, marginTop: i === 1 ? 16 : 0, fontFamily: fontDisplay }}>{pack.name}</div>
+                          {/* Description */}
+                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 20, lineHeight: 1.5 }}>{pack.desc}</div>
+
+                          {/* Price */}
+                          <div style={{ fontFamily: fontDisplay, fontSize: 28, fontWeight: 700, color: tierColor, marginBottom: 6 }}>
+                            {size ? price.toLocaleString() : "—"} <span style={{ fontSize: 14, opacity: 0.7 }}>{cur}</span>
+                          </div>
+
+                          {/* Saving */}
+                          {size && saving > 0 && (
+                            <div style={{
+                              display: "inline-flex", alignItems: "center", gap: 4,
+                              padding: "4px 12px", borderRadius: 100, fontSize: 11, fontWeight: 700,
+                              background: "rgba(76,175,80,0.12)", color: "#4CAF50",
+                              border: "1px solid rgba(76,175,80,0.2)",
+                            }}>
+                              {t.booking.packSave} {saving.toLocaleString()} {cur}
+                            </div>
+                          )}
+
+                          {/* Service count preview */}
+                          <div style={{ marginTop: 16, display: "flex", justifyContent: "center", gap: 6 }}>
+                            {pack.svcIds.map(svcId => {
+                              const s = svcs.find(x => x.id === svcId);
+                              if (!s) return null;
+                              const catLabel = s.cat === "ppf" ? "PPF" : s.cat === "tint" ? (isAr ? "تظليل" : "Tint") : (isAr ? "سيراميك" : "Ceramic");
+                              return (
+                                <span key={svcId} style={{
+                                  padding: "3px 10px", fontSize: 9, fontWeight: 700, borderRadius: 100,
+                                  background: `${tierColor}15`, color: tierColor, border: `1px solid ${tierColor}30`,
+                                  textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.04em",
+                                }}>{catLabel}</span>
+                              );
+                            })}
+                          </div>
+
+                          {/* Select indicator */}
+                          {isActive && (
+                            <div style={{
+                              position: "absolute", top: 14, ...(dir === "rtl" ? { left: 12 } : { right: 12 }),
+                              width: 24, height: 24, borderRadius: "50%", background: tierColor,
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                            }}>
+                              <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3.5 7L5.75 9.25L10.5 4.5" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            </div>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Expanded package details */}
+                {activePack && (() => {
+                  const pack = packages.find(p => p.id === activePack);
+                  if (!pack) return null;
+                  const tierColors = { basic: "#64B5F6", premium: "#F6BE00", vip: "#E040FB" };
+                  const tierColor = tierColors[pack.tier];
+                  return (
+                    <div style={{
+                      marginTop: 20, background: "#0d0d0d", borderRadius: 16,
+                      border: `2px solid ${tierColor}40`,
+                      overflow: "hidden", animation: "fadeUp 0.3s ease-out",
+                    }}>
+                      {/* Header */}
+                      <div style={{
+                        padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center",
+                        background: `${tierColor}08`, borderBottom: `1px solid ${tierColor}20`,
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <span style={{ color: tierColor, fontWeight: 700, fontSize: 14 }}>{t.booking.packIncludes}</span>
+                          <span style={{ padding: "2px 10px", borderRadius: 100, fontSize: 11, fontWeight: 700, background: `${tierColor}15`, color: tierColor }}>{pack.name}</span>
+                        </div>
+                        {size && (
+                          <div style={{
+                            display: "inline-flex", alignItems: "center", gap: 4,
+                            padding: "4px 12px", borderRadius: 100, fontSize: 11, fontWeight: 700,
+                            background: "rgba(76,175,80,0.12)", color: "#4CAF50",
+                          }}>
+                            -{pack.discount}%
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Services list */}
+                      <div style={{ padding: "16px 24px" }}>
+                        {pack.svcIds.map((svcId, idx) => {
+                          const s = svcs.find(x => x.id === svcId);
+                          if (!s) return null;
+                          const catLabels: Record<string, string> = { ppf: t.booking.catPpf, tint: t.booking.catTint, ceramic: t.booking.catCeramic };
+                          return (
+                            <div key={svcId} style={{
+                              display: "flex", alignItems: "center", gap: 14, padding: "14px 0",
+                              borderBottom: idx < pack.svcIds.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
+                            }}>
+                              {/* Checkmark */}
+                              <div style={{
+                                width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+                                background: `${tierColor}15`, display: "flex", alignItems: "center", justifyContent: "center",
+                              }}>
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 7L5.75 9.25L10.5 4.5" stroke={tierColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              </div>
+                              {/* Service info */}
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                                  <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>{s.name}</span>
+                                  <span style={{ fontSize: 10, color: tierColor, border: `1px solid ${tierColor}30`, padding: "1px 8px", borderRadius: 100, flexShrink: 0 }}>{s.w}</span>
+                                </div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{catLabels[s.cat]}</span>
+                                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.15)" }}>•</span>
+                                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)" }}>{s.parts.slice(0, 3).join(", ")}{s.parts.length > 3 ? ` +${s.parts.length - 3}` : ""}</span>
+                                </div>
+                              </div>
+                              {/* Price */}
+                              <div style={{ textAlign: dir === "rtl" ? "left" : "right", flexShrink: 0 }}>
+                                <div style={{ color: tierColor, fontWeight: 700, fontSize: 14 }}>{size ? s.p[size].toLocaleString() : "—"} {cur}</div>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {/* Total row */}
+                        {size && (
+                          <div style={{
+                            display: "flex", justifyContent: "space-between", alignItems: "center",
+                            padding: "16px 0 4px", marginTop: 8, borderTop: `1px solid ${tierColor}20`,
+                          }}>
+                            <span style={{ color: "rgba(255,255,255,0.5)", fontWeight: 600, fontSize: 13 }}>{t.booking.totalLabel}</span>
+                            <div style={{ textAlign: dir === "rtl" ? "left" : "right" }}>
+                              <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 12, textDecoration: "line-through", marginRight: 8 }}>
+                                {pack.svcIds.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v ? v.p[size] : 0); }, 0).toLocaleString()} {cur}
+                              </span>
+                              <span style={{ color: tierColor, fontWeight: 700, fontSize: 18, fontFamily: fontDisplay }}>{getPackPrice(pack).toLocaleString()} {cur}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Divider to individual services */}
+                <div style={{ textAlign: "center", marginTop: 24 }}>
+                  <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>— {t.booking.orPickIndividual} —</span>
+                </div>
+              </div>
+            )}
+
             {/* Service Cards — 3 column grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {category !== "packages" && <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredSvcs.map((s) => {
                 const isSelected = sel.includes(s.id);
                 const svcAddons = selAddons[s.id] || [];
@@ -483,7 +601,7 @@ export default function Booking() {
                   </button>
                 );
               })}
-            </div>
+            </div>}
 
             {/* Detail panel — rendered below grid for the expanded service */}
             {detailSvc && sel.includes(detailSvc.id) && (() => {
