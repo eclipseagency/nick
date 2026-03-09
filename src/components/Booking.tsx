@@ -288,12 +288,12 @@ export default function Booking() {
                   <div style={{ position: "relative", height: 280 }}>
                     <Image data-active="true" src={c.img} alt={c.label} fill className="object-cover" style={{ transition: "opacity 0.5s", objectPosition: "center 30%" }} />
                     <Image data-hover="true" src={c.imgHover} alt={c.label + " hover"} fill className="object-cover" style={{ transition: "opacity 0.5s", opacity: 0, objectPosition: "center 30%" }} />
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,5,5,0.95) 0%, rgba(5,5,5,0) 50%)" }} />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(5,5,5,0.85) 0%, rgba(5,5,5,0) 40%)" }} />
                     {size === c.id && (
                       <div style={{ position: "absolute", top: 12, ...(dir === "rtl" ? { left: 12 } : { right: 12 }), width: 28, height: 28, borderRadius: "50%", background: "#F6BE00", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "#000", fontWeight: 700, boxShadow: "0 2px 10px rgba(246,190,0,0.4)" }}>&#10003;</div>
                     )}
                   </div>
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px 16px" }}>
+                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, padding: "20px 16px" }}>
                     <div style={{ color: size === c.id ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 18, marginBottom: 4 }}>{c.label}</div>
                     <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>{c.ex}</div>
                   </div>
