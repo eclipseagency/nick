@@ -59,8 +59,8 @@ export default function Booking() {
   };
 
   const cars = [
-    { id: "small" as const, label: t.booking.carSmall, ex: "Civic, Corolla, Elantra, Camry", img: "/images/DSC03060.jpg" },
-    { id: "large" as const, label: t.booking.carLarge, ex: "Tahoe, Land Cruiser, S-Class", img: "/images/IMG_9912.JPG" },
+    { id: "small" as const, label: t.booking.carSmall, ex: "Civic, Corolla, Elantra, Camry", img: "/images/small-car-active.png", imgHover: "/images/small-car-hover.png" },
+    { id: "large" as const, label: t.booking.carLarge, ex: "Tahoe, Land Cruiser, S-Class", img: "/images/big-car-active.png", imgHover: "/images/big-car-hover.png" },
   ];
 
   const categories: { id: Category; label: string; icon: React.ReactNode }[] = [
@@ -262,27 +262,40 @@ export default function Booking() {
         {step === 1 && (
           <div className="step-enter">
             <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: 14, marginBottom: 32 }}>{t.booking.step1instruction}</p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, maxWidth: 600, margin: "0 auto" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20, maxWidth: 700, margin: "0 auto" }}>
               {cars.map((c) => (
                 <button key={c.id} onClick={() => setSize(c.id)} className={size === c.id ? "gold-pulse" : ""} style={{
-                  position: "relative", borderRadius: 16, overflow: "hidden", textAlign: dir === "rtl" ? "right" : "left", cursor: "pointer", background: "none", padding: 0,
+                  position: "relative", borderRadius: 20, overflow: "hidden", textAlign: "center", cursor: "pointer", background: "#050505", padding: 0,
                   border: size === c.id ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
-                  boxShadow: size === c.id ? "0 0 24px rgba(246,190,0,0.15)" : "none",
-                  transition: "all 0.3s", transform: size === c.id ? "scale(1.02)" : "scale(1)",
+                  boxShadow: size === c.id ? "0 0 30px rgba(246,190,0,0.2)" : "none",
+                  transition: "all 0.4s", transform: size === c.id ? "scale(1.02)" : "scale(1)",
                 }}
-                  onMouseEnter={e => { if (size !== c.id) e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)"; }}
-                  onMouseLeave={e => { if (size !== c.id) e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
+                  onMouseEnter={e => {
+                    if (size !== c.id) e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)";
+                    const hover = e.currentTarget.querySelector("[data-hover]") as HTMLElement;
+                    const active = e.currentTarget.querySelector("[data-active]") as HTMLElement;
+                    if (hover) hover.style.opacity = "1";
+                    if (active) active.style.opacity = "0";
+                  }}
+                  onMouseLeave={e => {
+                    if (size !== c.id) e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
+                    const hover = e.currentTarget.querySelector("[data-hover]") as HTMLElement;
+                    const active = e.currentTarget.querySelector("[data-active]") as HTMLElement;
+                    if (hover) hover.style.opacity = "0";
+                    if (active) active.style.opacity = "1";
+                  }}
                 >
-                  <div style={{ position: "relative", height: 200 }}>
-                    <Image src={c.img} alt={c.label} fill className="object-cover" style={{ transition: "transform 0.5s" }} />
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 100%)" }} />
+                  <div style={{ position: "relative", height: 280 }}>
+                    <Image data-active="true" src={c.img} alt={c.label} fill className="object-cover" style={{ transition: "opacity 0.5s", objectPosition: "center 30%" }} />
+                    <Image data-hover="true" src={c.imgHover} alt={c.label + " hover"} fill className="object-cover" style={{ transition: "opacity 0.5s", opacity: 0, objectPosition: "center 30%" }} />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,5,5,0.95) 0%, rgba(5,5,5,0) 50%)" }} />
                     {size === c.id && (
-                      <div style={{ position: "absolute", top: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }), width: 26, height: 26, borderRadius: "50%", background: "#F6BE00", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "#000", fontWeight: 700 }}>&#10003;</div>
+                      <div style={{ position: "absolute", top: 12, ...(dir === "rtl" ? { left: 12 } : { right: 12 }), width: 28, height: 28, borderRadius: "50%", background: "#F6BE00", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "#000", fontWeight: 700, boxShadow: "0 2px 10px rgba(246,190,0,0.4)" }}>&#10003;</div>
                     )}
                   </div>
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 16 }}>
-                    <div style={{ color: size === c.id ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 16 }}>{c.label}</div>
-                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 12, marginTop: 4 }}>{c.ex}</div>
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px 16px" }}>
+                    <div style={{ color: size === c.id ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 18, marginBottom: 4 }}>{c.label}</div>
+                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>{c.ex}</div>
                   </div>
                 </button>
               ))}
