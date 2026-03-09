@@ -227,7 +227,7 @@ export const en: Dictionary = {
     addonRemovePartial: "Partial protection removal",
     addonRemoveFront: "Full front protection removal",
     addonRemoveFull: "Full car protection removal",
-    packagesTitle: "Quick Packages",
+    packagesTitle: "Packages",
     packBasic: "Basic",
     packBasicDesc: "Partial protection + front tint + 1yr ceramic",
     packPremium: "Premium",

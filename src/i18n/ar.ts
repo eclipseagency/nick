@@ -227,7 +227,7 @@ export const ar: Dictionary = {
     addonRemovePartial: "إزالة حماية جزئي",
     addonRemoveFront: "إزالة حماية مقدمة كاملة",
     addonRemoveFull: "إزالة حماية كامل السيارة",
-    packagesTitle: "باقات سريعة",
+    packagesTitle: "الباقات",
     packBasic: "الأساسية",
     packBasicDesc: "حماية جزئي + عازل أمامي + سيراميك سنة",
     packPremium: "المميزة",
