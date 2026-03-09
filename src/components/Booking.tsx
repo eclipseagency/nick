@@ -22,13 +22,13 @@ export default function Booking() {
   const [step, setStep] = useState(1);
   const [size, setSize] = useState<Size>(null);
   const [category, setCategory] = useState<Category>("packages");
-  const [sel, setSel] = useState<string[]>([]);
+  const [sel, setSel] = useState<string[]>(["ppf-clear75", "tint-full", "ceramic-ext-3"]);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [selAddons, setSelAddons] = useState<Record<string, string[]>>({});
   const [form, setForm] = useState({ name: "", phone: "", notes: "" });
   const [orderSent, setOrderSent] = useState(false);
   const [displayTotal, setDisplayTotal] = useState(0);
-  const [activePack, setActivePack] = useState<string | null>(null);
+  const [activePack, setActivePack] = useState<string | null>("premium");
   const detailRef = useRef<HTMLDivElement>(null);
 
   const { t, locale, dir } = useLanguage();
