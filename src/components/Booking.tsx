@@ -97,10 +97,10 @@ export default function Booking() {
   ];
 
   const svcs: Svc[] = [
-    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: { small: 16500, large: 18500 }, w: "5yr", img: "/images/DSC03279.jpg", addonTier: "high", parts: [t.booking.fullBody] },
-    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: { small: 12000, large: 14500 }, w: "10yr", img: "/images/DSC03292.jpg", addonTier: "low", parts: [t.booking.fullBody] },
-    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: { small: 14000, large: 15500 }, w: "10yr", img: "/images/DSC03235.jpg", addonTier: "low", parts: [t.booking.fullBody], popular: true },
-    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: { small: 13450, large: 15450 }, w: "10yr", img: "/images/DSC03064.jpg", addonTier: "low", parts: [t.booking.fullBody] },
+    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: { small: 16500, large: 18500 }, w: "5yr", img: "/images/DSC03279.jpg", imgLarge: "/images/big-car-active.png", addonTier: "high", parts: [t.booking.fullBody] },
+    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: { small: 12000, large: 14500 }, w: "10yr", img: "/images/DSC03292.jpg", imgLarge: "/images/big-car-active.png", addonTier: "low", parts: [t.booking.fullBody] },
+    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: { small: 14000, large: 15500 }, w: "10yr", img: "/images/DSC03235.jpg", imgLarge: "/images/big-car-active.png", addonTier: "low", parts: [t.booking.fullBody], popular: true },
+    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: { small: 13450, large: 15450 }, w: "10yr", img: "/images/DSC03064.jpg", imgLarge: "/images/big-car-active.png", addonTier: "low", parts: [t.booking.fullBody] },
     { id: "ppf-front-rear", cat: "ppf", name: t.booking.svcPpfFrontRear, p: { small: 4770, large: 5500 }, w: "10yr", img: "/images/DSC03279.jpg", imgLarge: "/images/ppf-front-rear-large.jpg", addonTier: "high",
       parts: [t.booking.fullHood, t.booking.fullFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges, t.booking.rearBumper] },
     { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: { small: 3660, large: 5600 }, w: "10yr", img: "/images/DSC03292.jpg", imgLarge: "/images/ppf-front-large.jpg", addonTier: "high",
@@ -109,7 +109,7 @@ export default function Booking() {
       parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges, t.booking.rearBumper] },
     { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: { small: 1850, large: 2900 }, w: "10yr", img: "/images/DSC03064.jpg", imgLarge: "/images/ppf-partial-large.jpg", addonTier: "low",
       parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges] },
-    { id: "ppf-windshield", cat: "ppf", name: t.booking.svcPpfWindshield, p: { small: 1000, large: 1000 }, w: "10yr", img: "/images/DSC03174.jpg", addonTier: "low", parts: [t.booking.frontWindshield] },
+    { id: "ppf-windshield", cat: "ppf", name: t.booking.svcPpfWindshield, p: { small: 1000, large: 1000 }, w: "10yr", img: "/images/DSC03174.jpg", imgLarge: "/images/ppf-front-large.jpg", addonTier: "low", parts: [t.booking.frontWindshield] },
     { id: "tint-full", cat: "tint", name: t.booking.svcTintFull, p: { small: 2400, large: 2800 }, w: "10yr", img: "/images/DSC03136.jpg", addonTier: "low", parts: [t.booking.allGlass], popular: true },
     { id: "tint-front", cat: "tint", name: t.booking.svcTintFront, p: { small: 1160, large: 1300 }, w: "10yr", img: "/images/DSC03174.jpg", addonTier: "high", parts: [t.booking.frontWindshield] },
     { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: { small: 2300, large: 2500 }, w: "1yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
