@@ -384,12 +384,12 @@ export default function Booking() {
                     const isActive = activePack === pack.id;
                     const price = getPackPrice(pack);
                     const saving = getPackSaving(pack);
-                    const tierColors = { basic: "#64B5F6", premium: "#F6BE00", vip: "#E040FB" };
+                    const tierColors = { basic: "#64B5F6", premium: "#F6BE00", vip: "#8B1A3A" };
                     const tierColor = tierColors[pack.tier];
                     return (
                       <button key={pack.id} onClick={() => selectPack(pack)} style={{
                         position: "relative", padding: 0, borderRadius: 16, cursor: "pointer", overflow: "hidden",
-                        background: isActive ? `rgba(${pack.tier === "basic" ? "100,181,246" : pack.tier === "premium" ? "246,190,0" : "224,64,251"},0.06)` : "rgba(255,255,255,0.02)",
+                        background: isActive ? `rgba(${pack.tier === "basic" ? "100,181,246" : pack.tier === "premium" ? "246,190,0" : "139,26,58"},0.06)` : "rgba(255,255,255,0.02)",
                         border: isActive ? `2px solid ${tierColor}` : "2px solid rgba(255,255,255,0.06)",
                         transition: "all 0.3s", textAlign: "center",
                         boxShadow: isActive ? `0 0 30px ${tierColor}20` : "none",
@@ -498,7 +498,7 @@ export default function Booking() {
                 {activePack && (() => {
                   const pack = packages.find(p => p.id === activePack);
                   if (!pack) return null;
-                  const tierColors = { basic: "#64B5F6", premium: "#F6BE00", vip: "#E040FB" };
+                  const tierColors = { basic: "#64B5F6", premium: "#F6BE00", vip: "#8B1A3A" };
                   const tierColor = tierColors[pack.tier];
                   const packSvcs = pack.svcIds.map(id => svcs.find(x => x.id === id)).filter(Boolean) as Svc[];
                   return (
