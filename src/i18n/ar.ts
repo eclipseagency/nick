@@ -184,6 +184,7 @@ export const ar: Dictionary = {
     catTint: "العازل الحراري",
     catCeramic: "النانو سيراميك",
     carSmall: "سيارة صغيرة",
+    carMedium: "سيارة متوسطة",
     carLarge: "سيارة كبيرة",
     svcPpfColor: "حماية كامل ألوان",
     svcPpfClear75: "حماية كامل شفاف 7.5 ملم",

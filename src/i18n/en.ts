@@ -184,6 +184,7 @@ export const en: Dictionary = {
     catTint: "Thermal Insulation",
     catCeramic: "Nano Ceramic",
     carSmall: "Small Car",
+    carMedium: "Medium Car",
     carLarge: "Large Car",
     svcPpfColor: "Full Body Color PPF",
     svcPpfClear75: "Full Body Clear PPF 7.5mm",
