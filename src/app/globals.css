@@ -133,12 +133,23 @@ body {
 .anim-3 { animation: fadeUp 0.7s ease-out 0.3s both; }
 .anim-4 { animation: fadeUp 0.7s ease-out 0.4s both; }
 
-/* Booking step transition */
-@keyframes stepIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Booking step transition — directional slides (#5) */
+@keyframes slideForward {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
 }
-.step-enter { animation: stepIn 0.4s ease-out both; }
+@keyframes slideBack {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+[dir="rtl"] .step-slide-forward { animation: slideBack 0.4s ease-out both; }
+[dir="rtl"] .step-slide-back { animation: slideForward 0.4s ease-out both; }
+.step-slide-forward { animation: slideForward 0.4s ease-out both; }
+.step-slide-back { animation: slideBack 0.4s ease-out both; }
+.step-enter { animation: slideForward 0.4s ease-out both; }
+
+/* Booking tabs horizontal scroll (#3) */
+.booking-tabs-scroll::-webkit-scrollbar { display: none; }
 
 /* Subtle gold pulse for selected items */
 @keyframes goldPulse {

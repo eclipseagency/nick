@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useReveal } from "@/hooks/useReveal";
@@ -29,7 +29,9 @@ export default function Booking() {
   const [orderSent, setOrderSent] = useState(false);
   const [displayTotal, setDisplayTotal] = useState(0);
   const [activePack, setActivePack] = useState<string | null>("premium");
+  const [slideDir, setSlideDir] = useState<"forward" | "back">("forward");
   const detailRef = useRef<HTMLDivElement>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
 
   const { t, locale, dir } = useLanguage();
   const ref = useReveal([locale]);
@@ -38,6 +40,12 @@ export default function Booking() {
   const cur = isAr ? "ر.س" : "SAR";
 
   const catDesc: Record<string, string> = { ppf: t.services.s1desc, tint: t.services.s2desc, ceramic: t.services.s3desc };
+
+  // #5 Step transitions with direction
+  const goStep = useCallback((target: number) => {
+    setSlideDir(target > step ? "forward" : "back");
+    setStep(target);
+  }, [step]);
 
   const toggleSvc = (id: string) => {
     if (sel.includes(id)) {
@@ -116,37 +124,7 @@ export default function Booking() {
 
   const getAddonPrice = (addon: Addon, tier: "low" | "high") => tier === "high" ? addon.p.large : addon.p.small;
 
-  const svcTotal = sel.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v && size ? v.p[size] : 0); }, 0);
-  const addonTotal = Object.entries(selAddons).reduce((s, [svcId, addonIds]) => {
-    const svc = svcs.find(x => x.id === svcId);
-    if (!svc) return s;
-    return s + addonIds.reduce((a, aid) => { const addon = addons.find(x => x.id === aid); return a + (addon ? getAddonPrice(addon, svc.addonTier) : 0); }, 0);
-  }, 0);
-  const total = svcTotal + addonTotal;
-
-  // Animated total count
-  useEffect(() => {
-    if (displayTotal === total) return;
-    const diff = total - displayTotal;
-    const steps = 20;
-    const inc = diff / steps;
-    let current = displayTotal;
-    let step = 0;
-    const timer = setInterval(() => {
-      step++;
-      if (step >= steps) {
-        setDisplayTotal(total);
-        clearInterval(timer);
-      } else {
-        current += inc;
-        setDisplayTotal(Math.round(current));
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [total]);
-
-  // Packages
+  // Packages — declared before total calc so packDiscount can reference it
   interface Pack { id: string; name: string; desc: string; svcIds: string[]; discount: number; tier: "basic" | "premium" | "vip"; warranty: string }
   const packages: Pack[] = [
     {
@@ -173,6 +151,52 @@ export default function Booking() {
     if (!size) return 0;
     const raw = pack.svcIds.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v ? v.p[size] : 0); }, 0);
     return raw - getPackPrice(pack);
+  };
+
+  const svcTotal = sel.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v && size ? v.p[size] : 0); }, 0);
+  const addonTotal = Object.entries(selAddons).reduce((s, [svcId, addonIds]) => {
+    const svc = svcs.find(x => x.id === svcId);
+    if (!svc) return s;
+    return s + addonIds.reduce((a, aid) => { const addon = addons.find(x => x.id === aid); return a + (addon ? getAddonPrice(addon, svc.addonTier) : 0); }, 0);
+  }, 0);
+
+  // Apply package discount if a package is active
+  const packDiscount = (() => {
+    if (!activePack || !size) return 0;
+    const pack = packages.find(p => p.id === activePack);
+    if (!pack) return 0;
+    const packRaw = pack.svcIds.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v ? v.p[size] : 0); }, 0);
+    return Math.round(packRaw * pack.discount / 100);
+  })();
+  const total = svcTotal + addonTotal - packDiscount;
+
+  // Animated total count
+  useEffect(() => {
+    if (displayTotal === total) return;
+    const diff = total - displayTotal;
+    const steps = 20;
+    const inc = diff / steps;
+    let current = displayTotal;
+    let frame = 0;
+    const timer = setInterval(() => {
+      frame++;
+      if (frame >= steps) {
+        setDisplayTotal(total);
+        clearInterval(timer);
+      } else {
+        current += inc;
+        setDisplayTotal(Math.round(current));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [total]);
+
+  // #8 Get short service names for package cards
+  const getSvcShortName = (svcId: string) => {
+    const s = svcs.find(x => x.id === svcId);
+    if (!s) return "";
+    return s.name;
   };
 
   const selectPack = (pack: Pack) => {
@@ -224,6 +248,15 @@ export default function Booking() {
     return sel.filter(id => svcs.find(s => s.id === id)?.cat === cat).length;
   };
 
+  // #5 Slide animation class
+  const slideClass = slideDir === "forward" ? "step-slide-forward" : "step-slide-back";
+
+  // #7 Auto-advance after car selection
+  const handleCarSelect = (carId: "small" | "large") => {
+    setSize(carId);
+    setTimeout(() => goStep(2), 600);
+  };
+
   return (
     <section id="booking" ref={ref} style={{ padding: "96px 0", background: "linear-gradient(180deg, #050505, #0a0a0a, #050505)" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
@@ -239,7 +272,7 @@ export default function Booking() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 48 }}>
           {[{ n: 1, l: t.booking.step1 }, { n: 2, l: t.booking.step2 }, { n: 3, l: t.booking.step3 }].map((s, i) => (
             <div key={s.n} style={{ display: "flex", alignItems: "center" }}>
-              <button onClick={() => { if (step > s.n) setStep(s.n); }} style={{
+              <button onClick={() => { if (step > s.n) goStep(s.n); }} style={{
                 display: "flex", flexDirection: "column", alignItems: "center", background: "none", border: "none", padding: 0,
                 cursor: step > s.n ? "pointer" : "default",
               }}>
@@ -258,13 +291,13 @@ export default function Booking() {
           ))}
         </div>
 
-        {/* STEP 1 */}
+        {/* STEP 1 — #7 Auto-advance on car select */}
         {step === 1 && (
-          <div className="step-enter">
+          <div className={slideClass} key={`step1-${slideDir}`}>
             <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: 14, marginBottom: 32 }}>{t.booking.step1instruction}</p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20, maxWidth: 700, margin: "0 auto" }}>
               {cars.map((c) => (
-                <button key={c.id} onClick={() => setSize(c.id)} className={size === c.id ? "gold-pulse" : ""} style={{
+                <button key={c.id} onClick={() => handleCarSelect(c.id)} className={size === c.id ? "gold-pulse" : ""} style={{
                   position: "relative", borderRadius: 20, overflow: "hidden", textAlign: "center", cursor: "pointer", background: "#050505", padding: 0,
                   border: size === c.id ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
                   boxShadow: size === c.id ? "0 0 30px rgba(246,190,0,0.2)" : "none",
@@ -300,28 +333,33 @@ export default function Booking() {
                 </button>
               ))}
             </div>
+            {/* Fallback button if auto-advance doesn't feel right */}
             <div style={{ textAlign: "center", marginTop: 40 }}>
-              <button onClick={() => size && setStep(2)} disabled={!size} className="btn-gold">{t.booking.chooseServices}</button>
+              <button onClick={() => size && goStep(2)} disabled={!size} className="btn-gold" style={{ opacity: size ? 1 : 0.3, transition: "opacity 0.3s" }}>{t.booking.chooseServices}</button>
             </div>
           </div>
         )}
 
         {/* STEP 2 */}
         {step === 2 && (
-          <div className="step-enter">
+          <div className={slideClass} key={`step2-${slideDir}`}>
             <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: 14, marginBottom: 24 }}>
               {t.booking.pricesFor} <strong style={{ color: "#F6BE00" }}>{cars.find(c => c.id === size)?.label}</strong> {t.booking.selectOneOrMore}
             </p>
 
-            {/* Category Tabs */}
-            <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 32, flexWrap: "wrap" }}>
+            {/* #3 Category Tabs — horizontal scroll on mobile */}
+            <div ref={tabsRef} className="booking-tabs-scroll" style={{
+              display: "flex", gap: 8, justifyContent: "center", marginBottom: 32, flexWrap: "nowrap",
+              overflowX: "auto", WebkitOverflowScrolling: "touch", paddingBottom: 4,
+              scrollbarWidth: "none",
+            }}>
               {categories.map((cat) => {
                 const isActive = category === cat.id;
                 const count = selCount(cat.id);
                 return (
                   <button key={cat.id} onClick={() => setCategory(cat.id)} style={{
                     display: "flex", alignItems: "center", gap: 8, padding: "10px 20px", borderRadius: 100, cursor: "pointer",
-                    fontSize: 13, fontWeight: 600, transition: "all 0.3s",
+                    fontSize: 13, fontWeight: 600, transition: "all 0.3s", whiteSpace: "nowrap", flexShrink: 0,
                     background: isActive ? "#F6BE00" : "rgba(255,255,255,0.04)",
                     color: isActive ? "#000" : "rgba(255,255,255,0.5)",
                     border: isActive ? "1.5px solid #F6BE00" : "1.5px solid rgba(255,255,255,0.08)",
@@ -338,10 +376,10 @@ export default function Booking() {
               })}
             </div>
 
-            {/* Packages View */}
+            {/* Packages View — #1 Customize as 4th card in grid */}
             {category === "packages" && (
               <div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {packages.map((pack, i) => {
                     const isActive = activePack === pack.id;
                     const price = getPackPrice(pack);
@@ -363,7 +401,7 @@ export default function Booking() {
                         {/* Tier gradient top bar */}
                         <div style={{ height: 4, background: `linear-gradient(90deg, ${tierColor}, ${tierColor}80)` }} />
 
-                        <div style={{ padding: "24px 20px" }}>
+                        <div style={{ padding: "24px 16px" }}>
                           {/* Popular badge on premium */}
                           {i === 1 && (
                             <div style={{
@@ -378,50 +416,42 @@ export default function Booking() {
                           )}
 
                           {/* Tier name */}
-                          <div style={{ color: isActive ? tierColor : "#fff", fontWeight: 800, fontSize: 20, marginBottom: 6, marginTop: i === 1 ? 16 : 0, fontFamily: fontDisplay }}>{pack.name}</div>
-                          {/* Description */}
-                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 10, lineHeight: 1.5 }}>{pack.desc}</div>
+                          <div style={{ color: isActive ? tierColor : "#fff", fontWeight: 800, fontSize: 18, marginBottom: 6, marginTop: i === 1 ? 16 : 0, fontFamily: fontDisplay }}>{pack.name}</div>
+
+                          {/* #8 Actual service names instead of vague pills */}
+                          <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12, minHeight: 52 }}>
+                            {pack.svcIds.map(svcId => (
+                              <span key={svcId} style={{
+                                fontSize: 11, color: "rgba(255,255,255,0.4)", lineHeight: 1.3,
+                              }}>{getSvcShortName(svcId)}</span>
+                            ))}
+                          </div>
+
                           {/* Warranty badge */}
                           <div style={{
                             display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 12px", borderRadius: 100, fontSize: 11, fontWeight: 700,
-                            background: `${tierColor}12`, color: tierColor, border: `1px solid ${tierColor}25`, marginBottom: 16,
+                            background: `${tierColor}12`, color: tierColor, border: `1px solid ${tierColor}25`, marginBottom: 14,
                           }}>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                             {pack.warranty}
                           </div>
 
                           {/* Price */}
-                          <div style={{ fontFamily: fontDisplay, fontSize: 28, fontWeight: 700, color: tierColor, marginBottom: 6 }}>
-                            {size ? price.toLocaleString() : "—"} <span style={{ fontSize: 14, opacity: 0.7 }}>{cur}</span>
+                          <div style={{ fontFamily: fontDisplay, fontSize: 24, fontWeight: 700, color: tierColor, marginBottom: 6 }}>
+                            {size ? price.toLocaleString() : "—"} <span style={{ fontSize: 13, opacity: 0.7 }}>{cur}</span>
                           </div>
 
                           {/* Saving */}
                           {size && saving > 0 && (
                             <div style={{
                               display: "inline-flex", alignItems: "center", gap: 4,
-                              padding: "4px 12px", borderRadius: 100, fontSize: 11, fontWeight: 700,
+                              padding: "4px 10px", borderRadius: 100, fontSize: 10, fontWeight: 700,
                               background: "rgba(76,175,80,0.12)", color: "#4CAF50",
                               border: "1px solid rgba(76,175,80,0.2)",
                             }}>
                               {t.booking.packSave} {saving.toLocaleString()} {cur}
                             </div>
                           )}
-
-                          {/* Service count preview */}
-                          <div style={{ marginTop: 16, display: "flex", justifyContent: "center", gap: 6 }}>
-                            {pack.svcIds.map(svcId => {
-                              const s = svcs.find(x => x.id === svcId);
-                              if (!s) return null;
-                              const catLabel = s.cat === "ppf" ? "PPF" : s.cat === "tint" ? (isAr ? "تظليل" : "Tint") : (isAr ? "سيراميك" : "Ceramic");
-                              return (
-                                <span key={svcId} style={{
-                                  padding: "3px 10px", fontSize: 9, fontWeight: 700, borderRadius: 100,
-                                  background: `${tierColor}15`, color: tierColor, border: `1px solid ${tierColor}30`,
-                                  textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.04em",
-                                }}>{catLabel}</span>
-                              );
-                            })}
-                          </div>
 
                           {/* Select indicator */}
                           {isActive && (
@@ -437,6 +467,31 @@ export default function Booking() {
                       </button>
                     );
                   })}
+
+                  {/* #1 Customize Your Own — as 4th card in same grid */}
+                  <button onClick={() => { setActivePack(null); setSel([]); setSelAddons({}); setCategory("ppf"); }} style={{
+                    position: "relative", padding: 0, borderRadius: 16, cursor: "pointer", overflow: "hidden",
+                    background: "rgba(255,255,255,0.02)",
+                    border: "2px solid rgba(255,255,255,0.06)",
+                    transition: "all 0.3s", textAlign: "center",
+                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                    minHeight: 280,
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(246,190,0,0.4)"; e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.4)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "none"; }}
+                  >
+                    {/* Top bar — gold gradient */}
+                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: "linear-gradient(90deg, rgba(246,190,0,0.4), rgba(246,190,0,0.15))" }} />
+
+                    <div style={{
+                      width: 56, height: 56, borderRadius: "50%", background: "rgba(246,190,0,0.08)", border: "1px solid rgba(246,190,0,0.2)",
+                      display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, transition: "all 0.3s",
+                    }}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F6BE00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </div>
+                    <div style={{ color: "#F6BE00", fontWeight: 800, fontSize: 18, marginBottom: 6, fontFamily: fontDisplay }}>{t.booking.customPackage}</div>
+                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, padding: "0 16px", lineHeight: 1.5 }}>{t.booking.customPackageDesc}</div>
+                  </button>
                 </div>
 
                 {/* Expanded package — visual service cards */}
@@ -461,7 +516,7 @@ export default function Booking() {
                         )}
                       </div>
 
-                      {/* Service cards grid — same visual as category cards */}
+                      {/* Service cards grid */}
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {packSvcs.map((s) => (
                           <div key={s.id} style={{
@@ -519,44 +574,27 @@ export default function Booking() {
                         ))}
                       </div>
 
-                      {/* Total bar */}
+                      {/* #4 Package total bar with Continue CTA */}
                       {size && (
                         <div style={{
                           marginTop: 16, padding: "16px 24px", borderRadius: 14,
                           background: `${tierColor}06`, border: `1px solid ${tierColor}25`,
                           display: "flex", justifyContent: "space-between", alignItems: "center",
+                          flexWrap: "wrap", gap: 12,
                         }}>
-                          <span style={{ color: "rgba(255,255,255,0.5)", fontWeight: 600, fontSize: 14 }}>{t.booking.totalLabel}</span>
-                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                            <span style={{ color: "rgba(255,255,255,0.5)", fontWeight: 600, fontSize: 14 }}>{t.booking.totalLabel}</span>
                             <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 13, textDecoration: "line-through" }}>
                               {pack.svcIds.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v ? v.p[size] : 0); }, 0).toLocaleString()} {cur}
                             </span>
                             <span style={{ color: tierColor, fontWeight: 700, fontSize: 20, fontFamily: fontDisplay }}>{getPackPrice(pack).toLocaleString()} {cur}</span>
                           </div>
+                          <button onClick={() => goStep(3)} className="btn-gold" style={{ margin: 0, padding: "10px 28px" }}>{t.booking.continue}</button>
                         </div>
                       )}
                     </div>
                   );
                 })()}
-
-                {/* Customize Your Own */}
-                <button onClick={() => { setActivePack(null); setSel([]); setSelAddons({}); setCategory("ppf"); }} style={{
-                  marginTop: 20, width: "100%", padding: "24px 20px", borderRadius: 16, cursor: "pointer",
-                  background: activePack === null ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.02)",
-                  border: activePack === null ? "2px dashed #F6BE00" : "2px dashed rgba(255,255,255,0.12)",
-                  transition: "all 0.3s", display: "flex", alignItems: "center", justifyContent: "center", gap: 14,
-                }}
-                  onMouseEnter={e => { if (activePack !== null) { e.currentTarget.style.borderColor = "rgba(246,190,0,0.4)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; } }}
-                  onMouseLeave={e => { if (activePack !== null) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; e.currentTarget.style.background = "rgba(255,255,255,0.02)"; } }}
-                >
-                  <div style={{ width: 44, height: 44, borderRadius: "50%", background: activePack === null ? "rgba(246,190,0,0.12)" : "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.3s" }}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={activePack === null ? "#F6BE00" : "rgba(255,255,255,0.3)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  </div>
-                  <div style={{ textAlign: dir === "rtl" ? "right" : "left" }}>
-                    <div style={{ color: activePack === null ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 16 }}>{t.booking.customPackage}</div>
-                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>{t.booking.customPackageDesc}</div>
-                  </div>
-                </button>
               </div>
             )}
 
@@ -648,7 +686,7 @@ export default function Booking() {
               })}
             </div>}
 
-            {/* Detail panel — rendered below grid for the expanded service */}
+            {/* #6 Detail panel — inline expanded below the service card */}
             {detailSvc && sel.includes(detailSvc.id) && (() => {
               const s = detailSvc;
               const svcAddons = selAddons[s.id] || [];
@@ -738,49 +776,55 @@ export default function Booking() {
               );
             })()}
 
-            {/* Sticky floating total bar */}
-            {sel.length > 0 && (
-              <div style={{
-                position: "sticky", bottom: 16, zIndex: 20, marginTop: 24,
-                padding: "16px 24px", borderRadius: 16,
-                background: "rgba(17,17,17,0.95)", backdropFilter: "blur(12px)",
-                border: "1px solid rgba(246,190,0,0.25)",
-                boxShadow: "0 -4px 24px rgba(0,0,0,0.5)",
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-              }}>
-                <div>
-                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{t.booking.estimatedTotal}</div>
-                  <div className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 24, fontWeight: 700, transition: "all 0.3s" }}>{displayTotal.toLocaleString()} {cur}</div>
+            {/* #2 Sticky floating total bar — always visible on Step 2, with car tag */}
+            <div style={{
+              position: "sticky", bottom: 16, zIndex: 20, marginTop: 24,
+              padding: "16px 24px", borderRadius: 16,
+              background: "rgba(17,17,17,0.95)", backdropFilter: "blur(12px)",
+              border: sel.length > 0 ? "1px solid rgba(246,190,0,0.25)" : "1px solid rgba(255,255,255,0.08)",
+              boxShadow: "0 -4px 24px rgba(0,0,0,0.5)",
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              transition: "all 0.3s",
+            }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                  <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{t.booking.estimatedTotal}</span>
+                  {/* Car type tag */}
+                  <span style={{
+                    padding: "2px 8px", borderRadius: 100, fontSize: 10, fontWeight: 600,
+                    background: "rgba(246,190,0,0.1)", color: "#F6BE00", border: "1px solid rgba(246,190,0,0.2)",
+                  }}>{cars.find(c => c.id === size)?.label}</span>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                  <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>{sel.length} {sel.length > 1 ? t.booking.servicesCount : t.booking.serviceCount}</span>
-                  <button onClick={() => setStep(3)} className="btn-gold" style={{ margin: 0, padding: "10px 28px" }}>{t.booking.continue}</button>
-                </div>
+                <div className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 24, fontWeight: 700, transition: "all 0.3s" }}>{displayTotal.toLocaleString()} {cur}</div>
               </div>
-            )}
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>{sel.length} {sel.length > 1 ? t.booking.servicesCount : t.booking.serviceCount}</span>
+                <button onClick={() => sel.length > 0 && goStep(3)} className="btn-gold" style={{ margin: 0, padding: "10px 28px", opacity: sel.length > 0 ? 1 : 0.3, pointerEvents: sel.length > 0 ? "auto" : "none", transition: "opacity 0.3s" }}>{t.booking.continue}</button>
+              </div>
+            </div>
 
-            {/* Back button — only show when no services selected (sticky bar handles Continue) */}
-            <div style={{ marginTop: 40, display: "flex", justifyContent: sel.length > 0 ? "center" : "space-between" }}>
-              <button onClick={() => setStep(1)} className="btn-outline">{t.booking.back}</button>
+            {/* Back button */}
+            <div style={{ marginTop: 40, display: "flex", justifyContent: "center" }}>
+              <button onClick={() => goStep(1)} className="btn-outline">{t.booking.back}</button>
             </div>
           </div>
         )}
 
         {/* STEP 3 */}
         {step === 3 && (
-          <div className="step-enter" style={{ maxWidth: 600, margin: "0 auto" }}>
+          <div className={slideClass} key={`step3-${slideDir}`} style={{ maxWidth: 600, margin: "0 auto" }}>
             <div style={{ borderRadius: 14, background: "#111", border: "1px solid rgba(255,255,255,0.08)", overflow: "hidden", marginBottom: 32 }}>
               <div style={{ padding: 20, borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between" }}>
                 <div>
                   <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>{t.booking.vehicleLabel}</div>
                   <div style={{ color: "#fff", fontWeight: 700, marginTop: 2 }}>{cars.find(c => c.id === size)?.label}</div>
                 </div>
-                <button onClick={() => setStep(1)} style={{ color: "#F6BE00", fontSize: 12, background: "none", border: "none", cursor: "pointer" }}>{t.booking.change}</button>
+                <button onClick={() => goStep(1)} style={{ color: "#F6BE00", fontSize: 12, background: "none", border: "none", cursor: "pointer" }}>{t.booking.change}</button>
               </div>
               <div style={{ padding: 20, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
                   <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>{t.booking.servicesLabel}</span>
-                  <button onClick={() => setStep(2)} style={{ color: "#F6BE00", fontSize: 12, background: "none", border: "none", cursor: "pointer" }}>{t.booking.change}</button>
+                  <button onClick={() => goStep(2)} style={{ color: "#F6BE00", fontSize: 12, background: "none", border: "none", cursor: "pointer" }}>{t.booking.change}</button>
                 </div>
                 {(["ppf", "tint", "ceramic"] as const).map(cat => {
                   const catSvcs = sel.filter(id => svcs.find(s => s.id === id)?.cat === cat);
@@ -815,6 +859,13 @@ export default function Booking() {
                     </div>
                   );
                 })}
+                {/* Package discount line */}
+                {activePack && packDiscount > 0 && (
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: 13, borderTop: "1px solid rgba(255,255,255,0.05)", marginTop: 6, paddingTop: 10 }}>
+                    <span style={{ color: "#4CAF50", fontWeight: 600 }}>{packages.find(p => p.id === activePack)?.name} {t.booking.packSave.toLowerCase()}</span>
+                    <span style={{ color: "#4CAF50", fontWeight: 600 }}>-{packDiscount.toLocaleString()} {cur}</span>
+                  </div>
+                )}
               </div>
               <div style={{ padding: 20, background: "rgba(246,190,0,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>{t.booking.totalLabel}</span>
@@ -875,7 +926,7 @@ export default function Booking() {
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-              <button onClick={() => setStep(2)} className="btn-outline">{t.booking.back}</button>
+              <button onClick={() => goStep(2)} className="btn-outline">{t.booking.back}</button>
               <Link href={buildWhatsApp()} target="_blank" className="btn-gold"
                 onClick={() => setTimeout(() => setOrderSent(true), 500)}
                 style={(!form.name || !form.phone) ? { opacity: 0.3, pointerEvents: "none" } : {}}>
@@ -902,7 +953,7 @@ export default function Booking() {
                   </div>
                   <h3 style={{ fontFamily: fontDisplay, fontSize: 28, fontWeight: 700, color: "#F6BE00", marginBottom: 12, animation: "fadeUp 0.5s ease-out 0.2s both" }}>{t.booking.orderSent}</h3>
                   <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 15, lineHeight: 1.6, animation: "fadeUp 0.5s ease-out 0.3s both" }}>{t.booking.orderSentSub}</p>
-                  <button onClick={() => { setOrderSent(false); setStep(1); setSel([]); setSelAddons({}); setForm({ name: "", phone: "", notes: "" }); }} className="btn-outline" style={{ marginTop: 32, animation: "fadeUp 0.5s ease-out 0.4s both" }}>
+                  <button onClick={() => { setOrderSent(false); goStep(1); setSel([]); setSelAddons({}); setForm({ name: "", phone: "", notes: "" }); }} className="btn-outline" style={{ marginTop: 32, animation: "fadeUp 0.5s ease-out 0.4s both" }}>
                     {t.booking.back}
                   </button>
                 </div>
