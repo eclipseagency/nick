@@ -123,6 +123,7 @@ export default function Booking() {
   const filteredSvcs = category === "packages" ? [] : svcs.filter(s => s.cat === category);
   const detailSvc = detailId ? svcs.find(s => s.id === detailId) : null;
   const svcImg = (s: Svc) => (size === "large" && s.imgLarge) ? s.imgLarge : s.img;
+  const hasLargeImg = (s: Svc) => size === "large" && !!s.imgLarge;
 
   const getAddonPrice = (addon: Addon, tier: "low" | "high") => tier === "high" ? addon.p.large : addon.p.small;
 
@@ -533,9 +534,9 @@ export default function Booking() {
                             transition: "all 0.3s",
                           }}>
                             {/* Image */}
-                            <div style={{ position: "relative", height: 140 }}>
-                              <Image src={svcImg(s)} alt={s.name} fill className="object-cover" />
-                              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #111 0%, rgba(17,17,17,0.3) 50%, transparent 100%)" }} />
+                            <div style={{ position: "relative", height: hasLargeImg(s) ? "auto" : 140, aspectRatio: hasLargeImg(s) ? "1" : undefined, background: "#0a0a0a" }}>
+                              <Image src={svcImg(s)} alt={s.name} fill className={hasLargeImg(s) ? "object-contain" : "object-cover"} />
+                              <div style={{ position: "absolute", inset: 0, background: hasLargeImg(s) ? "linear-gradient(to top, #111 0%, transparent 40%)" : "linear-gradient(to top, #111 0%, rgba(17,17,17,0.3) 50%, transparent 100%)" }} />
                               {/* Category pill */}
                               <span style={{
                                 position: "absolute", top: 10, ...(dir === "rtl" ? { right: 10 } : { left: 10 }),
@@ -716,9 +717,9 @@ export default function Booking() {
                     onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.outlineColor = "rgba(255,255,255,0.06)"; } }}
                   >
                     {/* Image */}
-                    <div style={{ position: "relative", height: 140 }}>
-                      <Image src={svcImg(s)} alt={s.name} fill className="object-cover" />
-                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #111 0%, rgba(17,17,17,0.3) 50%, transparent 100%)" }} />
+                    <div style={{ position: "relative", height: hasLargeImg(s) ? "auto" : 140, aspectRatio: hasLargeImg(s) ? "1" : undefined, background: "#0a0a0a" }}>
+                      <Image src={svcImg(s)} alt={s.name} fill className={hasLargeImg(s) ? "object-contain" : "object-cover"} />
+                      <div style={{ position: "absolute", inset: 0, background: hasLargeImg(s) ? "linear-gradient(to top, #111 0%, transparent 40%)" : "linear-gradient(to top, #111 0%, rgba(17,17,17,0.3) 50%, transparent 100%)" }} />
                       {/* Popular badge */}
                       {s.popular && (
                         <span style={{
