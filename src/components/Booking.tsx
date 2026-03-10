@@ -12,7 +12,7 @@ type Category = "packages" | "ppf" | "tint" | "ceramic";
 interface Addon { id: string; name: string; p: { small: number; large: number }; icon: React.ReactNode }
 interface Svc {
   id: string; cat: "ppf" | "tint" | "ceramic"; name: string; w: string; img: string;
-  imgLarge?: string;
+  imgSmall?: string; imgLarge?: string;
   p: { small: number; large: number };
   parts: string[];
   addonTier: "low" | "high";
@@ -97,19 +97,19 @@ export default function Booking() {
   ];
 
   const svcs: Svc[] = [
-    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: { small: 16500, large: 18500 }, w: "5yr", img: "/images/DSC03279.jpg", imgLarge: "/images/big-car-active.png", addonTier: "high", parts: [t.booking.fullBody] },
-    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: { small: 12000, large: 14500 }, w: "10yr", img: "/images/DSC03292.jpg", imgLarge: "/images/big-car-active.png", addonTier: "low", parts: [t.booking.fullBody] },
-    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: { small: 14000, large: 15500 }, w: "10yr", img: "/images/DSC03235.jpg", imgLarge: "/images/big-car-active.png", addonTier: "low", parts: [t.booking.fullBody], popular: true },
-    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: { small: 13450, large: 15450 }, w: "10yr", img: "/images/DSC03064.jpg", imgLarge: "/images/big-car-active.png", addonTier: "low", parts: [t.booking.fullBody] },
-    { id: "ppf-front-rear", cat: "ppf", name: t.booking.svcPpfFrontRear, p: { small: 4770, large: 5500 }, w: "10yr", img: "/images/DSC03279.jpg", imgLarge: "/images/ppf-front-rear-large.jpg", addonTier: "high",
+    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: { small: 16500, large: 18500 }, w: "5yr", img: "/images/DSC03279.jpg", imgSmall: "/images/ppf-color-small.png", imgLarge: "/images/ppf-color-large.png", addonTier: "high", parts: [t.booking.fullBody] },
+    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: { small: 12000, large: 14500 }, w: "10yr", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody] },
+    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: { small: 14000, large: 15500 }, w: "10yr", img: "/images/DSC03235.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody], popular: true },
+    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: { small: 13450, large: 15450 }, w: "10yr", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody] },
+    { id: "ppf-front-rear", cat: "ppf", name: t.booking.svcPpfFrontRear, p: { small: 4770, large: 5500 }, w: "10yr", img: "/images/DSC03279.jpg", imgSmall: "/images/ppf-front-rear-small.png", imgLarge: "/images/ppf-front-rear-large.png", addonTier: "high",
       parts: [t.booking.fullHood, t.booking.fullFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges, t.booking.rearBumper] },
-    { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: { small: 3660, large: 5600 }, w: "10yr", img: "/images/DSC03292.jpg", imgLarge: "/images/ppf-front-large.jpg", addonTier: "high",
+    { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: { small: 3660, large: 5600 }, w: "10yr", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-front-small.png", imgLarge: "/images/ppf-front-large.png", addonTier: "high",
       parts: [t.booking.fullHood, t.booking.fullFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges] },
-    { id: "ppf-partial-rear", cat: "ppf", name: t.booking.svcPpfPartialRear, p: { small: 2770, large: 4800 }, w: "10yr", img: "/images/DSC03235.jpg", imgLarge: "/images/ppf-partial-large.jpg", addonTier: "low",
+    { id: "ppf-partial-rear", cat: "ppf", name: t.booking.svcPpfPartialRear, p: { small: 2770, large: 4800 }, w: "10yr", img: "/images/DSC03235.jpg", imgSmall: "/images/ppf-partial-rear-small.png", imgLarge: "/images/ppf-partial-rear-large.png", addonTier: "low",
       parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges, t.booking.rearBumper] },
-    { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: { small: 1850, large: 2900 }, w: "10yr", img: "/images/DSC03064.jpg", imgLarge: "/images/ppf-partial-large.jpg", addonTier: "low",
+    { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: { small: 1850, large: 2900 }, w: "10yr", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-partial-small.png", imgLarge: "/images/ppf-partial-large.png", addonTier: "low",
       parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges] },
-    { id: "ppf-windshield", cat: "ppf", name: t.booking.svcPpfWindshield, p: { small: 1000, large: 1000 }, w: "10yr", img: "/images/DSC03174.jpg", imgLarge: "/images/ppf-front-large.jpg", addonTier: "low", parts: [t.booking.frontWindshield] },
+    { id: "ppf-windshield", cat: "ppf", name: t.booking.svcPpfWindshield, p: { small: 1000, large: 1000 }, w: "10yr", img: "/images/DSC03174.jpg", imgSmall: "/images/ppf-front-small.png", imgLarge: "/images/ppf-front-large.png", addonTier: "low", parts: [t.booking.frontWindshield] },
     { id: "tint-full", cat: "tint", name: t.booking.svcTintFull, p: { small: 2400, large: 2800 }, w: "10yr", img: "/images/DSC03136.jpg", addonTier: "low", parts: [t.booking.allGlass], popular: true },
     { id: "tint-front", cat: "tint", name: t.booking.svcTintFront, p: { small: 1160, large: 1300 }, w: "10yr", img: "/images/DSC03174.jpg", addonTier: "high", parts: [t.booking.frontWindshield] },
     { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: { small: 2300, large: 2500 }, w: "1yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
@@ -122,8 +122,12 @@ export default function Booking() {
 
   const filteredSvcs = category === "packages" ? [] : svcs.filter(s => s.cat === category);
   const detailSvc = detailId ? svcs.find(s => s.id === detailId) : null;
-  const svcImg = (s: Svc) => (size === "large" && s.imgLarge) ? s.imgLarge : s.img;
-  const hasLargeImg = (s: Svc) => size === "large" && !!s.imgLarge;
+  const svcImg = (s: Svc) => {
+    if (size === "large" && s.imgLarge) return s.imgLarge;
+    if (size === "small" && s.imgSmall) return s.imgSmall;
+    return s.img;
+  };
+  const hasCoverageImg = (s: Svc) => (size === "large" && !!s.imgLarge) || (size === "small" && !!s.imgSmall);
 
   const getAddonPrice = (addon: Addon, tier: "low" | "high") => tier === "high" ? addon.p.large : addon.p.small;
 
@@ -534,9 +538,9 @@ export default function Booking() {
                             transition: "all 0.3s",
                           }}>
                             {/* Image */}
-                            <div style={{ position: "relative", height: hasLargeImg(s) ? "auto" : 140, aspectRatio: hasLargeImg(s) ? "1" : undefined, background: "#0a0a0a" }}>
-                              <Image src={svcImg(s)} alt={s.name} fill className={hasLargeImg(s) ? "object-contain" : "object-cover"} />
-                              <div style={{ position: "absolute", inset: 0, background: hasLargeImg(s) ? "linear-gradient(to top, #111 0%, transparent 40%)" : "linear-gradient(to top, #111 0%, rgba(17,17,17,0.3) 50%, transparent 100%)" }} />
+                            <div style={{ position: "relative", height: hasCoverageImg(s) ? "auto" : 140, aspectRatio: hasCoverageImg(s) ? "1" : undefined, background: "#0a0a0a" }}>
+                              <Image src={svcImg(s)} alt={s.name} fill className={hasCoverageImg(s) ? "object-contain" : "object-cover"} />
+                              <div style={{ position: "absolute", inset: 0, background: hasCoverageImg(s) ? "linear-gradient(to top, #111 0%, transparent 40%)" : "linear-gradient(to top, #111 0%, rgba(17,17,17,0.3) 50%, transparent 100%)" }} />
                               {/* Category pill */}
                               <span style={{
                                 position: "absolute", top: 10, ...(dir === "rtl" ? { right: 10 } : { left: 10 }),
@@ -717,9 +721,9 @@ export default function Booking() {
                     onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.outlineColor = "rgba(255,255,255,0.06)"; } }}
                   >
                     {/* Image */}
-                    <div style={{ position: "relative", height: hasLargeImg(s) ? "auto" : 140, aspectRatio: hasLargeImg(s) ? "1" : undefined, background: "#0a0a0a" }}>
-                      <Image src={svcImg(s)} alt={s.name} fill className={hasLargeImg(s) ? "object-contain" : "object-cover"} />
-                      <div style={{ position: "absolute", inset: 0, background: hasLargeImg(s) ? "linear-gradient(to top, #111 0%, transparent 40%)" : "linear-gradient(to top, #111 0%, rgba(17,17,17,0.3) 50%, transparent 100%)" }} />
+                    <div style={{ position: "relative", height: hasCoverageImg(s) ? "auto" : 140, aspectRatio: hasCoverageImg(s) ? "1" : undefined, background: "#0a0a0a" }}>
+                      <Image src={svcImg(s)} alt={s.name} fill className={hasCoverageImg(s) ? "object-contain" : "object-cover"} />
+                      <div style={{ position: "absolute", inset: 0, background: hasCoverageImg(s) ? "linear-gradient(to top, #111 0%, transparent 40%)" : "linear-gradient(to top, #111 0%, rgba(17,17,17,0.3) 50%, transparent 100%)" }} />
                       {/* Popular badge */}
                       {s.popular && (
                         <span style={{
@@ -949,7 +953,7 @@ export default function Booking() {
                     <div style={{ display: "flex", alignItems: "stretch" }}>
                       {/* Service image */}
                       <div style={{ position: "relative", width: 90, minHeight: 80, flexShrink: 0, background: "#0a0a0a" }}>
-                        <Image src={svcImg(s)} alt={s.name} fill className={hasLargeImg(s) ? "object-contain" : "object-cover"} />
+                        <Image src={svcImg(s)} alt={s.name} fill className={hasCoverageImg(s) ? "object-contain" : "object-cover"} />
                         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, transparent 60%, #111 100%)" }} />
                       </div>
                       {/* Service info */}
