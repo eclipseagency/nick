@@ -914,63 +914,102 @@ export default function Booking() {
         {/* STEP 3 */}
         {step === 3 && (
           <div className={slideClass} key={`step3-${slideDir}`} style={{ maxWidth: 600, margin: "0 auto" }}>
-            <div style={{ borderRadius: 14, background: "#111", border: "1px solid rgba(255,255,255,0.08)", overflow: "hidden", marginBottom: 32 }}>
-              <div style={{ padding: 20, borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between" }}>
-                <div>
-                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>{t.booking.vehicleLabel}</div>
-                  <div style={{ color: "#fff", fontWeight: 700, marginTop: 2 }}>{cars.find(c => c.id === size)?.label}</div>
+            {/* Vehicle header */}
+            <div style={{ borderRadius: 14, background: "#111", border: "1px solid rgba(255,255,255,0.08)", overflow: "hidden", marginBottom: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 14, padding: 16 }}>
+                <div style={{ position: "relative", width: 56, height: 56, borderRadius: 12, overflow: "hidden", flexShrink: 0, background: "#0a0a0a" }}>
+                  <Image src={cars.find(c => c.id === size)?.img || ""} alt="" fill className="object-cover" />
                 </div>
-                <button onClick={() => goStep(1)} style={{ color: "#F6BE00", fontSize: 12, background: "none", border: "none", cursor: "pointer" }}>{t.booking.change}</button>
+                <div style={{ flex: 1 }}>
+                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>{t.booking.vehicleLabel}</div>
+                  <div style={{ color: "#fff", fontWeight: 700, fontSize: 15, marginTop: 2 }}>{cars.find(c => c.id === size)?.label}</div>
+                </div>
+                <button onClick={() => goStep(1)} style={{ color: "#F6BE00", fontSize: 12, background: "none", cursor: "pointer", padding: "6px 12px", borderRadius: 8, border: "1px solid rgba(246,190,0,0.2)" }}>{t.booking.change}</button>
               </div>
-              <div style={{ padding: 20, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
-                  <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>{t.booking.servicesLabel}</span>
-                  <button onClick={() => goStep(2)} style={{ color: "#F6BE00", fontSize: 12, background: "none", border: "none", cursor: "pointer" }}>{t.booking.change}</button>
-                </div>
-                {(["ppf", "tint", "ceramic"] as const).map(cat => {
-                  const catSvcs = sel.filter(id => svcs.find(s => s.id === id)?.cat === cat);
-                  if (catSvcs.length === 0) return null;
-                  return (
-                    <div key={cat} style={{ marginBottom: 10 }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: "#F6BE00", opacity: 0.6, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em", marginBottom: 4 }}>
-                        {categories.find(c => c.id === cat)?.label}
+            </div>
+
+            {/* Selected services — visual cards */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>{t.booking.servicesLabel}</span>
+              <button onClick={() => goStep(2)} style={{ color: "#F6BE00", fontSize: 12, background: "none", cursor: "pointer", padding: "6px 12px", borderRadius: 8, border: "1px solid rgba(246,190,0,0.2)" }}>{t.booking.change}</button>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
+              {sel.map(id => {
+                const s = svcs.find(x => x.id === id)!;
+                const svcAddonList = selAddons[id] || [];
+                const addonSubtotal = svcAddonList.reduce((sum, aid) => {
+                  const addon = addons.find(a => a.id === aid);
+                  return sum + (addon ? getAddonPrice(addon, s.addonTier) : 0);
+                }, 0);
+                return (
+                  <div key={id} style={{
+                    borderRadius: 14, background: "#111", border: "1px solid rgba(255,255,255,0.08)", overflow: "hidden",
+                  }}>
+                    <div style={{ display: "flex", alignItems: "stretch" }}>
+                      {/* Service image */}
+                      <div style={{ position: "relative", width: 90, minHeight: 80, flexShrink: 0, background: "#0a0a0a" }}>
+                        <Image src={svcImg(s)} alt={s.name} fill className={hasLargeImg(s) ? "object-contain" : "object-cover"} />
+                        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, transparent 60%, #111 100%)" }} />
                       </div>
-                      {catSvcs.map(id => {
-                        const s = svcs.find(x => x.id === id)!;
-                        const svcAddonList = selAddons[id] || [];
-                        return (
-                          <div key={id}>
-                            <div style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", fontSize: 14 }}>
-                              <span style={{ color: "rgba(255,255,255,0.65)" }}>{s.name}</span>
-                              <span style={{ color: "#F6BE00", fontWeight: 600 }}>{size ? s.p[size].toLocaleString() : 0} {cur}</span>
+                      {/* Service info */}
+                      <div style={{ flex: 1, padding: "12px 14px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+                          <div>
+                            <div style={{ color: "#fff", fontWeight: 700, fontSize: 13, marginBottom: 3 }}>{s.name}</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <span style={{
+                                padding: "2px 8px", fontSize: 9, fontWeight: 700, borderRadius: 100,
+                                background: "rgba(246,190,0,0.1)", color: "#F6BE00", border: "1px solid rgba(246,190,0,0.2)",
+                                textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.04em",
+                              }}>{categories.find(c => c.id === s.cat)?.label}</span>
+                              <span style={{ fontSize: 10, color: "rgba(246,190,0,0.6)", border: "1px solid rgba(246,190,0,0.15)", padding: "1px 6px", borderRadius: 100 }}>{s.w}</span>
                             </div>
+                          </div>
+                          <span style={{ color: "#F6BE00", fontWeight: 700, fontSize: 14, whiteSpace: "nowrap" }}>{size ? s.p[size].toLocaleString() : 0} {cur}</span>
+                        </div>
+                        {/* Add-ons under service */}
+                        {svcAddonList.length > 0 && (
+                          <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid rgba(255,255,255,0.04)" }}>
                             {svcAddonList.map(aid => {
                               const addon = addons.find(a => a.id === aid)!;
                               const price = getAddonPrice(addon, s.addonTier);
                               return (
-                                <div key={aid} style={{ display: "flex", justifyContent: "space-between", padding: "2px 0 2px 16px", fontSize: 12 }}>
+                                <div key={aid} style={{ display: "flex", justifyContent: "space-between", padding: "2px 0", fontSize: 11 }}>
                                   <span style={{ color: "rgba(255,255,255,0.35)" }}>+ {addon.name}</span>
-                                  <span style={{ color: "rgba(246,190,0,0.6)" }}>{price} {cur}</span>
+                                  <span style={{ color: "rgba(246,190,0,0.5)" }}>{price} {cur}</span>
                                 </div>
                               );
                             })}
                           </div>
-                        );
-                      })}
+                        )}
+                      </div>
                     </div>
-                  );
-                })}
-                {/* Package discount line */}
-                {activePack && packDiscount > 0 && (
-                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: 13, borderTop: "1px solid rgba(255,255,255,0.05)", marginTop: 6, paddingTop: 10 }}>
-                    <span style={{ color: "#4CAF50", fontWeight: 600 }}>{packages.find(p => p.id === activePack)?.name} {t.booking.packSave.toLowerCase()}</span>
-                    <span style={{ color: "#4CAF50", fontWeight: 600 }}>-{packDiscount.toLocaleString()} {cur}</span>
                   </div>
-                )}
-              </div>
-              <div style={{ padding: 20, background: "rgba(246,190,0,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                );
+              })}
+            </div>
+
+            {/* Total bar */}
+            <div style={{
+              borderRadius: 14, overflow: "hidden", marginBottom: 32,
+              background: "#111", border: "1px solid rgba(246,190,0,0.15)",
+            }}>
+              {/* Package discount */}
+              {activePack && packDiscount > 0 && (
+                <div style={{ padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(76,175,80,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 6L5 8L9 4" stroke="#4CAF50" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </span>
+                    <span style={{ color: "#4CAF50", fontWeight: 600, fontSize: 13 }}>{packages.find(p => p.id === activePack)?.name} {t.booking.packSave.toLowerCase()}</span>
+                  </div>
+                  <span style={{ color: "#4CAF50", fontWeight: 700, fontSize: 14 }}>-{packDiscount.toLocaleString()} {cur}</span>
+                </div>
+              )}
+              <div style={{ padding: "16px 20px", background: "rgba(246,190,0,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>{t.booking.totalLabel}</span>
-                <span className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 22, fontWeight: 700 }}>{displayTotal.toLocaleString()} {cur}</span>
+                <span className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 24, fontWeight: 700 }}>{displayTotal.toLocaleString()} {cur}</span>
               </div>
             </div>
 
