@@ -85,7 +85,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
-    const { username, current_password, new_password } = await req.json();
+    const { username, new_password } = await req.json();
     const targetUser = username || session.username;
 
     if (!new_password || new_password.length < 4) {
@@ -96,18 +96,6 @@ export async function PATCH(req: NextRequest) {
     }
 
     const db = getAdminClient();
-
-    // If changing own password, verify current password
-    if (targetUser === session.username && current_password) {
-      const { data: valid } = await db.rpc("nick_check_password", {
-        p_username: targetUser,
-        p_password: current_password,
-      });
-
-      if (!valid) {
-        return NextResponse.json({ error: "Current password is incorrect" }, { status: 403 });
-      }
-    }
 
     // Update password via RPC
     const { error } = await db.rpc("nick_change_password", {

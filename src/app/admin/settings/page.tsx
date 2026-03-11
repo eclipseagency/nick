@@ -14,7 +14,6 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
 
   // Change password state
-  const [currentPw, setCurrentPw] = useState("");
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
   const [pwMsg, setPwMsg] = useState("");
@@ -48,8 +47,8 @@ export default function SettingsPage() {
     setPwMsg("");
     setPwError(false);
 
-    if (!currentPw || !newPw) {
-      setPwMsg("Please fill in all fields");
+    if (!newPw) {
+      setPwMsg("Please enter a new password");
       setPwError(true);
       return;
     }
@@ -70,7 +69,6 @@ export default function SettingsPage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          current_password: currentPw,
           new_password: newPw,
         }),
       });
@@ -78,7 +76,6 @@ export default function SettingsPage() {
       if (res.ok) {
         setPwMsg("Password changed successfully");
         setPwError(false);
-        setCurrentPw("");
         setNewPw("");
         setConfirmPw("");
       } else {
@@ -201,16 +198,6 @@ export default function SettingsPage() {
           </p>
 
           <div style={{ display: "grid", gap: 14 }}>
-            <div>
-              <label style={labelStyle}>Current Password</label>
-              <input
-                type="password"
-                style={inputStyle}
-                value={currentPw}
-                onChange={(e) => setCurrentPw(e.target.value)}
-                placeholder="Enter current password"
-              />
-            </div>
             <div>
               <label style={labelStyle}>New Password</label>
               <input
