@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface Service {
   id: string;
@@ -26,6 +26,125 @@ const CATEGORY_COLORS: Record<string, string> = {
   tint: "#2196F3",
   ceramic: "#4CAF50",
 };
+
+function ImageUpload({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string | null;
+  onChange: (url: string) => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+
+      if (res.ok && data.url) {
+        onChange(data.url);
+      } else {
+        setError(data.error || "Upload failed");
+      }
+    } catch {
+      setError("Upload failed");
+    }
+
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
+  return (
+    <div>
+      <label
+        style={{
+          fontSize: 11,
+          color: "rgba(255,255,255,0.4)",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          marginBottom: 6,
+          display: "block",
+        }}
+      >
+        {label}
+      </label>
+
+      {/* Preview */}
+      {value && (
+        <div
+          style={{
+            width: "100%",
+            height: 80,
+            borderRadius: 8,
+            marginBottom: 8,
+            background: `url(${value}) center/cover`,
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
+        />
+      )}
+
+      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/svg+xml"
+          onChange={handleFile}
+          style={{ display: "none" }}
+        />
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          style={{
+            padding: "6px 14px",
+            background: uploading ? "rgba(246,190,0,0.3)" : "rgba(246,190,0,0.1)",
+            border: "1px solid rgba(246,190,0,0.3)",
+            borderRadius: 6,
+            color: "#F6BE00",
+            fontSize: 11,
+            fontWeight: 600,
+            cursor: uploading ? "not-allowed" : "pointer",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {uploading ? "Uploading..." : value ? "Replace" : "Upload"}
+        </button>
+
+        {value && (
+          <div
+            style={{
+              flex: 1,
+              fontSize: 10,
+              color: "rgba(255,255,255,0.3)",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+            title={value}
+          >
+            {value.split("/").pop()}
+          </div>
+        )}
+      </div>
+
+      {error && (
+        <div style={{ fontSize: 11, color: "#f44336", marginTop: 4 }}>{error}</div>
+      )}
+    </div>
+  );
+}
 
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
@@ -303,32 +422,26 @@ export default function ServicesPage() {
                           onChange={(e) => setEditData({ ...editData, warranty: e.target.value })}
                         />
                       </div>
-                      <div>
-                        <label style={labelStyle}>Image URL</label>
-                        <input
-                          style={inputStyle}
-                          value={editData.image || ""}
-                          onChange={(e) => setEditData({ ...editData, image: e.target.value })}
+
+                      {/* Image uploads */}
+                      <ImageUpload
+                        label="Main Image"
+                        value={editData.image || null}
+                        onChange={(url) => setEditData({ ...editData, image: url })}
+                      />
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                        <ImageUpload
+                          label="Image Small"
+                          value={editData.image_small || null}
+                          onChange={(url) => setEditData({ ...editData, image_small: url })}
+                        />
+                        <ImageUpload
+                          label="Image Large"
+                          value={editData.image_large || null}
+                          onChange={(url) => setEditData({ ...editData, image_large: url })}
                         />
                       </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                        <div>
-                          <label style={labelStyle}>Image Small URL</label>
-                          <input
-                            style={inputStyle}
-                            value={editData.image_small || ""}
-                            onChange={(e) => setEditData({ ...editData, image_small: e.target.value })}
-                          />
-                        </div>
-                        <div>
-                          <label style={labelStyle}>Image Large URL</label>
-                          <input
-                            style={inputStyle}
-                            value={editData.image_large || ""}
-                            onChange={(e) => setEditData({ ...editData, image_large: e.target.value })}
-                          />
-                        </div>
-                      </div>
+
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                         <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
                           <input
