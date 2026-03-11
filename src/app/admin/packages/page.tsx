@@ -37,6 +37,19 @@ export default function PackagesPage() {
   const [editData, setEditData] = useState<Partial<Package>>({});
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [createData, setCreateData] = useState<Partial<Package>>({
+    name_en: "",
+    name_ar: "",
+    desc_en: "",
+    desc_ar: "",
+    tier: "basic",
+    discount: 0,
+    warranty_en: "",
+    warranty_ar: "",
+    active: true,
+  });
+  const [createSaving, setCreateSaving] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -94,6 +107,50 @@ export default function PackagesPage() {
     setSaving(false);
   }
 
+  function startCreate() {
+    setCreating(true);
+    setCreateData({
+      name_en: "",
+      name_ar: "",
+      desc_en: "",
+      desc_ar: "",
+      tier: "basic",
+      discount: 0,
+      warranty_en: "",
+      warranty_ar: "",
+      active: true,
+    });
+  }
+
+  function cancelCreate() {
+    setCreating(false);
+  }
+
+  async function saveCreate() {
+    setCreateSaving(true);
+    setSaveMsg("");
+    try {
+      const res = await fetch("/api/packages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(createData),
+      });
+      if (res.ok) {
+        const created = await res.json();
+        setPackages((prev) => [created, ...prev]);
+        setCreating(false);
+        setSaveMsg("Created!");
+        setTimeout(() => setSaveMsg(""), 2000);
+      } else {
+        const err = await res.json();
+        setSaveMsg(err.error || "Error creating");
+      }
+    } catch {
+      setSaveMsg("Error creating");
+    }
+    setCreateSaving(false);
+  }
+
   function toggleServiceId(sid: string) {
     const current = editData.service_ids || [];
     if (current.includes(sid)) {
@@ -135,10 +192,177 @@ export default function PackagesPage() {
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
         <h1 style={{ fontSize: 24, fontWeight: 700, color: "#fff" }}>Packages</h1>
-        {saveMsg && (
-          <span style={{ fontSize: 13, color: "#4CAF50" }}>{saveMsg}</span>
-        )}
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {saveMsg && (
+            <span style={{ fontSize: 13, color: "#4CAF50" }}>{saveMsg}</span>
+          )}
+          {!creating && (
+            <button
+              onClick={startCreate}
+              style={{
+                padding: "8px 20px",
+                background: "#F6BE00",
+                border: "none",
+                borderRadius: 8,
+                color: "#000",
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+            >
+              + New Package
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Create form */}
+      {creating && (
+        <div
+          style={{
+            background: "#111",
+            border: "1px solid rgba(246,190,0,0.3)",
+            borderRadius: 14,
+            padding: 20,
+            marginBottom: 16,
+          }}
+        >
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#F6BE00", marginBottom: 16 }}>
+            New Package
+          </div>
+          <div style={{ display: "grid", gap: 12 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div>
+                <label style={labelStyle}>Name (EN)</label>
+                <input
+                  style={inputStyle}
+                  value={createData.name_en || ""}
+                  onChange={(e) => setCreateData({ ...createData, name_en: e.target.value })}
+                  placeholder="Package name"
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Name (AR)</label>
+                <input
+                  style={{ ...inputStyle, direction: "rtl" as const }}
+                  value={createData.name_ar || ""}
+                  onChange={(e) => setCreateData({ ...createData, name_ar: e.target.value })}
+                  placeholder="اسم الباقة"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Description (EN)</label>
+              <textarea
+                style={{ ...inputStyle, minHeight: 60, resize: "vertical" }}
+                value={createData.desc_en || ""}
+                onChange={(e) => setCreateData({ ...createData, desc_en: e.target.value })}
+                placeholder="Package description"
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Description (AR)</label>
+              <textarea
+                style={{ ...inputStyle, minHeight: 60, resize: "vertical", direction: "rtl" as const }}
+                value={createData.desc_ar || ""}
+                onChange={(e) => setCreateData({ ...createData, desc_ar: e.target.value })}
+                placeholder="وصف الباقة"
+              />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div>
+                <label style={labelStyle}>Tier</label>
+                <select
+                  style={inputStyle}
+                  value={createData.tier || "basic"}
+                  onChange={(e) => setCreateData({ ...createData, tier: e.target.value })}
+                >
+                  <option value="basic">Basic</option>
+                  <option value="premium">Premium</option>
+                  <option value="vip">VIP</option>
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Discount (%)</label>
+                <input
+                  type="number"
+                  style={inputStyle}
+                  value={createData.discount || 0}
+                  onChange={(e) => setCreateData({ ...createData, discount: Number(e.target.value) })}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div>
+                <label style={labelStyle}>Warranty (EN)</label>
+                <input
+                  style={inputStyle}
+                  value={createData.warranty_en || ""}
+                  onChange={(e) => setCreateData({ ...createData, warranty_en: e.target.value })}
+                  placeholder="e.g. 5 years"
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Warranty (AR)</label>
+                <input
+                  style={{ ...inputStyle, direction: "rtl" as const }}
+                  value={createData.warranty_ar || ""}
+                  onChange={(e) => setCreateData({ ...createData, warranty_ar: e.target.value })}
+                  placeholder="مثلاً ٥ سنوات"
+                />
+              </div>
+            </div>
+
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={createData.active !== false}
+                onChange={(e) => setCreateData({ ...createData, active: e.target.checked })}
+                style={{ accentColor: "#4CAF50" }}
+              />
+              Active
+            </label>
+
+            <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+              <button
+                onClick={saveCreate}
+                disabled={createSaving}
+                style={{
+                  flex: 1,
+                  padding: "10px 16px",
+                  background: createSaving ? "rgba(246,190,0,0.5)" : "#F6BE00",
+                  border: "none",
+                  borderRadius: 8,
+                  color: "#000",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: createSaving ? "not-allowed" : "pointer",
+                }}
+              >
+                {createSaving ? "Creating..." : "Create Package"}
+              </button>
+              <button
+                onClick={cancelCreate}
+                style={{
+                  padding: "10px 16px",
+                  background: "transparent",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: 8,
+                  color: "rgba(255,255,255,0.5)",
+                  fontSize: 13,
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))", gap: 16 }}>
         {packages.map((p) => {

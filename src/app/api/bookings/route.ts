@@ -49,7 +49,7 @@ export async function PATCH(req: NextRequest) {
 
     const { data, error } = await admin
       .from("nick_bookings")
-      .update({ status })
+      .update({ status, updated_at: new Date().toISOString() })
       .eq("id", id)
       .select()
       .single();

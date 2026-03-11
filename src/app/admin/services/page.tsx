@@ -153,6 +153,21 @@ export default function ServicesPage() {
   const [editData, setEditData] = useState<Partial<Service>>({});
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [createData, setCreateData] = useState<Partial<Service>>({
+    category: "ppf",
+    name_en: "",
+    name_ar: "",
+    price_small: 0,
+    price_large: 0,
+    warranty: "",
+    image: null,
+    image_small: null,
+    image_large: null,
+    popular: false,
+    active: true,
+  });
+  const [createSaving, setCreateSaving] = useState(false);
 
   useEffect(() => {
     fetch("/api/services?all=true")
@@ -200,6 +215,52 @@ export default function ServicesPage() {
       setSaveMsg("Error saving");
     }
     setSaving(false);
+  }
+
+  function startCreate() {
+    setCreating(true);
+    setCreateData({
+      category: "ppf",
+      name_en: "",
+      name_ar: "",
+      price_small: 0,
+      price_large: 0,
+      warranty: "",
+      image: null,
+      image_small: null,
+      image_large: null,
+      popular: false,
+      active: true,
+    });
+  }
+
+  function cancelCreate() {
+    setCreating(false);
+  }
+
+  async function saveCreate() {
+    setCreateSaving(true);
+    setSaveMsg("");
+    try {
+      const res = await fetch("/api/services", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(createData),
+      });
+      if (res.ok) {
+        const created = await res.json();
+        setServices((prev) => [created, ...prev]);
+        setCreating(false);
+        setSaveMsg("Created!");
+        setTimeout(() => setSaveMsg(""), 2000);
+      } else {
+        const err = await res.json();
+        setSaveMsg(err.error || "Error creating");
+      }
+    } catch {
+      setSaveMsg("Error creating");
+    }
+    setCreateSaving(false);
   }
 
   async function toggleField(id: string, field: "popular" | "active", value: boolean) {
@@ -250,10 +311,184 @@ export default function ServicesPage() {
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
         <h1 style={{ fontSize: 24, fontWeight: 700, color: "#fff" }}>Services</h1>
-        {saveMsg && (
-          <span style={{ fontSize: 13, color: "#4CAF50" }}>{saveMsg}</span>
-        )}
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {saveMsg && (
+            <span style={{ fontSize: 13, color: "#4CAF50" }}>{saveMsg}</span>
+          )}
+          {!creating && (
+            <button
+              onClick={startCreate}
+              style={{
+                padding: "8px 20px",
+                background: "#F6BE00",
+                border: "none",
+                borderRadius: 8,
+                color: "#000",
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+            >
+              + New Service
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Create form */}
+      {creating && (
+        <div
+          style={{
+            background: "#111",
+            border: "1px solid rgba(246,190,0,0.3)",
+            borderRadius: 14,
+            padding: 20,
+            marginBottom: 16,
+          }}
+        >
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#F6BE00", marginBottom: 16 }}>
+            New Service
+          </div>
+          <div style={{ display: "grid", gap: 12 }}>
+            <div>
+              <label style={labelStyle}>Category</label>
+              <select
+                style={inputStyle}
+                value={createData.category || "ppf"}
+                onChange={(e) => setCreateData({ ...createData, category: e.target.value })}
+              >
+                <option value="ppf">PPF</option>
+                <option value="tint">Tint</option>
+                <option value="ceramic">Ceramic</option>
+              </select>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div>
+                <label style={labelStyle}>Name (EN)</label>
+                <input
+                  style={inputStyle}
+                  value={createData.name_en || ""}
+                  onChange={(e) => setCreateData({ ...createData, name_en: e.target.value })}
+                  placeholder="Service name"
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Name (AR)</label>
+                <input
+                  style={{ ...inputStyle, direction: "rtl" as const }}
+                  value={createData.name_ar || ""}
+                  onChange={(e) => setCreateData({ ...createData, name_ar: e.target.value })}
+                  placeholder="اسم الخدمة"
+                />
+              </div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div>
+                <label style={labelStyle}>Price Small (SAR)</label>
+                <input
+                  type="number"
+                  style={inputStyle}
+                  value={createData.price_small || 0}
+                  onChange={(e) => setCreateData({ ...createData, price_small: Number(e.target.value) })}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Price Large (SAR)</label>
+                <input
+                  type="number"
+                  style={inputStyle}
+                  value={createData.price_large || 0}
+                  onChange={(e) => setCreateData({ ...createData, price_large: Number(e.target.value) })}
+                />
+              </div>
+            </div>
+            <div>
+              <label style={labelStyle}>Warranty</label>
+              <input
+                style={inputStyle}
+                value={createData.warranty || ""}
+                onChange={(e) => setCreateData({ ...createData, warranty: e.target.value })}
+                placeholder="e.g. 5 years"
+              />
+            </div>
+
+            {/* Image uploads */}
+            <ImageUpload
+              label="Main Image"
+              value={createData.image || null}
+              onChange={(url) => setCreateData({ ...createData, image: url })}
+            />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <ImageUpload
+                label="Image Small"
+                value={createData.image_small || null}
+                onChange={(url) => setCreateData({ ...createData, image_small: url })}
+              />
+              <ImageUpload
+                label="Image Large"
+                value={createData.image_large || null}
+                onChange={(url) => setCreateData({ ...createData, image_large: url })}
+              />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={createData.popular || false}
+                  onChange={(e) => setCreateData({ ...createData, popular: e.target.checked })}
+                  style={{ accentColor: "#F6BE00" }}
+                />
+                Popular
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={createData.active !== false}
+                  onChange={(e) => setCreateData({ ...createData, active: e.target.checked })}
+                  style={{ accentColor: "#4CAF50" }}
+                />
+                Active
+              </label>
+            </div>
+
+            <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+              <button
+                onClick={saveCreate}
+                disabled={createSaving}
+                style={{
+                  flex: 1,
+                  padding: "10px 16px",
+                  background: createSaving ? "rgba(246,190,0,0.5)" : "#F6BE00",
+                  border: "none",
+                  borderRadius: 8,
+                  color: "#000",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: createSaving ? "not-allowed" : "pointer",
+                }}
+              >
+                {createSaving ? "Creating..." : "Create Service"}
+              </button>
+              <button
+                onClick={cancelCreate}
+                style={{
+                  padding: "10px 16px",
+                  background: "transparent",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: 8,
+                  color: "rgba(255,255,255,0.5)",
+                  fontSize: 13,
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 16 }}>
         {services.map((s) => {

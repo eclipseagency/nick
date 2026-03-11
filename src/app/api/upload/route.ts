@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getAdminClient } from "@/lib/supabase";
+import sharp from "sharp";
 
 const BUCKET = "nick-images";
+const MAX_WIDTH = 1200;
+const WEBP_QUALITY = 80;
 
 export async function POST(req: NextRequest) {
   const session = await getSession();
@@ -31,20 +34,42 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "File too large (max 5MB)" }, { status: 400 });
     }
 
-    const ext = file.name.split(".").pop() || "jpg";
+    const isSvg = file.type === "image/svg+xml";
+    const rawBuffer = Buffer.from(await file.arrayBuffer());
+
+    let uploadBuffer: Buffer;
+    let contentType: string;
+    let ext: string;
+
+    if (isSvg) {
+      // SVGs are kept as-is — no compression
+      uploadBuffer = rawBuffer;
+      contentType = file.type;
+      ext = "svg";
+    } else {
+      // Resize to max width and convert to WebP
+      uploadBuffer = await sharp(rawBuffer)
+        .resize({ width: MAX_WIDTH, withoutEnlargement: true })
+        .webp({ quality: WEBP_QUALITY })
+        .toBuffer();
+      contentType = "image/webp";
+      ext = "webp";
+    }
+
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
     const filePath = `services/${fileName}`;
 
-    const buffer = Buffer.from(await file.arrayBuffer());
     const db = getAdminClient();
 
-    const { error } = await db.storage.from(BUCKET).upload(filePath, buffer, {
-      contentType: file.type,
+    const { error } = await db.storage.from(BUCKET).upload(filePath, uploadBuffer, {
+      contentType,
       upsert: false,
     });
 
     if (error) {
-      console.error("Upload error:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Upload error:", error);
+      }
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
@@ -52,7 +77,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: urlData.publicUrl });
   } catch (e) {
-    console.error("Upload error:", e);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Upload error:", e);
+    }
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }

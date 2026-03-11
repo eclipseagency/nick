@@ -62,6 +62,8 @@ export default function BookingsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
@@ -120,13 +122,59 @@ export default function BookingsPage() {
     if (filter !== "all" && b.status !== filter) return false;
     if (search) {
       const q = search.toLowerCase();
-      return (
-        b.customer_name.toLowerCase().includes(q) ||
-        b.customer_phone.includes(q)
-      );
+      if (
+        !b.customer_name.toLowerCase().includes(q) &&
+        !b.customer_phone.includes(q)
+      )
+        return false;
+    }
+    if (dateFrom) {
+      const bookingDate = new Date(b.created_at).toISOString().slice(0, 10);
+      if (bookingDate < dateFrom) return false;
+    }
+    if (dateTo) {
+      const bookingDate = new Date(b.created_at).toISOString().slice(0, 10);
+      if (bookingDate > dateTo) return false;
     }
     return true;
   });
+
+  function exportCSV() {
+    const escapeCSV = (val: string) => {
+      if (val.includes(",") || val.includes('"') || val.includes("\n")) {
+        return `"${val.replace(/"/g, '""')}"`;
+      }
+      return val;
+    };
+    const headers = [
+      "Confirmation#", "Customer Name", "Phone", "Car Size", "Status",
+      "Package", "Services", "Subtotal", "Discount", "Total",
+      "Payment Method", "Date",
+    ];
+    const rows = filtered.map((b) => [
+      b.id,
+      b.customer_name,
+      b.customer_phone,
+      b.car_size,
+      b.status.replace("_", " "),
+      b.package_id ? getPackageName(b.package_id) : "",
+      (b.service_ids || []).map((sid) => getServiceName(sid)).join("; "),
+      String(b.subtotal || 0),
+      String(b.discount || 0),
+      String(b.total || 0),
+      b.payment_method,
+      new Date(b.created_at).toISOString().slice(0, 10),
+    ]);
+    const csv = [headers, ...rows].map((row) => row.map(escapeCSV).join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const today = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `nick-bookings-${today}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   if (loading) {
     return (
@@ -138,9 +186,43 @@ export default function BookingsPage() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 24, fontWeight: 700, color: "#fff", marginBottom: 24 }}>
-        Bookings
-      </h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: 0 }}>
+          Bookings
+        </h1>
+        <button
+          onClick={exportCSV}
+          style={{
+            padding: "8px 18px",
+            background: "transparent",
+            border: "1px solid rgba(255,255,255,0.15)",
+            borderRadius: 8,
+            color: "rgba(255,255,255,0.7)",
+            fontSize: 13,
+            fontWeight: 500,
+            cursor: "pointer",
+            transition: "all 0.15s",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = "#F6BE00";
+            e.currentTarget.style.color = "#F6BE00";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+            e.currentTarget.style.color = "rgba(255,255,255,0.7)";
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Export CSV
+        </button>
+      </div>
 
       {/* Filters */}
       <div style={{ marginBottom: 20, display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
@@ -171,8 +253,8 @@ export default function BookingsPage() {
         })}
       </div>
 
-      {/* Search */}
-      <div style={{ marginBottom: 20 }}>
+      {/* Search & Date Filters */}
+      <div style={{ marginBottom: 20, display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
         <input
           type="text"
           placeholder="Search by name or phone..."
@@ -180,16 +262,68 @@ export default function BookingsPage() {
           onChange={(e) => setSearch(e.target.value)}
           style={{
             width: "100%",
-            maxWidth: 360,
+            maxWidth: 280,
             padding: "10px 14px",
             background: "#111",
             border: "1px solid rgba(255,255,255,0.1)",
-            borderRadius: 10,
+            borderRadius: 8,
             color: "#fff",
             fontSize: 14,
             outline: "none",
           }}
         />
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <label style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", whiteSpace: "nowrap" }}>From</label>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            style={{
+              padding: "9px 12px",
+              background: "#050505",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 8,
+              color: "#fff",
+              fontSize: 13,
+              outline: "none",
+              colorScheme: "dark",
+            }}
+          />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <label style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", whiteSpace: "nowrap" }}>To</label>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            style={{
+              padding: "9px 12px",
+              background: "#050505",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 8,
+              color: "#fff",
+              fontSize: 13,
+              outline: "none",
+              colorScheme: "dark",
+            }}
+          />
+        </div>
+        {(dateFrom || dateTo) && (
+          <button
+            onClick={() => { setDateFrom(""); setDateTo(""); }}
+            style={{
+              padding: "8px 12px",
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 8,
+              color: "rgba(255,255,255,0.4)",
+              fontSize: 12,
+              cursor: "pointer",
+            }}
+          >
+            Clear dates
+          </button>
+        )}
       </div>
 
       {/* Bookings list */}

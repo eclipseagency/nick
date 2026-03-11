@@ -1,7 +1,9 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-const secret = new TextEncoder().encode(process.env.ADMIN_JWT_SECRET || "fallback-secret");
+const secret = new TextEncoder().encode(
+  process.env.ADMIN_JWT_SECRET ?? (() => { throw new Error("ADMIN_JWT_SECRET is not set"); })()
+);
 const COOKIE_NAME = "nick-admin-token";
 
 export async function signToken(username: string) {
