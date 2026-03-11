@@ -41,8 +41,25 @@ export default function ContactPage() {
     setSubmitted(true);
   };
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: "Contact NICK",
+    description: "Get in touch with NICK for automotive protection services in Riyadh, Saudi Arabia.",
+    url: "https://nick-fawn.vercel.app/contact",
+    mainEntity: { "@id": "https://nick-fawn.vercel.app/#business" },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://nick-fawn.vercel.app" },
+        { "@type": "ListItem", position: 2, name: "Contact", item: "https://nick-fawn.vercel.app/contact" },
+      ],
+    },
+  };
+
   return (
     <main ref={ref}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
 
       {/* ── Hero Banner ── */}

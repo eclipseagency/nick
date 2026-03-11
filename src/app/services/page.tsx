@@ -60,8 +60,48 @@ export default function ServicesPage() {
     },
   ];
 
+  const siteUrl = "https://nick-fawn.vercel.app";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Service", name: "Paint Protection Film (PPF)",
+        description: "Invisible self-healing armor against rock chips, scratches, and UV damage. Up to 10-year warranty.",
+        provider: { "@id": `${siteUrl}/#business` }, areaServed: { "@type": "Country", name: "Saudi Arabia" },
+        hasOfferCatalog: { "@type": "OfferCatalog", name: "PPF Options", itemListElement: [
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Full Body Clear PPF 8.5mm" }, priceSpecification: { "@type": "PriceSpecification", priceCurrency: "SAR", minPrice: "14000", maxPrice: "15500" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Full Body Clear PPF 7.5mm" }, priceSpecification: { "@type": "PriceSpecification", priceCurrency: "SAR", minPrice: "12000", maxPrice: "14500" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Full Front Protection" }, priceSpecification: { "@type": "PriceSpecification", priceCurrency: "SAR", minPrice: "3660", maxPrice: "5600" } },
+        ]},
+      },
+      {
+        "@type": "Service", name: "Thermal Insulation (Window Tinting)",
+        description: "Nano-ceramic window films blocking 99% UV rays and reducing cabin heat. 10-year warranty.",
+        provider: { "@id": `${siteUrl}/#business` }, areaServed: { "@type": "Country", name: "Saudi Arabia" },
+      },
+      {
+        "@type": "Service", name: "Nano Ceramic Coating",
+        description: "Permanent hydrophobic shield with enhanced gloss and easy maintenance. Up to 5-year warranty.",
+        provider: { "@id": `${siteUrl}/#business` }, areaServed: { "@type": "Country", name: "Saudi Arabia" },
+      },
+      {
+        "@type": "Service", name: "Color Wrapping",
+        description: "Premium color-change wraps that protect your original paint. Fully reversible.",
+        provider: { "@id": `${siteUrl}/#business` }, areaServed: { "@type": "Country", name: "Saudi Arabia" },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+          { "@type": "ListItem", position: 2, name: "Services", item: `${siteUrl}/services` },
+        ],
+      },
+    ],
+  };
+
   return (
     <main ref={ref} dir={dir}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
 
       {/* ── Hero Banner ── */}

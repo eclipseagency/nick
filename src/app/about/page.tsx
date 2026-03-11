@@ -96,8 +96,25 @@ export default function AboutPage() {
     },
   ];
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: "About NICK",
+    description: "27 years of automotive protection excellence in Saudi Arabia. Manufacturer and installer since 1999.",
+    url: "https://nick-fawn.vercel.app/about",
+    mainEntity: { "@id": "https://nick-fawn.vercel.app/#business" },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://nick-fawn.vercel.app" },
+        { "@type": "ListItem", position: 2, name: "About", item: "https://nick-fawn.vercel.app/about" },
+      ],
+    },
+  };
+
   return (
     <main ref={ref}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
 
       {/* ── Page Hero Banner ── */}

@@ -97,8 +97,25 @@ export default function GalleryPage() {
     factory: { en: "Factory", ar: "المصنع" },
   };
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    name: "NICK Work Gallery",
+    description: "Portfolio of automotive protection work including PPF, ceramic coating, window tinting, and color wrapping.",
+    url: "https://nick-fawn.vercel.app/gallery",
+    publisher: { "@id": "https://nick-fawn.vercel.app/#business" },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://nick-fawn.vercel.app" },
+        { "@type": "ListItem", position: 2, name: "Gallery", item: "https://nick-fawn.vercel.app/gallery" },
+      ],
+    },
+  };
+
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
 
       {/* Hero Banner */}
