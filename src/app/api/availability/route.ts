@@ -29,12 +29,14 @@ export async function GET(req: Request) {
         .toISOString()
         .slice(0, 10);
 
-    // Fetch bookings in the date range, selecting only created_at
+    // Fetch bookings in the date range by preferred_date
     const { data, error } = await supabase
       .from("nick_bookings")
-      .select("created_at")
-      .gte("created_at", `${from}T00:00:00`)
-      .lte("created_at", `${to}T23:59:59`);
+      .select("preferred_date")
+      .not("preferred_date", "is", null)
+      .gte("preferred_date", from)
+      .lte("preferred_date", to)
+      .neq("status", "cancelled");
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
@@ -43,8 +45,10 @@ export async function GET(req: Request) {
     // Count bookings per day
     const countByDate: Record<string, number> = {};
     for (const row of data ?? []) {
-      const date = (row.created_at as string).slice(0, 10);
-      countByDate[date] = (countByDate[date] || 0) + 1;
+      const date = row.preferred_date as string;
+      if (date) {
+        countByDate[date] = (countByDate[date] || 0) + 1;
+      }
     }
 
     // Collect dates that hit the capacity limit

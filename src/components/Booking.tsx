@@ -26,7 +26,8 @@ export default function Booking() {
   const [sel, setSel] = useState<string[]>([]);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [selAddons, setSelAddons] = useState<Record<string, string[]>>({});
-  const [form, setForm] = useState({ name: "", phone: "", notes: "" });
+  const [form, setForm] = useState({ name: "", phone: "", notes: "", carMake: "", carYear: "", carColor: "", preferredDate: "" });
+  const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
   const [orderSent, setOrderSent] = useState(false);
   const [bookingError, setBookingError] = useState("");
   const [confirmationNumber, setConfirmationNumber] = useState("");
@@ -223,6 +224,14 @@ export default function Booking() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [total]);
 
+  // Fetch unavailable dates for the date picker
+  useEffect(() => {
+    fetch("/api/availability")
+      .then(r => r.json())
+      .then(d => { if (d.unavailable) setUnavailableDates(d.unavailable); })
+      .catch(() => {});
+  }, []);
+
   // #8 Get short service names for package cards
   const getSvcShortName = (svcId: string) => {
     const s = svcs.find(x => x.id === svcId);
@@ -270,6 +279,10 @@ export default function Booking() {
           customer_name: form.name,
           customer_phone: form.phone,
           customer_notes: form.notes || null,
+          car_make: form.carMake,
+          car_year: form.carYear || null,
+          car_color: form.carColor || null,
+          preferred_date: form.preferredDate,
           car_size: size,
           package_id: activePack || null,
           service_ids: sel,
@@ -311,7 +324,7 @@ export default function Booking() {
     const cleaned = phone.replace(/[\s\-()]/g, "");
     return /^(\+966|966|05|5)\d{8}$/.test(cleaned);
   };
-  const formValid = form.name.trim().length >= 2 && isValidPhone(form.phone);
+  const formValid = form.name.trim().length >= 2 && isValidPhone(form.phone) && form.carMake.trim().length >= 2 && form.preferredDate.length > 0;
 
   const selCount = (cat: Category) => {
     if (cat === "packages") return activePack ? 1 : 0;
@@ -1098,6 +1111,7 @@ export default function Booking() {
               {[
                 { k: "name" as const, ph: t.booking.namePh, tp: "text" },
                 { k: "phone" as const, ph: t.booking.phonePh, tp: "tel" },
+                { k: "carMake" as const, ph: t.booking.carMakePh, tp: "text" },
               ].map(f => (
                 <input key={f.k} type={f.tp} value={form[f.k]} onChange={e => setForm({...form, [f.k]: e.target.value})}
                   placeholder={f.ph} dir={f.k === "phone" ? "ltr" : undefined}
@@ -1105,6 +1119,37 @@ export default function Booking() {
                   onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
                   style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s", textAlign: f.k === "phone" ? ("left" as const) : undefined }} />
               ))}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                <input type="text" value={form.carYear} onChange={e => setForm({...form, carYear: e.target.value})}
+                  placeholder={t.booking.carYearPh}
+                  onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
+                  onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
+                  style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s" }} />
+                <input type="text" value={form.carColor} onChange={e => setForm({...form, carColor: e.target.value})}
+                  placeholder={t.booking.carColorPh}
+                  onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
+                  onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
+                  style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s" }} />
+              </div>
+              {/* Preferred date picker */}
+              <div>
+                <label style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 6 }}>{t.booking.preferredDateLabel}</label>
+                <input type="date" value={form.preferredDate}
+                  min={new Date().toISOString().slice(0, 10)}
+                  onChange={e => {
+                    const val = e.target.value;
+                    if (unavailableDates.includes(val)) return;
+                    setForm({...form, preferredDate: val});
+                  }}
+                  onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
+                  onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
+                  style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: form.preferredDate ? "#fff" : "rgba(255,255,255,0.35)", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s", colorScheme: "dark" }} />
+                {unavailableDates.length > 0 && (
+                  <p style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 4 }}>
+                    {isAr ? "بعض التواريخ محجوزة بالكامل" : "Some dates are fully booked"}
+                  </p>
+                )}
+              </div>
               <textarea value={form.notes} onChange={e => setForm({...form, notes: e.target.value})}
                 placeholder={t.booking.notesPh} rows={3}
                 onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
@@ -1235,7 +1280,7 @@ export default function Booking() {
                     </div>
                   )}
                   <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 15, lineHeight: 1.6, animation: "fadeUp 0.5s ease-out 0.3s both" }}>{t.booking.orderSentSub}</p>
-                  <button onClick={() => { setOrderSent(false); setConfirmationNumber(""); setBookingError(""); goStep(1); setSel([]); setSelAddons({}); setForm({ name: "", phone: "", notes: "" }); }} className="btn-outline" style={{ marginTop: 32, animation: "fadeUp 0.5s ease-out 0.4s both" }}>
+                  <button onClick={() => { setOrderSent(false); setConfirmationNumber(""); setBookingError(""); goStep(1); setSel([]); setSelAddons({}); setForm({ name: "", phone: "", notes: "", carMake: "", carYear: "", carColor: "", preferredDate: "" }); }} className="btn-outline" style={{ marginTop: 32, animation: "fadeUp 0.5s ease-out 0.4s both" }}>
                     {t.booking.back}
                   </button>
                 </div>

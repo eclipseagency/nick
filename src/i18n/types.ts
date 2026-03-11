@@ -169,13 +169,18 @@ export interface Dictionary {
     change: string;
     namePh: string;
     phonePh: string;
+    carMakePh: string;
+    carYearPh: string;
+    carColorPh: string;
+    preferredDatePh: string;
+    preferredDateLabel: string;
+    fullyBooked: string;
     notesPh: string;
     paymentMethod: string;
     payOnline: string;
     splitIn4: string;
     splitIn3: string;
     or: string;
-    confirmWhatsapp: string;
     perMonth: string;
     // Service categories
     catAll: string;

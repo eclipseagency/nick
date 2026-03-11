@@ -62,6 +62,10 @@ export async function POST(req: NextRequest) {
       customer_name,
       customer_phone,
       customer_notes,
+      car_make,
+      car_year,
+      car_color,
+      preferred_date,
       car_size,
       package_id,
       service_ids,
@@ -73,7 +77,7 @@ export async function POST(req: NextRequest) {
       locale,
     } = body;
 
-    if (!customer_name || !customer_phone || !car_size || !payment_method) {
+    if (!customer_name || !customer_phone || !car_size || !payment_method || !car_make || !preferred_date) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
@@ -172,6 +176,10 @@ export async function POST(req: NextRequest) {
         customer_name,
         customer_phone,
         customer_notes: customer_notes || null,
+        car_make: car_make || null,
+        car_year: car_year || null,
+        car_color: car_color || null,
+        preferred_date: preferred_date || null,
         car_size,
         package_id: package_id || null,
         service_ids: svcIds,
@@ -201,6 +209,10 @@ export async function POST(req: NextRequest) {
           confirmation_number,
           customer_name,
           customer_phone,
+          car_make: car_make || null,
+          car_year: car_year || null,
+          car_color: car_color || null,
+          preferred_date: preferred_date || null,
           car_size,
           package_id: package_id || null,
           service_ids: svcIds,

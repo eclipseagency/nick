@@ -7,6 +7,10 @@ interface Booking {
   customer_name: string;
   customer_phone: string;
   customer_notes: string | null;
+  car_make: string | null;
+  car_year: string | null;
+  car_color: string | null;
+  preferred_date: string | null;
   car_size: string;
   package_id: string | null;
   service_ids: string[];
@@ -147,7 +151,8 @@ export default function BookingsPage() {
       return val;
     };
     const headers = [
-      "Confirmation#", "Customer Name", "Phone", "Car Size", "Status",
+      "Confirmation#", "Customer Name", "Phone", "Car Make/Model", "Year", "Color",
+      "Car Size", "Status", "Preferred Date",
       "Package", "Services", "Subtotal", "Discount", "Total",
       "Payment Method", "Date",
     ];
@@ -155,8 +160,12 @@ export default function BookingsPage() {
       b.id,
       b.customer_name,
       b.customer_phone,
+      b.car_make || "",
+      b.car_year || "",
+      b.car_color || "",
       b.car_size,
       b.status.replace("_", " "),
+      b.preferred_date || "",
       b.package_id ? getPackageName(b.package_id) : "",
       (b.service_ids || []).map((sid) => getServiceName(sid)).join("; "),
       String(b.subtotal || 0),
@@ -456,6 +465,23 @@ export default function BookingsPage() {
                         <span style={{ fontSize: 13, color: b.package_id ? "#fff" : "rgba(255,255,255,0.3)" }}>
                           {b.package_id ? getPackageName(b.package_id) : "None"}
                         </span>
+                      </div>
+
+                      {/* Car Details */}
+                      <div>
+                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
+                          Car Details
+                        </div>
+                        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
+                          {b.car_make || "—"}
+                          {b.car_year && <span> &middot; {b.car_year}</span>}
+                          {b.car_color && <span> &middot; {b.car_color}</span>}
+                        </div>
+                        {b.preferred_date && (
+                          <div style={{ fontSize: 12, color: "#F6BE00", marginTop: 4 }}>
+                            Preferred: {new Date(b.preferred_date + "T00:00:00").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+                          </div>
+                        )}
                       </div>
 
                       {/* Addons */}
