@@ -1036,6 +1036,41 @@ export default function Booking() {
               })}
             </div>
 
+            {/* Additional services summary */}
+            {(() => {
+              const allAddons = Object.entries(selAddons).flatMap(([svcId, addonIds]) => {
+                const svc = svcs.find(x => x.id === svcId);
+                if (!svc) return [];
+                return addonIds.map(aid => {
+                  const addon = addons.find(a => a.id === aid);
+                  if (!addon) return null;
+                  return { addon, price: getAddonPrice(addon, svc.addonTier) };
+                }).filter(Boolean) as { addon: typeof addons[0]; price: number }[];
+              });
+              if (allAddons.length === 0) return null;
+              return (
+                <div style={{
+                  borderRadius: 14, background: "#111", border: "1px solid rgba(246,190,0,0.12)",
+                  padding: "14px 18px", marginBottom: 16,
+                }}>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em", marginBottom: 10 }}>
+                    {t.booking.additionalServices}
+                  </div>
+                  {allAddons.map(({ addon, price }) => (
+                    <div key={addon.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(246,190,0,0.08)", color: "#F6BE00", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          {addon.icon}
+                        </div>
+                        <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>{addon.name}</span>
+                      </div>
+                      <span style={{ color: "#F6BE00", fontWeight: 600, fontSize: 13 }}>+{price.toLocaleString()} {cur}</span>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+
             {/* Total bar */}
             <div style={{
               borderRadius: 14, overflow: "hidden", marginBottom: 32,
