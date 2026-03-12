@@ -2,6 +2,26 @@
 
 import { useEffect, useState, useCallback } from "react";
 
+const ADDON_NAMES: Record<string, string> = {
+  ozone: "Ozone Sanitization",
+  "rim-ceramic": "Rim Ceramic",
+  "engine-clean": "Engine Cleaning",
+  "remove-tint": "Tint Removal",
+  "remove-partial": "Partial Protection Removal",
+  "remove-front": "Front Protection Removal",
+  "remove-full": "Full Protection Removal",
+};
+
+const SERVICE_NAMES: Record<string, string> = {
+  "ppf-color": "PPF Color", "ppf-clear75": "PPF Clear 75%", "ppf-clear85": "PPF Clear 85%", "ppf-matte": "PPF Matte",
+  "ppf-front-rear": "PPF Front & Rear", "ppf-front": "PPF Front", "ppf-partial-rear": "PPF Partial Rear", "ppf-partial": "PPF Partial",
+  "ppf-windshield": "PPF Windshield",
+  "tint-full": "Full Tint", "tint-front": "Front Tint",
+  "ceramic-int-1": "Interior Ceramic 1yr", "ceramic-int-3": "Interior Ceramic 3yr", "ceramic-int-5": "Interior Ceramic 5yr",
+  "ceramic-ext-1": "Exterior Ceramic 1yr", "ceramic-ext-3": "Exterior Ceramic 3yr", "ceramic-ext-5": "Exterior Ceramic 5yr",
+  "wrap-color": "Color Wrap", "wrap-chrome-delete": "Chrome Delete",
+};
+
 interface Booking {
   id: string;
   customer_name: string;
@@ -489,11 +509,19 @@ export default function BookingsPage() {
                         <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
                           Add-ons
                         </div>
-                        <span style={{ fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
-                          {b.addon_ids && Object.keys(b.addon_ids).length > 0
-                            ? JSON.stringify(b.addon_ids)
-                            : "None"}
-                        </span>
+                        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
+                          {(() => {
+                            const raw = b.addon_ids;
+                            const parsed: Record<string, unknown> | null = typeof raw === "string" ? (() => { try { return JSON.parse(raw); } catch { return null; } })() : raw;
+                            if (!parsed || typeof parsed !== "object" || Object.keys(parsed).length === 0) return "None";
+                            return Object.entries(parsed).map(([svcId, addonIds]) => (
+                              <div key={svcId} style={{ marginBottom: 4 }}>
+                                <span style={{ color: "#F6BE00", fontSize: 11 }}>{SERVICE_NAMES[svcId] || svcId}:</span>{" "}
+                                {Array.isArray(addonIds) ? addonIds.map(a => ADDON_NAMES[a as string] || a).join(", ") : String(addonIds)}
+                              </div>
+                            ));
+                          })()}
+                        </div>
                       </div>
 
                       {/* Pricing */}
