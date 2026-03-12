@@ -11,7 +11,7 @@ export async function GET() {
 
   const db = getAdminClient();
   const { data, error } = await db
-    .from("nick_users")
+    .from("nick_admins")
     .select("id, username, created_at")
     .order("created_at", { ascending: true });
 
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     // Check if username exists
     const { data: existing } = await db
-      .from("nick_users")
+      .from("nick_admins")
       .select("id")
       .eq("username", username)
       .single();
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     if (error) {
       // Fallback: try direct insert with crypt
       const { error: insertError } = await db
-        .from("nick_users")
+        .from("nick_admins")
         .insert({
           username,
           password_hash: password, // Will be handled by trigger or RPC
@@ -132,7 +132,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     const db = getAdminClient();
-    const { error } = await db.from("nick_users").delete().eq("username", username);
+    const { error } = await db.from("nick_admins").delete().eq("username", username);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
