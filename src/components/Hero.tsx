@@ -95,10 +95,11 @@ export default function Hero() {
         </div>
 
         {/* Stats — animated count up */}
-        <div className="anim-4" style={{ display: "flex", justifyContent: "center", gap: 40, paddingTop: 32, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        <div className="anim-4 hero-stats">
           <AnimatedStat end={27} suffix="+" label={t.hero.stat1l} fontDisplay={fontDisplay} />
-          <AnimatedStat end={50} suffix="K+" label={t.hero.stat2l} fontDisplay={fontDisplay} />
-          <AnimatedStat end={10} suffix={isAr ? " سنوات" : "yr"} label={t.hero.stat3l} fontDisplay={fontDisplay} />
+          <AnimatedStat end={20} suffix="M+" label={t.hero.stat2l} fontDisplay={fontDisplay} />
+          <AnimatedStat end={300} suffix="+" label={t.hero.stat3l} fontDisplay={fontDisplay} />
+          <AnimatedStat end={10} suffix={isAr ? " سنوات" : "yr"} label={t.hero.stat4l} fontDisplay={fontDisplay} />
         </div>
       </div>
     </section>

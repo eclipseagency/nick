@@ -133,6 +133,23 @@ body {
 .anim-3 { animation: fadeUp 0.7s ease-out 0.3s both; }
 .anim-4 { animation: fadeUp 0.7s ease-out 0.4s both; }
 
+/* Hero stats row */
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+@media (max-width: 640px) {
+  .hero-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 30px;
+    justify-items: center;
+  }
+}
+
 /* Booking step transition — directional slides (#5) */
 @keyframes slideForward {
   from { opacity: 0; transform: translateX(40px); }
