@@ -26,6 +26,8 @@ export interface Dictionary {
     stat2l: string;
     stat3n: string;
     stat3l: string;
+    stat4n: string;
+    stat4l: string;
   };
   about: {
     badge: string;
