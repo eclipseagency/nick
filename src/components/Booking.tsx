@@ -341,14 +341,18 @@ export default function Booking() {
   };
 
   return (
-    <section id="booking" ref={(el) => { (ref as React.MutableRefObject<HTMLElement | null>).current = el; sectionRef.current = el; }} style={{ padding: "96px 0", background: "linear-gradient(180deg, #050505, #0a0a0a, #050505)" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-        <div className="reveal" style={{ textAlign: "center", maxWidth: 560, margin: "0 auto 40px" }}>
+    <section id="booking" ref={(el) => { (ref as React.MutableRefObject<HTMLElement | null>).current = el; sectionRef.current = el; }} style={{ padding: "96px 0", position: "relative", overflow: "hidden" }}>
+      {/* Epic background */}
+      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(246,190,0,0.06) 0%, transparent 60%), linear-gradient(180deg, #050505 0%, #0a0a0a 50%, #050505 100%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 600, height: 1, background: "linear-gradient(90deg, transparent, rgba(246,190,0,0.3), transparent)", pointerEvents: "none" }} />
+
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", position: "relative" }}>
+        <div className="reveal" style={{ textAlign: "center", maxWidth: 600, margin: "0 auto 48px" }}>
           <span className="section-badge">{t.booking.badge}</span>
-          <h2 style={{ fontFamily: fontDisplay, fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 700, marginBottom: 12 }}>
+          <h2 style={{ fontFamily: fontDisplay, fontSize: "clamp(32px, 6vw, 52px)", fontWeight: 800, marginBottom: 16, lineHeight: 1.1 }}>
             <span style={{ color: "#fff" }}>{t.booking.heading1}</span><span className="gold-text">{t.booking.heading2}</span>
           </h2>
-          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 16 }}>{t.booking.subtitle}</p>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 17, lineHeight: 1.6 }}>{t.booking.subtitle}</p>
         </div>
 
         {/* Steps — clickable to go back */}
@@ -360,16 +364,17 @@ export default function Booking() {
                 cursor: step > s.n ? "pointer" : "default",
               }}>
                 <div style={{
-                  width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 14, fontWeight: 700, transition: "all 0.3s",
-                  background: step >= s.n ? "#F6BE00" : "#1a1a1a", color: step >= s.n ? "#000" : "rgba(255,255,255,0.3)",
+                  width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 15, fontWeight: 700, transition: "all 0.3s",
+                  background: step >= s.n ? "#F6BE00" : "rgba(255,255,255,0.04)", color: step >= s.n ? "#000" : "rgba(255,255,255,0.3)",
                   border: step >= s.n ? "none" : "1px solid rgba(255,255,255,0.1)",
+                  boxShadow: step >= s.n ? "0 0 20px rgba(246,190,0,0.25)" : "none",
                 }}>
                   {step > s.n ? "\u2713" : s.n}
                 </div>
-                <span style={{ fontSize: 11, marginTop: 6, color: step >= s.n ? "#F6BE00" : "rgba(255,255,255,0.25)" }}>{s.l}</span>
+                <span style={{ fontSize: 11, marginTop: 8, color: step >= s.n ? "#F6BE00" : "rgba(255,255,255,0.25)", fontWeight: step >= s.n ? 600 : 400 }}>{s.l}</span>
               </button>
-              {i < 2 && <div style={{ width: 60, height: 2, margin: "0 10px", marginBottom: 20, background: step > s.n ? "#F6BE00" : "rgba(255,255,255,0.08)" }} />}
+              {i < 2 && <div style={{ width: 70, height: 2, margin: "0 12px", marginBottom: 22, background: step > s.n ? "linear-gradient(90deg, #F6BE00, rgba(246,190,0,0.3))" : "rgba(255,255,255,0.06)", borderRadius: 1 }} />}
             </div>
           ))}
         </div>
@@ -377,48 +382,69 @@ export default function Booking() {
         {/* STEP 1 — #7 Auto-advance on car select */}
         {step === 1 && (
           <div className={slideClass} key={`step1-${slideDir}`}>
-            <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: 14, marginBottom: 32 }}>{t.booking.step1instruction}</p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20, maxWidth: 700, margin: "0 auto" }}>
-              {cars.map((c) => (
-                <button key={c.id} onClick={() => handleCarSelect(c.id)} className={size === c.id ? "gold-pulse" : ""} style={{
-                  position: "relative", borderRadius: 20, overflow: "hidden", textAlign: "center", cursor: "pointer", background: "#050505", padding: 0,
-                  border: size === c.id ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
-                  boxShadow: size === c.id ? "0 0 30px rgba(246,190,0,0.2)" : "none",
-                  transition: "all 0.4s", transform: size === c.id ? "scale(1.02)" : "scale(1)",
+            <p style={{ textAlign: "center", color: "rgba(255,255,255,0.45)", fontSize: 15, marginBottom: 40, fontWeight: 500 }}>{t.booking.step1instruction}</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 24, maxWidth: 760, margin: "0 auto" }}>
+              {cars.map((c) => {
+                const active = size === c.id;
+                return (
+                <button key={c.id} onClick={() => handleCarSelect(c.id)} className={active ? "gold-pulse" : "booking-car-card"} style={{
+                  position: "relative", borderRadius: 24, overflow: "hidden", textAlign: "center", cursor: "pointer", background: "#080808", padding: 0,
+                  border: active ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
+                  boxShadow: active ? "0 0 40px rgba(246,190,0,0.25), inset 0 0 30px rgba(246,190,0,0.05)" : "0 4px 30px rgba(0,0,0,0.5)",
+                  transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)", transform: active ? "scale(1.03)" : "scale(1)",
                 }}
                   onMouseEnter={e => {
-                    if (size !== c.id) e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)";
+                    if (!active) { e.currentTarget.style.borderColor = "rgba(246,190,0,0.4)"; e.currentTarget.style.transform = "scale(1.02)"; e.currentTarget.style.boxShadow = "0 8px 40px rgba(246,190,0,0.15), 0 4px 30px rgba(0,0,0,0.5)"; }
                     const hover = e.currentTarget.querySelector("[data-hover]") as HTMLElement;
-                    const active = e.currentTarget.querySelector("[data-active]") as HTMLElement;
+                    const active2 = e.currentTarget.querySelector("[data-active]") as HTMLElement;
                     if (hover) hover.style.opacity = "1";
-                    if (active) active.style.opacity = "0";
+                    if (active2) active2.style.opacity = "0";
                   }}
                   onMouseLeave={e => {
-                    if (size !== c.id) e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
+                    if (!active) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "0 4px 30px rgba(0,0,0,0.5)"; }
                     const hover = e.currentTarget.querySelector("[data-hover]") as HTMLElement;
-                    const active = e.currentTarget.querySelector("[data-active]") as HTMLElement;
+                    const active2 = e.currentTarget.querySelector("[data-active]") as HTMLElement;
                     if (hover) hover.style.opacity = "0";
-                    if (active) active.style.opacity = "1";
+                    if (active2) active2.style.opacity = "1";
                   }}
                 >
-                  <div style={{ position: "relative", height: 280 }}>
-                    <Image data-active="true" src={c.img} alt={c.label} fill className="object-cover" style={{ transition: "opacity 0.5s", objectPosition: "center 30%" }} />
-                    <Image data-hover="true" src={c.imgHover} alt={c.label + " hover"} fill className="object-cover" style={{ transition: "opacity 0.5s", opacity: 0, objectPosition: "center 30%" }} />
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(5,5,5,0.85) 0%, rgba(5,5,5,0) 40%)" }} />
-                    {size === c.id && (
-                      <div style={{ position: "absolute", top: 12, ...(dir === "rtl" ? { left: 12 } : { right: 12 }), width: 28, height: 28, borderRadius: "50%", background: "#F6BE00", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "#000", fontWeight: 700, boxShadow: "0 2px 10px rgba(246,190,0,0.4)" }}>&#10003;</div>
+                  <div style={{ position: "relative", height: 320 }}>
+                    <Image data-active="true" src={c.img} alt={c.label} fill className="object-cover" style={{ transition: "opacity 0.6s ease", objectPosition: "center 30%" }} />
+                    <Image data-hover="true" src={c.imgHover} alt={c.label + " hover"} fill className="object-cover" style={{ transition: "opacity 0.6s ease", opacity: 0, objectPosition: "center 30%" }} />
+                    {/* Cinematic gradient overlays */}
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0) 35%, rgba(5,5,5,0) 65%, rgba(5,5,5,0.85) 100%)" }} />
+                    {active && <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(246,190,0,0.08), transparent 50%)", pointerEvents: "none" }} />}
+                    {active && (
+                      <div style={{ position: "absolute", top: 16, ...(dir === "rtl" ? { left: 16 } : { right: 16 }), width: 32, height: 32, borderRadius: "50%", background: "#F6BE00", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "#000", fontWeight: 700, boxShadow: "0 4px 15px rgba(246,190,0,0.5)", animation: "fadeUp 0.3s ease-out" }}>&#10003;</div>
                     )}
                   </div>
-                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, padding: "20px 16px" }}>
-                    <div style={{ color: size === c.id ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 18, marginBottom: 4 }}>{c.label}</div>
-                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>{c.ex}</div>
+                  {/* Text at top */}
+                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, padding: "24px 20px" }}>
+                    <div style={{ color: active ? "#F6BE00" : "#fff", fontWeight: 800, fontSize: 22, marginBottom: 6, fontFamily: fontDisplay, transition: "color 0.3s" }}>{c.label}</div>
+                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, fontWeight: 500 }}>{c.ex}</div>
+                  </div>
+                  {/* Bottom gradient label */}
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px", textAlign: "center" }}>
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 24px", borderRadius: 100,
+                      background: active ? "rgba(246,190,0,0.15)" : "rgba(255,255,255,0.06)",
+                      border: `1px solid ${active ? "rgba(246,190,0,0.3)" : "rgba(255,255,255,0.08)"}`,
+                      color: active ? "#F6BE00" : "rgba(255,255,255,0.5)",
+                      fontSize: 13, fontWeight: 600, transition: "all 0.3s",
+                    }}>
+                      {active ? "\u2713" : ""} {active ? (isAr ? "تم الاختيار" : "Selected") : (isAr ? "اختر" : "Select")}
+                    </div>
                   </div>
                 </button>
-              ))}
+                );
+              })}
             </div>
-            {/* Fallback button if auto-advance doesn't feel right */}
-            <div style={{ textAlign: "center", marginTop: 40 }}>
-              <button onClick={() => size && goStep(2)} disabled={!size} className="btn-gold" style={{ opacity: size ? 1 : 0.3, transition: "opacity 0.3s" }}>{t.booking.chooseServices}</button>
+            {/* Continue button */}
+            <div style={{ textAlign: "center", marginTop: 48 }}>
+              <button onClick={() => size && goStep(2)} disabled={!size} className="btn-gold" style={{
+                opacity: size ? 1 : 0.3, transition: "all 0.4s", padding: "16px 48px", fontSize: 16, fontWeight: 700,
+                boxShadow: size ? "0 0 30px rgba(246,190,0,0.2)" : "none",
+              }}>{t.booking.chooseServices}</button>
             </div>
           </div>
         )}
