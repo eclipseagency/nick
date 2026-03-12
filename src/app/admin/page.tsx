@@ -27,7 +27,7 @@ const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ];
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 export default function AdminDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -48,7 +48,6 @@ export default function AdminDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Group bookings by preferred_date
   const bookingsByDate = useMemo(() => {
     const map: Record<string, Booking[]> = {};
     bookings.forEach((b) => {
@@ -59,7 +58,6 @@ export default function AdminDashboard() {
     return map;
   }, [bookings]);
 
-  // Calendar grid
   const calendarDays = useMemo(() => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
@@ -69,7 +67,6 @@ export default function AdminDashboard() {
 
     const days: { date: string; day: number; isCurrentMonth: boolean; isToday: boolean }[] = [];
 
-    // Previous month padding
     for (let i = firstDay - 1; i >= 0; i--) {
       const d = daysInPrevMonth - i;
       const prevMonth = month === 0 ? 11 : month - 1;
@@ -78,14 +75,12 @@ export default function AdminDashboard() {
       days.push({ date: dateStr, day: d, isCurrentMonth: false, isToday: false });
     }
 
-    // Current month
     const todayStr = new Date().toISOString().slice(0, 10);
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
       days.push({ date: dateStr, day: d, isCurrentMonth: true, isToday: dateStr === todayStr });
     }
 
-    // Next month padding
     const remaining = 42 - days.length;
     for (let d = 1; d <= remaining; d++) {
       const nextMonth = month === 11 ? 0 : month + 1;
@@ -123,13 +118,6 @@ export default function AdminDashboard() {
     setSelectedDate(todayStr);
   }
 
-  const cardStyle: React.CSSProperties = {
-    background: "#111",
-    border: "1px solid rgba(246,190,0,0.15)",
-    borderRadius: 14,
-    padding: 24,
-  };
-
   if (loading) {
     return (
       <div style={{ color: "rgba(255,255,255,0.4)", padding: 40, textAlign: "center" }}>
@@ -139,91 +127,64 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div>
-      <h1 style={{ fontSize: 24, fontWeight: 700, color: "#fff", marginBottom: 24 }}>
+    <div className="dash-root">
+      <h1 style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 20 }}>
         Dashboard
       </h1>
 
-      {/* Stats grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: 16,
-          marginBottom: 32,
-        }}
-      >
-        <div style={cardStyle}>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>
-            Total Bookings
+      {/* Stats */}
+      <div className="dash-stats">
+        {[
+          { label: "Bookings", value: bookings.length, color: "#fff" },
+          { label: "Revenue", value: totalRevenue.toLocaleString(), color: "#fff", sub: "SAR" },
+          { label: "Pending", value: pendingCount, color: "#F6BE00" },
+          { label: "Confirmed", value: confirmedCount, color: "#2196F3" },
+        ].map((s) => (
+          <div key={s.label} className="dash-card">
+            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
+              {s.label}
+            </div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: s.color, lineHeight: 1 }}>
+              {s.value}
+            </div>
+            {s.sub && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 3 }}>{s.sub}</div>}
           </div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: "#fff" }}>
-            {bookings.length}
-          </div>
-        </div>
-
-        <div style={cardStyle}>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>
-            Revenue
-          </div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: "#fff" }}>
-            {totalRevenue.toLocaleString()}
-          </div>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>SAR</div>
-        </div>
-
-        <div style={cardStyle}>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>
-            Pending
-          </div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: "#F6BE00" }}>
-            {pendingCount}
-          </div>
-        </div>
-
-        <div style={cardStyle}>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>
-            Confirmed
-          </div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: "#2196F3" }}>
-            {confirmedCount}
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* Calendar + Detail panel */}
-      <div style={{ display: "grid", gridTemplateColumns: selectedBookings ? "1fr 380px" : "1fr", gap: 16 }}>
+      {/* Calendar + Detail */}
+      <div className="dash-calendar-wrap">
         {/* Calendar */}
-        <div style={cardStyle}>
-          {/* Calendar header */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <button onClick={prevMonth} style={navBtnStyle}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <div className="dash-card" style={{ padding: 16 }}>
+          {/* Header */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <button onClick={prevMonth} className="dash-nav-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
               </button>
-              <h2 style={{ fontSize: 18, fontWeight: 700, color: "#fff", margin: 0, minWidth: 180, textAlign: "center" }}>
+              <h2 className="dash-month-title">
                 {MONTHS[currentMonth.getMonth()]} {currentMonth.getFullYear()}
               </h2>
-              <button onClick={nextMonth} style={navBtnStyle}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+              <button onClick={nextMonth} className="dash-nav-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
             </div>
-            <button onClick={goToday} style={{ ...navBtnStyle, padding: "6px 14px", fontSize: 12, color: "#F6BE00", borderColor: "rgba(246,190,0,0.3)" }}>
+            <button onClick={goToday} className="dash-nav-btn" style={{ padding: "5px 12px", fontSize: 11, color: "#F6BE00", borderColor: "rgba(246,190,0,0.3)" }}>
               Today
             </button>
           </div>
 
           {/* Day headers */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, marginBottom: 4 }}>
+          <div className="dash-cal-grid" style={{ marginBottom: 2 }}>
             {DAYS.map((d) => (
-              <div key={d} style={{ textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.35)", padding: "6px 0", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              <div key={d} style={{ textAlign: "center", fontSize: 10, color: "rgba(255,255,255,0.3)", padding: "4px 0", fontWeight: 600 }}>
                 {d}
               </div>
             ))}
           </div>
 
-          {/* Calendar grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
+          {/* Days */}
+          <div className="dash-cal-grid">
             {calendarDays.map((cell) => {
               const dayBookings = bookingsByDate[cell.date] || [];
               const hasBookings = dayBookings.length > 0;
@@ -237,14 +198,8 @@ export default function AdminDashboard() {
                 <button
                   key={cell.date}
                   onClick={() => setSelectedDate(isSelected ? null : cell.date)}
+                  className="dash-cal-cell"
                   style={{
-                    position: "relative",
-                    aspectRatio: "1",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 4,
                     background: isSelected
                       ? "rgba(246,190,0,0.15)"
                       : cell.isToday
@@ -255,29 +210,23 @@ export default function AdminDashboard() {
                       : cell.isToday
                       ? "1px solid rgba(246,190,0,0.2)"
                       : "1px solid rgba(255,255,255,0.04)",
-                    borderRadius: 10,
                     color: !cell.isCurrentMonth
                       ? "rgba(255,255,255,0.15)"
                       : cell.isToday
                       ? "#F6BE00"
                       : "#fff",
-                    fontSize: 14,
                     fontWeight: cell.isToday ? 700 : 500,
-                    cursor: "pointer",
-                    transition: "all 0.15s",
-                    padding: 4,
                   }}
                 >
                   <span>{cell.day}</span>
                   {hasBookings && cell.isCurrentMonth && (
-                    <div style={{ display: "flex", gap: 3 }}>
-                      {Object.entries(statusCounts).slice(0, 4).map(([status, count]) => (
+                    <div style={{ display: "flex", gap: 2, justifyContent: "center" }}>
+                      {Object.entries(statusCounts).slice(0, 3).map(([status]) => (
                         <div
                           key={status}
-                          title={`${count} ${status}`}
                           style={{
-                            width: count > 1 ? 12 : 6,
-                            height: 6,
+                            width: 5,
+                            height: 5,
                             borderRadius: 3,
                             background: STATUS_COLORS[status] || "#666",
                           }}
@@ -285,22 +234,17 @@ export default function AdminDashboard() {
                       ))}
                     </div>
                   )}
-                  {hasBookings && cell.isCurrentMonth && (
-                    <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)" }}>
-                      {dayBookings.length}
-                    </span>
-                  )}
                 </button>
               );
             })}
           </div>
 
           {/* Legend */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginTop: 16, paddingTop: 14, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 12, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
             {Object.entries(STATUS_COLORS).map(([status, color]) => (
-              <div key={status} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                <div style={{ width: 8, height: 8, borderRadius: 4, background: color }} />
-                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", textTransform: "capitalize" }}>
+              <div key={status} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <div style={{ width: 6, height: 6, borderRadius: 3, background: color }} />
+                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", textTransform: "capitalize" }}>
                   {status.replace("_", " ")}
                 </span>
               </div>
@@ -308,12 +252,12 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Side panel — selected date bookings */}
+        {/* Side panel */}
         {selectedBookings && (
-          <div style={{ ...cardStyle, maxHeight: "calc(100vh - 280px)", overflowY: "auto" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: "#fff", margin: 0 }}>
-                {new Date(selectedDate + "T00:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
+          <div className="dash-card dash-side-panel">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: "#fff", margin: 0 }}>
+                {new Date(selectedDate + "T00:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}
               </h3>
               <button
                 onClick={() => setSelectedDate(null)}
@@ -328,89 +272,59 @@ export default function AdminDashboard() {
                 No bookings
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {selectedBookings.map((b) => (
                   <div
                     key={b.id}
                     style={{
-                      padding: 14,
+                      padding: 12,
                       background: "rgba(255,255,255,0.03)",
                       border: "1px solid rgba(255,255,255,0.06)",
                       borderRadius: 10,
                       borderLeft: `3px solid ${STATUS_COLORS[b.status] || "#666"}`,
                     }}
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 8 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 6 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>
                         {b.customer_name}
                       </div>
                       <span
                         style={{
-                          padding: "2px 8px",
+                          padding: "2px 7px",
                           borderRadius: 12,
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: 600,
                           textTransform: "capitalize",
                           background: `${STATUS_COLORS[b.status] || "#666"}20`,
                           color: STATUS_COLORS[b.status] || "#666",
                           whiteSpace: "nowrap",
+                          flexShrink: 0,
+                          marginLeft: 6,
                         }}
                       >
                         {b.status.replace("_", " ")}
                       </span>
                     </div>
-                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 3 }}>
                       {b.customer_phone}
                     </div>
                     {b.car_make && (
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>
+                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
                         {b.car_make} &middot; {b.car_size}
                       </div>
                     )}
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>
                         {(b.total || 0).toLocaleString()} SAR
                       </span>
-                      <div style={{ display: "flex", gap: 6 }}>
-                        <a
-                          href={`tel:${b.customer_phone}`}
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            width: 30,
-                            height: 30,
-                            borderRadius: 8,
-                            background: "rgba(33,150,243,0.1)",
-                            border: "1px solid rgba(33,150,243,0.2)",
-                            color: "#2196F3",
-                            textDecoration: "none",
-                          }}
-                          title="Call"
-                        >
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <div style={{ display: "flex", gap: 5 }}>
+                        <a href={`tel:${b.customer_phone}`} className="dash-action-btn dash-action-call" title="Call">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
                           </svg>
                         </a>
-                        <a
-                          href={`https://wa.me/${b.customer_phone.replace(/[^0-9]/g, "")}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            width: 30,
-                            height: 30,
-                            borderRadius: 8,
-                            background: "rgba(37,211,102,0.1)",
-                            border: "1px solid rgba(37,211,102,0.2)",
-                            color: "#25D366",
-                            textDecoration: "none",
-                          }}
-                          title="WhatsApp"
-                        >
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                        <a href={`https://wa.me/${b.customer_phone.replace(/[^0-9]/g, "")}`} target="_blank" rel="noopener noreferrer" className="dash-action-btn dash-action-wa" title="WhatsApp">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                           </svg>
                         </a>
@@ -424,18 +338,18 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* Today's bookings quick view */}
+      {/* Today's bookings */}
       {todayBookings.length > 0 && !selectedDate && (
-        <div style={{ ...cardStyle, marginTop: 16 }}>
-          <h2 style={{ fontSize: 15, fontWeight: 600, color: "#F6BE00", marginBottom: 14 }}>
+        <div className="dash-card" style={{ marginTop: 16 }}>
+          <h2 style={{ fontSize: 14, fontWeight: 600, color: "#F6BE00", marginBottom: 12 }}>
             {"Today's Bookings"} ({todayBookings.length})
           </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 10 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {todayBookings.map((b) => (
               <div
                 key={b.id}
                 style={{
-                  padding: 14,
+                  padding: 12,
                   background: "rgba(255,255,255,0.03)",
                   border: "1px solid rgba(255,255,255,0.06)",
                   borderRadius: 10,
@@ -443,23 +357,26 @@ export default function AdminDashboard() {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  gap: 8,
                 }}
               >
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>{b.customer_name}</div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.customer_name}</div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
                     {b.car_make || b.car_size} &middot; {(b.total || 0).toLocaleString()} SAR
                   </div>
                 </div>
                 <span
                   style={{
-                    padding: "3px 10px",
+                    padding: "3px 8px",
                     borderRadius: 12,
-                    fontSize: 10,
+                    fontSize: 9,
                     fontWeight: 600,
                     textTransform: "capitalize",
                     background: `${STATUS_COLORS[b.status] || "#666"}20`,
                     color: STATUS_COLORS[b.status] || "#666",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
                   }}
                 >
                   {b.status.replace("_", " ")}
@@ -471,25 +388,118 @@ export default function AdminDashboard() {
       )}
 
       <style>{`
-        @media (max-width: 900px) {
-          div[style*="gridTemplateColumns: selectedBookings"] {
-            grid-template-columns: 1fr !important;
+        .dash-root { max-width: 100%; overflow-x: hidden; }
+        .dash-card {
+          background: #111;
+          border: 1px solid rgba(246,190,0,0.15);
+          border-radius: 12px;
+          padding: 16px;
+        }
+        .dash-stats {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+        .dash-calendar-wrap {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        .dash-cal-grid {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 2px;
+        }
+        .dash-cal-cell {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 2px;
+          padding: 6px 2px;
+          border-radius: 8px;
+          font-size: 13px;
+          cursor: pointer;
+          transition: all 0.15s;
+          min-height: 42px;
+        }
+        .dash-cal-cell:active {
+          transform: scale(0.95);
+        }
+        .dash-nav-btn {
+          background: transparent;
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 8px;
+          color: rgba(255,255,255,0.6);
+          cursor: pointer;
+          padding: 5px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .dash-month-title {
+          font-size: 15px;
+          font-weight: 700;
+          color: #fff;
+          margin: 0;
+          min-width: 150px;
+          text-align: center;
+        }
+        .dash-side-panel {
+          max-height: 60vh;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        .dash-action-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 28px;
+          height: 28px;
+          border-radius: 7px;
+          text-decoration: none;
+        }
+        .dash-action-call {
+          background: rgba(33,150,243,0.1);
+          border: 1px solid rgba(33,150,243,0.2);
+          color: #2196F3;
+        }
+        .dash-action-wa {
+          background: rgba(37,211,102,0.1);
+          border: 1px solid rgba(37,211,102,0.2);
+          color: #25D366;
+        }
+
+        /* Mobile: 2x2 stats, stacked layout */
+        @media (max-width: 640px) {
+          .dash-stats {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+          }
+          .dash-card { padding: 12px; border-radius: 10px; }
+          .dash-cal-cell {
+            font-size: 12px;
+            min-height: 38px;
+            padding: 4px 1px;
+            border-radius: 6px;
+          }
+          .dash-month-title {
+            font-size: 14px;
+            min-width: 130px;
+          }
+        }
+
+        /* Tablet+: side panel next to calendar */
+        @media (min-width: 900px) {
+          .dash-calendar-wrap {
+            grid-template-columns: 1fr 360px;
+          }
+          .dash-side-panel {
+            max-height: calc(100vh - 280px);
           }
         }
       `}</style>
     </div>
   );
 }
-
-const navBtnStyle: React.CSSProperties = {
-  background: "transparent",
-  border: "1px solid rgba(255,255,255,0.1)",
-  borderRadius: 8,
-  color: "rgba(255,255,255,0.6)",
-  cursor: "pointer",
-  padding: 6,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  transition: "all 0.15s",
-};
