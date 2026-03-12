@@ -10,10 +10,10 @@ export default function Footer() {
 
   const services = [t.footer.s1, t.footer.s2, t.footer.s3, t.footer.s4];
   const company = [
-    { l: t.footer.about, h: "#about" },
-    { l: t.footer.galleryLink, h: "#gallery" },
-    { l: t.footer.bookNow, h: "#booking" },
-    { l: t.footer.store, h: "#contact" },
+    { l: t.footer.about, h: "/about" },
+    { l: t.footer.galleryLink, h: "/gallery" },
+    { l: t.footer.bookNow, h: "/#booking" },
+    { l: t.footer.store, h: "/contact" },
   ];
 
   return (
@@ -40,7 +40,7 @@ export default function Footer() {
           <div>
             <h4 style={{ color: "#fff", fontWeight: 700, fontSize: 12, letterSpacing: isAr ? "0" : "0.1em", textTransform: isAr ? "none" : "uppercase" as const, marginBottom: 16 }}>{t.footer.servicesTitle}</h4>
             {services.map(s => (
-              <Link key={s} href="#services" style={{ display: "block", color: "rgba(255,255,255,0.3)", fontSize: 13, marginBottom: 8, textDecoration: "none" }}>{s}</Link>
+              <Link key={s} href="/services" style={{ display: "block", color: "rgba(255,255,255,0.3)", fontSize: 13, marginBottom: 8, textDecoration: "none" }}>{s}</Link>
             ))}
           </div>
           <div>

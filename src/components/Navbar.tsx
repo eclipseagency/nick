@@ -62,7 +62,7 @@ export default function Navbar() {
           >
             {isAr ? "EN" : "عربي"}
           </button>
-          <Link href="#booking" className="btn-gold" style={{ padding: "10px 20px", fontSize: 12 }}>{t.nav.shop}</Link>
+          <Link href="/#booking" className="btn-gold" style={{ padding: "10px 20px", fontSize: 12 }}>{t.nav.shop}</Link>
         </div>
 
         {/* Mobile toggle */}
