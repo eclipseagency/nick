@@ -13,7 +13,7 @@ export default function Footer() {
     { l: t.footer.about, h: "#about" },
     { l: t.footer.galleryLink, h: "#gallery" },
     { l: t.footer.bookNow, h: "#booking" },
-    { l: t.footer.store, h: "https://nick.sa" },
+    { l: t.footer.store, h: "#contact" },
   ];
 
   return (

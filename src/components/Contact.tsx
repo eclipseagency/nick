@@ -30,8 +30,8 @@ export default function Contact() {
                 {t.contact.subtitle}
               </p>
               <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 12, marginBottom: 40 }}>
-                <Link href="https://nick.sa" target="_blank" className="btn-gold">{t.contact.cta1}</Link>
-                <Link href="#booking" className="btn-outline">{t.contact.cta2}</Link>
+                <Link href="#booking" className="btn-gold">{t.contact.cta1}</Link>
+                <Link href="#services" className="btn-outline">{t.contact.cta2}</Link>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4" style={{ paddingTop: 24, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
                 {[
