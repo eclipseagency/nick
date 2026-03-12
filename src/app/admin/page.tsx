@@ -99,6 +99,32 @@ export default function AdminDashboard() {
   const pendingCount = bookings.filter((b) => b.status === "pending").length;
   const confirmedCount = bookings.filter((b) => b.status === "confirmed").length;
 
+  // Weekly revenue data (last 8 weeks)
+  const weeklyRevenue = useMemo(() => {
+    const weeks: { label: string; revenue: number; bookings: number }[] = [];
+    const now = new Date();
+    for (let i = 7; i >= 0; i--) {
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - (i * 7) - now.getDay());
+      weekStart.setHours(0, 0, 0, 0);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
+      weekEnd.setHours(23, 59, 59, 999);
+
+      const weekBookings = bookings.filter((b) => {
+        const d = new Date(b.created_at);
+        return d >= weekStart && d <= weekEnd && b.status !== "cancelled";
+      });
+
+      weeks.push({
+        label: `${weekStart.getDate()}/${weekStart.getMonth() + 1}`,
+        revenue: weekBookings.reduce((s, b) => s + (b.total || 0), 0),
+        bookings: weekBookings.length,
+      });
+    }
+    return weeks;
+  }, [bookings]);
+
   const todayStr = new Date().toISOString().slice(0, 10);
   const todayBookings = bookingsByDate[todayStr] || [];
 
@@ -150,6 +176,38 @@ export default function AdminDashboard() {
             {s.sub && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 3 }}>{s.sub}</div>}
           </div>
         ))}
+      </div>
+
+      {/* Revenue Chart */}
+      <div className="dash-card" style={{ marginBottom: 20, padding: 16 }}>
+        <h2 style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 16 }}>Weekly Revenue</h2>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 120 }}>
+          {(() => {
+            const maxRev = Math.max(...weeklyRevenue.map((w) => w.revenue), 1);
+            return weeklyRevenue.map((w) => (
+              <div key={w.label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                {w.revenue > 0 && (
+                  <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", whiteSpace: "nowrap" }}>
+                    {(w.revenue / 1000).toFixed(w.revenue >= 1000 ? 1 : 0)}k
+                  </span>
+                )}
+                <div
+                  title={`${w.label}: ${w.revenue.toLocaleString()} SAR (${w.bookings} bookings)`}
+                  style={{
+                    width: "100%",
+                    maxWidth: 40,
+                    height: `${Math.max((w.revenue / maxRev) * 90, 4)}%`,
+                    background: w.revenue > 0 ? "linear-gradient(to top, rgba(246,190,0,0.3), rgba(246,190,0,0.7))" : "rgba(255,255,255,0.05)",
+                    borderRadius: "4px 4px 0 0",
+                    transition: "height 0.5s ease",
+                    minHeight: 4,
+                  }}
+                />
+                <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>{w.label}</span>
+              </div>
+            ));
+          })()}
+        </div>
       </div>
 
       {/* Calendar + Detail */}

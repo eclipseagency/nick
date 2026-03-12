@@ -113,6 +113,25 @@ export default function BookingsPage() {
       .catch(() => {});
   }, [fetchBookings]);
 
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  async function deleteBooking(id: string) {
+    if (!confirm("Delete this booking permanently?")) return;
+    setDeletingId(id);
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      if (res.ok) {
+        setBookings((prev) => prev.filter((b) => b.id !== id));
+        setExpandedId(null);
+      }
+    } catch { /* ignore */ }
+    setDeletingId(null);
+  }
+
   async function updateStatus(id: string, status: string) {
     setUpdatingId(id);
     try {
@@ -656,6 +675,30 @@ export default function BookingsPage() {
                           Saving...
                         </span>
                       )}
+                      <button
+                        onClick={() => deleteBooking(b.id)}
+                        disabled={deletingId === b.id}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 5,
+                          padding: "8px 14px",
+                          background: "rgba(244,67,54,0.08)",
+                          border: "1px solid rgba(244,67,54,0.2)",
+                          borderRadius: 8,
+                          color: "#f44336",
+                          fontSize: 12,
+                          fontWeight: 500,
+                          cursor: "pointer",
+                          transition: "all 0.15s",
+                          opacity: deletingId === b.id ? 0.5 : 1,
+                        }}
+                      >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                        </svg>
+                        {deletingId === b.id ? "..." : "Delete"}
+                      </button>
                     </div>
                   </div>
                 )}

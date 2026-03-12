@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -1221,25 +1220,15 @@ export default function Booking() {
 
                 <div style={{ display: "flex", alignItems: "center", gap: 14, margin: "6px 0" }}>
                   <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
-                  <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 11 }}>{isAr ? "أو ادفع أونلاين" : "or pay online"}</span>
+                  <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 11 }}>{isAr ? "أو قسّط" : "or split payments"}</span>
                   <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
                 </div>
 
-                {/* Online payment */}
-                <Link href={`https://nick.sa/checkout?amount=${total}&name=${encodeURIComponent(form.name)}&phone=${encodeURIComponent(form.phone)}`} target="_blank"
-                  onClick={() => { saveBooking("online"); }}
-                  style={(!formValid || submitting) ? { ...bnplBase, background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.2)", opacity: 0.3, pointerEvents: "none" } : { ...bnplBase, background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.2)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <svg width="18" height="18" fill="none" stroke="#F6BE00" strokeWidth={2} viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg>
-                    <span style={{ color: "#F6BE00", fontWeight: 700, fontSize: 14 }}>{isAr ? "دفع أونلاين" : "Pay Online"}</span>
-                  </div>
-                  <span style={{ color: "#F6BE00", fontWeight: 700, fontSize: 14 }}>{displayTotal.toLocaleString()} {cur}</span>
-                </Link>
-
                 {/* Tabby */}
-                <Link href={`https://nick.sa/checkout?method=tabby&amount=${total}&name=${encodeURIComponent(form.name)}&phone=${encodeURIComponent(form.phone)}`} target="_blank"
+                <button
                   onClick={() => { saveBooking("tabby"); }}
-                  style={(!formValid || submitting) ? { ...bnplBase, background: "#003227", opacity: 0.3, pointerEvents: "none" } : { ...bnplBase, background: "#003227" }}>
+                  disabled={!formValid || submitting}
+                  style={(!formValid || submitting) ? { ...bnplBase, background: "#003227", opacity: 0.3, cursor: "not-allowed" } : { ...bnplBase, background: "#003227", cursor: "pointer" }}>
                   <span><svg width="60" height="20" viewBox="0 0 60 20" fill="none"><text x="0" y="16" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="18" letterSpacing="-0.5" fill="#3bff9d">tabby</text></svg></span>
                   <span style={{ display: "flex", flexDirection: "column" as const, alignItems: dir === "rtl" ? "flex-start" : "flex-end" }}>
                     {submitting ? <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>{isAr ? "جاري المعالجة..." : "Processing..."}</span> : <>
@@ -1247,12 +1236,13 @@ export default function Booking() {
                     <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{t.booking.splitIn4}</span>
                     </>}
                   </span>
-                </Link>
+                </button>
 
                 {/* Tamara */}
-                <Link href={`https://nick.sa/checkout?method=tamara&amount=${total}&name=${encodeURIComponent(form.name)}&phone=${encodeURIComponent(form.phone)}`} target="_blank"
+                <button
                   onClick={() => { saveBooking("tamara"); }}
-                  style={(!formValid || submitting) ? { ...bnplBase, background: "#250155", opacity: 0.3, pointerEvents: "none" } : { ...bnplBase, background: "#250155" }}>
+                  disabled={!formValid || submitting}
+                  style={(!formValid || submitting) ? { ...bnplBase, background: "#250155", opacity: 0.3, cursor: "not-allowed" } : { ...bnplBase, background: "#250155", cursor: "pointer" }}>
                   <span><svg width="72" height="20" viewBox="0 0 72 20" fill="none"><text x="0" y="16" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="18" letterSpacing="-0.5" fill="#c77dff">tamara</text></svg></span>
                   <span style={{ display: "flex", flexDirection: "column" as const, alignItems: dir === "rtl" ? "flex-start" : "flex-end" }}>
                     {submitting ? <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>{isAr ? "جاري المعالجة..." : "Processing..."}</span> : <>
@@ -1260,7 +1250,7 @@ export default function Booking() {
                     <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{t.booking.splitIn3}</span>
                     </>}
                   </span>
-                </Link>
+                </button>
               </div>
             </div>
 

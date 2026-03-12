@@ -54,6 +54,20 @@ export default function Contact() {
             </div>
           </div>
         </div>
+
+        {/* Google Maps */}
+        <div className="reveal" style={{ marginTop: 32, borderRadius: 20, overflow: "hidden", border: "1px solid rgba(246,190,0,0.15)", height: 300 }}>
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3621.5!2d46.6527!3d24.7748!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjTCsDQ2JzI5LjMiTiA0NsKwMzknMDkuNyJF!5e0!3m2!1sen!2ssa!4v1"
+            width="100%"
+            height="100%"
+            style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) saturate(0.3) brightness(0.8)" }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title={isAr ? "موقع NICK" : "NICK Location"}
+          />
+        </div>
       </div>
     </section>
   );
