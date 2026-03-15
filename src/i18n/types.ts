@@ -257,6 +257,8 @@ export interface Dictionary {
     customPackage: string;
     customPackageDesc: string;
     // UI labels
+    moreDetails: string;
+    discountBadge: string;
     popular: string;
     orderSent: string;
     orderSentSub: string;
