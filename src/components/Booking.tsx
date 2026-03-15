@@ -792,12 +792,6 @@ export default function Booking() {
         {/* Before/After Mini Gallery — only when services selected */}
         {sel.length > 0 && (
           <div style={{ marginTop: 40, marginBottom: 24 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14, justifyContent: "center" }}>
-              <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, fontWeight: 600 }}>
-                {isAr ? "شاهد أعمالنا" : "See Our Work"}
-              </span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(246,190,0,0.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points={dir === "rtl" ? "15 18 9 12 15 6" : "9 18 15 12 9 6"}/></svg>
-            </div>
             <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "none", justifyContent: "center" }}>
               {["/images/DSC03279.jpg", "/images/DSC03292.jpg", "/images/DSC03235.jpg"].map((img, i) => (
                 <a key={i} href="#gallery" style={{
