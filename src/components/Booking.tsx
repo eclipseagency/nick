@@ -363,28 +363,19 @@ export default function Booking() {
           </div>
         </div>
 
-        {/* Trust Bar with embedded Google Maps place card */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 32, flexWrap: "wrap" }}>
-          <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)", width: "100%", maxWidth: 400, height: 160 }}>
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1810.25!2d46.6846706!3d24.8361322!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2efb98afe87757%3A0xff5e5750a8dfbb71!2sNick%20RIYADH!5e0!3m2!1sen!2ssa!4v1709900000000"
-              width="100%" height="100%" style={{ border: 0 }}
-              allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"
-              title="Nick RIYADH"
-            />
-          </div>
-          <div style={{
-            display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 12,
-            background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.15)",
-          }}>
+        {/* Trust Badges */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 32, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 10, background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.15)" }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F6BE00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <span style={{ color: "#F6BE00", fontSize: 12, fontWeight: 600 }}>{isAr ? "+٢٧ سنة خبرة" : "27+ Years"}</span>
           </div>
-          <div style={{
-            display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 12,
-            background: "rgba(76,175,80,0.06)", border: "1px solid rgba(76,175,80,0.15)",
-          }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 10, background: "rgba(76,175,80,0.06)", border: "1px solid rgba(76,175,80,0.15)" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <span style={{ color: "#4CAF50", fontSize: 12, fontWeight: 600 }}>{isAr ? "ضمان حتى ١٠ سنوات" : "Up to 10yr Warranty"}</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 10, background: "rgba(33,150,243,0.06)", border: "1px solid rgba(33,150,243,0.15)" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2196F3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+            <span style={{ color: "#2196F3", fontSize: 12, fontWeight: 600 }}>{isAr ? "وكيل حصري معتمد" : "Certified Exclusive Agent"}</span>
           </div>
         </div>
 
