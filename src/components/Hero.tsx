@@ -57,8 +57,8 @@ export default function Hero() {
 
   const slides: Slide[] = [
     { img: "/images/hero-rhino.png", hasText: false },
+    { img: "/images/hero-slide2.png", hasText: false },
     { img: "/images/DSC03064.jpg", hasText: true },
-    { img: "/images/DSC03279.jpg", hasText: true },
   ];
 
   const [current, setCurrent] = useState(0);
