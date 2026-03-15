@@ -26,6 +26,7 @@ interface Svc {
   addonTier: "low" | "high";
   popular?: boolean;
   tier?: string;
+  duration: string;
 }
 
 export default function Booking() {
@@ -145,28 +146,28 @@ export default function Booking() {
   const tintSideDesc = [d("عازل بتقنية النانو سيراميك المتطورة", "Advanced nano ceramic insulation technology"), d("العازل يشمل الزجاج الجانبي والخلفي فقط", "Covers side and rear windows only")];
 
   const svcs: Svc[] = [
-    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: sp("ppf-color", { small: 11880, large: 14480 }), pBefore: { small: 14500, large: 17500 }, w: "5yr", img: "/images/DSC03279.jpg", imgSmall: "/images/ppf-color-small.png", imgLarge: "/images/ppf-color-large.png", addonTier: "high", parts: [t.booking.fullBody], details: [d("معالجة ذاتية", "Self-healing technology"), d("سماكة فلم الحماية 8.5", "Film thickness 8.5mm"), d("تغيير لون السيارة مع حماية الطلاء في نفس الوقت", "Change car color with paint protection at the same time"), d("مصمم ليكون مقاومًا للغبار", "Designed to be dust-resistant"), d("مصمم خصيصًا لأجواء المملكة العربية السعودية", "Designed for Saudi Arabia's climate")] },
-    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: sp("ppf-clear75", { small: 9780, large: 11380 }), pBefore: { small: 12000, large: 14000 }, w: "10yr", tier: "SPRINT", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +7.5", "Film thickness 7.5mm+"), ...ppfBase] },
-    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: sp("ppf-clear85", { small: 10780, large: 12180 }), pBefore: { small: 13000, large: 15000 }, w: "10yr", tier: "TURBO", img: "/images/DSC03235.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +8.5", "Film thickness 8.5mm+"), ...ppfBase], popular: true },
-    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: sp("ppf-matte", { small: 11380, large: 12980 }), pBefore: { small: 14000, large: 16000 }, w: "10yr", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-matte-small.png", imgLarge: "/images/ppf-matte-large.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +8.5", "Film thickness 8.5mm+"), ...ppfBase] },
-    { id: "wrapping", cat: "ppf", name: t.booking.svcWrapping, p: sp("wrapping", { small: 8780, large: 10780 }), pBefore: { small: 11000, large: 13000 }, w: "3yr", img: "/images/wrapping.png", imgSmall: "/images/wrapping.png", imgLarge: "/images/wrapping.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("تغيير لون السيارة بدون رش", "Color change without paint spray"), d("متوفر بألوان متعددة (مطفي – لامع – ساتان - كاربون)", "Available in multiple finishes (matte, gloss, satin, carbon)"), d("قابل للإزالة دون التأثير على الطلاء", "Removable without affecting original paint"), d("تركيب احترافي بدقة عالية", "Professional high-precision installation")] },
-    { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: sp("ppf-front", { small: 2980, large: 4780 }), pBefore: { small: 3660, large: 5660 }, w: "10yr", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-front-small.png", imgLarge: "/images/ppf-front-large.png", addonTier: "high",
+    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: sp("ppf-color", { small: 11880, large: 14480 }), pBefore: { small: 14500, large: 17500 }, w: "5yr", duration: "6-8 hrs", img: "/images/DSC03279.jpg", imgSmall: "/images/ppf-color-small.png", imgLarge: "/images/ppf-color-large.png", addonTier: "high", parts: [t.booking.fullBody], details: [d("معالجة ذاتية", "Self-healing technology"), d("سماكة فلم الحماية 8.5", "Film thickness 8.5mm"), d("تغيير لون السيارة مع حماية الطلاء في نفس الوقت", "Change car color with paint protection at the same time"), d("مصمم ليكون مقاومًا للغبار", "Designed to be dust-resistant"), d("مصمم خصيصًا لأجواء المملكة العربية السعودية", "Designed for Saudi Arabia's climate")] },
+    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: sp("ppf-clear75", { small: 9780, large: 11380 }), pBefore: { small: 12000, large: 14000 }, w: "10yr", duration: "6-8 hrs", tier: "SPRINT", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +7.5", "Film thickness 7.5mm+"), ...ppfBase] },
+    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: sp("ppf-clear85", { small: 10780, large: 12180 }), pBefore: { small: 13000, large: 15000 }, w: "10yr", duration: "6-8 hrs", tier: "TURBO", img: "/images/DSC03235.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +8.5", "Film thickness 8.5mm+"), ...ppfBase], popular: true },
+    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: sp("ppf-matte", { small: 11380, large: 12980 }), pBefore: { small: 14000, large: 16000 }, w: "10yr", duration: "6-8 hrs", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-matte-small.png", imgLarge: "/images/ppf-matte-large.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +8.5", "Film thickness 8.5mm+"), ...ppfBase] },
+    { id: "wrapping", cat: "ppf", name: t.booking.svcWrapping, p: sp("wrapping", { small: 8780, large: 10780 }), pBefore: { small: 11000, large: 13000 }, w: "3yr", duration: "8-10 hrs", img: "/images/wrapping.png", imgSmall: "/images/wrapping.png", imgLarge: "/images/wrapping.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("تغيير لون السيارة بدون رش", "Color change without paint spray"), d("متوفر بألوان متعددة (مطفي – لامع – ساتان - كاربون)", "Available in multiple finishes (matte, gloss, satin, carbon)"), d("قابل للإزالة دون التأثير على الطلاء", "Removable without affecting original paint"), d("تركيب احترافي بدقة عالية", "Professional high-precision installation")] },
+    { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: sp("ppf-front", { small: 2980, large: 4780 }), pBefore: { small: 3660, large: 5660 }, w: "10yr", duration: "3-4 hrs", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-front-small.png", imgLarge: "/images/ppf-front-large.png", addonTier: "high",
       parts: [t.booking.fullHood, t.booking.fullFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges], details: [d("سماكة فلم الحماية +7.5", "Film thickness 7.5mm+"), ...ppfBase] },
-    { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: sp("ppf-partial", { small: 1680, large: 2680 }), pBefore: { small: 2000, large: 3200 }, w: "10yr", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-partial-small.png", imgLarge: "/images/ppf-partial-large.png", addonTier: "low",
+    { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: sp("ppf-partial", { small: 1680, large: 2680 }), pBefore: { small: 2000, large: 3200 }, w: "10yr", duration: "2-3 hrs", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-partial-small.png", imgLarge: "/images/ppf-partial-large.png", addonTier: "low",
       parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges], details: [d("سماكة فلم الحماية +7.5", "Film thickness 7.5mm+"), ...ppfBase] },
-    { id: "ppf-interior", cat: "ppf", name: t.booking.svcPpfInterior, p: sp("ppf-interior", { small: 1180, large: 1580 }), pBefore: { small: 1400, large: 1950 }, w: "10yr", img: "", imgSmall: "/images/ppf-interior-small.png", imgLarge: "/images/ppf-interior-large.png", addonTier: "low", parts: [t.booking.interiorSurfaces], details: [d("سهولة التنظيف دون التأثير على جودة الأسطح الحساسة", "Easy cleaning without affecting sensitive surfaces"), d("حماية الشاشات والبيانو بلاك والكاربون فايبر من الخدوش", "Protects screens, piano black, and carbon fiber from scratches")] },
-    { id: "tint-plus", cat: "tint", tier: "Plus", name: t.booking.svcTintPlus, p: sp("tint-plus", { small: 1380, large: 1580 }), pBefore: { small: 1600, large: 1800 }, w: "10yr", img: "", imgSmall: "/images/tint-full-small.png", imgLarge: "/images/tint-full-large.png", addonTier: "low", parts: [t.booking.allGlass], details: [d("عازل بتقنية النانو سيراميك المتطورة", "Advanced nano ceramic insulation technology"), d("العازل يشمل الزجاج الجانبي والخلفي فقط", "Covers side and rear windows only")], popular: true },
-    { id: "tint-flex", cat: "tint", tier: "Flex", name: t.booking.svcTintFlex, p: sp("tint-flex", { small: 1180, large: 1380 }), pBefore: { small: 1300, large: 1500 }, w: "8yr", img: "", imgSmall: "/images/tint-full-small.png", imgLarge: "/images/tint-full-large.png", addonTier: "low", parts: [t.booking.allGlass], details: [...tintSideDesc] },
-    { id: "tint-lite", cat: "tint", tier: "Lite", name: t.booking.svcTintLite, p: sp("tint-lite", { small: 900, large: 1080 }), pBefore: { small: 1000, large: 1200 }, w: "5yr", img: "", imgSmall: "/images/tint-full-small.png", imgLarge: "/images/tint-full-large.png", addonTier: "low", parts: [t.booking.allGlass], details: [...tintSideDesc] },
-    { id: "tint-front-max", cat: "tint", tier: "Max", name: t.booking.svcTintFrontMax, p: sp("tint-front-max", { small: 780, large: 880 }), w: "10yr", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("قوة في العزل", "Strong insulation"), d("يدعم رؤية القيادة الليلية", "Supports night driving visibility"), d("يقلل من توهج حرارة الشمس", "Reduces sun heat glare"), d("يظهر باللون الأرجواني الفريد كزجاج سيارة رولزرويس", "Unique purple tint like Rolls-Royce windshield"), d("مدعوم بتقنية الرش المغناطيسي المزدوج", "Dual magnetic sputtering technology")] },
-    { id: "tint-front-pro", cat: "tint", tier: "Pro", name: t.booking.svcTintFrontPro, p: sp("tint-front-pro", { small: 660, large: 760 }), w: "10yr", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("قوة في العزل", "Strong insulation"), d("يدعم رؤية القيادة الليلية", "Supports night driving visibility"), d("يقلل من توهج حرارة الشمس", "Reduces sun heat glare"), d("مدعوم بتقنية الرش المغناطيسي المزدوج", "Dual magnetic sputtering technology")] },
-    { id: "tint-front-plus", cat: "tint", tier: "Plus", name: t.booking.svcTintFrontPlus, p: sp("tint-front-plus", { small: 375, large: 475 }), w: "10yr", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("عازل بتقنية النانو سيراميك المتطورة", "Advanced nano ceramic insulation")] },
-    { id: "tint-front-flex", cat: "tint", tier: "Flex", name: t.booking.svcTintFrontFlex, p: sp("tint-front-flex", { small: 225, large: 325 }), w: "8yr", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("عازل حراري بتقنية النانو سيراميك", "Nano ceramic thermal insulation")] },
-    { id: "tint-front-lite", cat: "tint", tier: "Lite", name: t.booking.svcTintFrontLite, p: sp("tint-front-lite", { small: 185, large: 285 }), w: "5yr", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("عازل حراري بتقنية النانو سيراميك", "Nano ceramic thermal insulation")] },
-    { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: sp("ceramic-int-1", { small: 1880, large: 2180 }), pBefore: { small: 2350, large: 2750 }, w: "1yr", img: "", imgSmall: "/images/ceramic-int-small.png", imgLarge: "/images/ceramic-int-large.png", addonTier: "low", parts: [t.booking.interiorSurfaces], details: [d("سهولة التنظيف", "Easy to clean"), d("مقاومة تسرب المواد السائلة داخل المراتب", "Liquid spill resistance for seats")] },
-    { id: "ceramic-ext-1", cat: "ceramic", name: t.booking.svcCeramicExt1, p: sp("ceramic-ext-1", { small: 1180, large: 1280 }), pBefore: { small: 1550, large: 1750 }, w: "1yr", img: "", imgSmall: "/images/ceramic-ext1-small.png", imgLarge: "/images/ceramic-ext1-large.png", addonTier: "high", parts: [t.booking.exteriorBody], details: [d("تلميع ساطع", "Brilliant shine"), d("4 طبقات خلال فترة الضمان", "4 layers during warranty period")] },
-    { id: "ceramic-ext-3", cat: "ceramic", name: t.booking.svcCeramicExt3, p: sp("ceramic-ext-3", { small: 1480, large: 1780 }), pBefore: { small: 2550, large: 2750 }, w: "3yr", img: "", imgSmall: "/images/ceramic-ext3-small.png", imgLarge: "/images/ceramic-ext3-large.png", addonTier: "low", parts: [t.booking.exteriorBody], details: [d("تلميع ساطع", "Brilliant shine"), d("10 طبقات خلال فترة الضمان", "10 layers during warranty period")], popular: true },
-    { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: sp("ceramic-ext-5", { small: 1780, large: 1980 }), pBefore: { small: 2950, large: 3250 }, w: "5yr", img: "", imgSmall: "/images/ceramic-ext5-small.png", imgLarge: "/images/ceramic-ext5-large.png", addonTier: "low", parts: [t.booking.exteriorBody], details: [d("تلميع ساطع", "Brilliant shine"), d("12 طبقة خلال فترة الضمان", "12 layers during warranty period")] },
+    { id: "ppf-interior", cat: "ppf", name: t.booking.svcPpfInterior, p: sp("ppf-interior", { small: 1180, large: 1580 }), pBefore: { small: 1400, large: 1950 }, w: "10yr", duration: "1-2 hrs", img: "", imgSmall: "/images/ppf-interior-small.png", imgLarge: "/images/ppf-interior-large.png", addonTier: "low", parts: [t.booking.interiorSurfaces], details: [d("سهولة التنظيف دون التأثير على جودة الأسطح الحساسة", "Easy cleaning without affecting sensitive surfaces"), d("حماية الشاشات والبيانو بلاك والكاربون فايبر من الخدوش", "Protects screens, piano black, and carbon fiber from scratches")] },
+    { id: "tint-plus", cat: "tint", tier: "Plus", name: t.booking.svcTintPlus, p: sp("tint-plus", { small: 1380, large: 1580 }), pBefore: { small: 1600, large: 1800 }, w: "10yr", duration: "2-3 hrs", img: "", imgSmall: "/images/tint-full-small.png", imgLarge: "/images/tint-full-large.png", addonTier: "low", parts: [t.booking.allGlass], details: [d("عازل بتقنية النانو سيراميك المتطورة", "Advanced nano ceramic insulation technology"), d("العازل يشمل الزجاج الجانبي والخلفي فقط", "Covers side and rear windows only")], popular: true },
+    { id: "tint-flex", cat: "tint", tier: "Flex", name: t.booking.svcTintFlex, p: sp("tint-flex", { small: 1180, large: 1380 }), pBefore: { small: 1300, large: 1500 }, w: "8yr", duration: "2-3 hrs", img: "", imgSmall: "/images/tint-full-small.png", imgLarge: "/images/tint-full-large.png", addonTier: "low", parts: [t.booking.allGlass], details: [...tintSideDesc] },
+    { id: "tint-lite", cat: "tint", tier: "Lite", name: t.booking.svcTintLite, p: sp("tint-lite", { small: 900, large: 1080 }), pBefore: { small: 1000, large: 1200 }, w: "5yr", duration: "2-3 hrs", img: "", imgSmall: "/images/tint-full-small.png", imgLarge: "/images/tint-full-large.png", addonTier: "low", parts: [t.booking.allGlass], details: [...tintSideDesc] },
+    { id: "tint-front-max", cat: "tint", tier: "Max", name: t.booking.svcTintFrontMax, p: sp("tint-front-max", { small: 780, large: 880 }), w: "10yr", duration: "30-45 min", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("قوة في العزل", "Strong insulation"), d("يدعم رؤية القيادة الليلية", "Supports night driving visibility"), d("يقلل من توهج حرارة الشمس", "Reduces sun heat glare"), d("يظهر باللون الأرجواني الفريد كزجاج سيارة رولزرويس", "Unique purple tint like Rolls-Royce windshield"), d("مدعوم بتقنية الرش المغناطيسي المزدوج", "Dual magnetic sputtering technology")] },
+    { id: "tint-front-pro", cat: "tint", tier: "Pro", name: t.booking.svcTintFrontPro, p: sp("tint-front-pro", { small: 660, large: 760 }), w: "10yr", duration: "30-45 min", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("قوة في العزل", "Strong insulation"), d("يدعم رؤية القيادة الليلية", "Supports night driving visibility"), d("يقلل من توهج حرارة الشمس", "Reduces sun heat glare"), d("مدعوم بتقنية الرش المغناطيسي المزدوج", "Dual magnetic sputtering technology")] },
+    { id: "tint-front-plus", cat: "tint", tier: "Plus", name: t.booking.svcTintFrontPlus, p: sp("tint-front-plus", { small: 375, large: 475 }), w: "10yr", duration: "30-45 min", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("عازل بتقنية النانو سيراميك المتطورة", "Advanced nano ceramic insulation")] },
+    { id: "tint-front-flex", cat: "tint", tier: "Flex", name: t.booking.svcTintFrontFlex, p: sp("tint-front-flex", { small: 225, large: 325 }), w: "8yr", duration: "30-45 min", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("عازل حراري بتقنية النانو سيراميك", "Nano ceramic thermal insulation")] },
+    { id: "tint-front-lite", cat: "tint", tier: "Lite", name: t.booking.svcTintFrontLite, p: sp("tint-front-lite", { small: 185, large: 285 }), w: "5yr", duration: "30-45 min", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("عازل حراري بتقنية النانو سيراميك", "Nano ceramic thermal insulation")] },
+    { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: sp("ceramic-int-1", { small: 1880, large: 2180 }), pBefore: { small: 2350, large: 2750 }, w: "1yr", duration: "2-3 hrs", img: "", imgSmall: "/images/ceramic-int-small.png", imgLarge: "/images/ceramic-int-large.png", addonTier: "low", parts: [t.booking.interiorSurfaces], details: [d("سهولة التنظيف", "Easy to clean"), d("مقاومة تسرب المواد السائلة داخل المراتب", "Liquid spill resistance for seats")] },
+    { id: "ceramic-ext-1", cat: "ceramic", name: t.booking.svcCeramicExt1, p: sp("ceramic-ext-1", { small: 1180, large: 1280 }), pBefore: { small: 1550, large: 1750 }, w: "1yr", duration: "3-5 hrs", img: "", imgSmall: "/images/ceramic-ext1-small.png", imgLarge: "/images/ceramic-ext1-large.png", addonTier: "high", parts: [t.booking.exteriorBody], details: [d("تلميع ساطع", "Brilliant shine"), d("4 طبقات خلال فترة الضمان", "4 layers during warranty period")] },
+    { id: "ceramic-ext-3", cat: "ceramic", name: t.booking.svcCeramicExt3, p: sp("ceramic-ext-3", { small: 1480, large: 1780 }), pBefore: { small: 2550, large: 2750 }, w: "3yr", duration: "3-5 hrs", img: "", imgSmall: "/images/ceramic-ext3-small.png", imgLarge: "/images/ceramic-ext3-large.png", addonTier: "low", parts: [t.booking.exteriorBody], details: [d("تلميع ساطع", "Brilliant shine"), d("10 طبقات خلال فترة الضمان", "10 layers during warranty period")], popular: true },
+    { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: sp("ceramic-ext-5", { small: 1780, large: 1980 }), pBefore: { small: 2950, large: 3250 }, w: "5yr", duration: "3-5 hrs", img: "", imgSmall: "/images/ceramic-ext5-small.png", imgLarge: "/images/ceramic-ext5-large.png", addonTier: "low", parts: [t.booking.exteriorBody], details: [d("تلميع ساطع", "Brilliant shine"), d("12 طبقة خلال فترة الضمان", "12 layers during warranty period")] },
   ];
 
   const filteredSvcs = svcs.filter(s => s.cat === category);
@@ -302,6 +303,20 @@ export default function Booking() {
 
   // Determine which "step" is currently active based on scroll (simplified: use state)
   // For the step indicators, we derive from user progress
+  // Ramadan countdown — ends ~April 4, 2026
+  const [ramadanDays, setRamadanDays] = useState(0);
+  useEffect(() => {
+    const calcDays = () => {
+      const end = new Date("2026-04-04T23:59:59");
+      const now = new Date();
+      const diff = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      setRamadanDays(Math.max(0, diff));
+    };
+    calcDays();
+    const timer = setInterval(calcDays, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
   const step1Done = !!size;
   const step2Done = sel.length > 0;
 
@@ -338,9 +353,41 @@ export default function Booking() {
               <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, fontWeight: 500 }}>
                 {isAr ? "بمناسبة شهر رمضان الكريم" : "Ramadan Special Offer"}
               </span>
+              {ramadanDays > 0 && (
+                <span style={{ color: "rgba(246,190,0,0.7)", fontSize: 11, fontWeight: 600, marginTop: 2 }}>
+                  {isAr ? `ينتهي العرض خلال ${ramadanDays} يوم` : `Offer ends in ${ramadanDays} days`}
+                </span>
+              )}
             </div>
             <span style={{ fontSize: 24 }}>&#9770;</span>
           </div>
+        </div>
+
+        {/* Google Reviews Trust Bar */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 32, flexWrap: "wrap" }}>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8, padding: "8px 16px", borderRadius: 12,
+            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+          }}>
+            <span style={{ fontSize: 18 }}>⭐</span>
+            <span style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>4.9/5</span>
+            <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>(500+ {isAr ? "تقييم" : "reviews"})</span>
+          </div>
+          {[
+            { ar: "خدمة ممتازة وجودة عالية جدًا", en: "Excellent service and top quality" },
+            { ar: "أفضل محل حماية في الرياض", en: "Best protection shop in Riyadh" },
+            { ar: "نتائج مذهلة، أنصح الجميع", en: "Amazing results, highly recommend" },
+          ].map((review, i) => (
+            <div key={i} style={{
+              padding: "6px 14px", borderRadius: 10,
+              background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)",
+              color: "rgba(255,255,255,0.4)", fontSize: 11, fontStyle: "italic",
+              display: "none",
+            }} className="review-snippet" data-index={i}>
+              &quot;{isAr ? review.ar : review.en}&quot;
+            </div>
+          ))}
+          <style>{`@media(min-width:768px){.review-snippet{display:block!important;}}`}</style>
         </div>
 
         {/* Steps — scroll-to anchors */}
@@ -446,6 +493,9 @@ export default function Booking() {
             display: "flex", gap: 8, justifyContent: "center", marginBottom: 32, flexWrap: "nowrap",
             overflowX: "auto", WebkitOverflowScrolling: "touch", paddingBottom: 4,
             scrollbarWidth: "none",
+            position: "sticky", top: 80, zIndex: 15,
+            background: "linear-gradient(180deg, #0a0a0a 0%, #0a0a0a 70%, transparent 100%)",
+            paddingTop: 12,
           }}>
             {categories.map((cat) => {
               const isActive = category === cat.id;
@@ -589,7 +639,16 @@ export default function Booking() {
                     <div style={{ padding: "14px 16px", background: "#111" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
                         <span style={{ color: isSelected ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 14 }}>{s.name}</span>
-                        <span style={{ fontSize: 10, color: "#F6BE00", border: "1px solid rgba(246,190,0,0.2)", padding: "2px 8px", borderRadius: 100, flexShrink: 0 }}>{s.w}</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10, color: "rgba(255,255,255,0.45)", padding: "2px 8px", borderRadius: 100, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            {s.duration}
+                          </span>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, color: "#F6BE00", fontWeight: 600, padding: "3px 10px", borderRadius: 100, background: "rgba(246,190,0,0.08)", border: "1px solid rgba(246,190,0,0.25)" }}>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F6BE00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            {s.w}
+                          </span>
+                        </div>
                       </div>
                       <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", lineHeight: 1.4, marginBottom: 8, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{catDesc[s.cat]}</p>
                       {/* More Details button — yellow */}
@@ -742,6 +801,32 @@ export default function Booking() {
             </div>
           </div>
         </div>
+
+        {/* Before/After Mini Gallery — only when services selected */}
+        {sel.length > 0 && (
+          <div style={{ marginTop: 40, marginBottom: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14, justifyContent: "center" }}>
+              <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, fontWeight: 600 }}>
+                {isAr ? "شاهد أعمالنا" : "See Our Work"}
+              </span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(246,190,0,0.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points={dir === "rtl" ? "15 18 9 12 15 6" : "9 18 15 12 9 6"}/></svg>
+            </div>
+            <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "none", justifyContent: "center" }}>
+              {["/images/DSC03279.jpg", "/images/DSC03292.jpg", "/images/DSC03235.jpg"].map((img, i) => (
+                <a key={i} href="#gallery" style={{
+                  flexShrink: 0, width: 140, height: 100, borderRadius: 12, overflow: "hidden",
+                  border: "2px solid rgba(246,190,0,0.2)", position: "relative",
+                  transition: "border-color 0.3s",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(246,190,0,0.5)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(246,190,0,0.2)"; }}
+                >
+                  <Image src={img} alt={`Work sample ${i + 1}`} fill className="object-cover" />
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* ==================== STEP 3 — Confirm & Book (only visible after services selected) ==================== */}
         <div ref={step3Ref} style={{ marginTop: 80, scrollMarginTop: 80, maxWidth: 600, margin: "80px auto 0", display: sel.length > 0 ? "block" : "none" }}>
@@ -1180,6 +1265,35 @@ export default function Booking() {
           )}
         </div>
       </div>
+      {/* Floating WhatsApp Help Button */}
+      <a
+        href={`https://wa.me/966543000055?text=${encodeURIComponent(isAr ? "مرحباً، أحتاج مساعدة في الحجز" : "Hi, I need help with booking")}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          position: "fixed", bottom: 90, right: 24, zIndex: 50,
+          display: "flex", alignItems: "center", gap: 10,
+          textDecoration: "none",
+        }}
+      >
+        <span style={{
+          background: "rgba(0,0,0,0.75)", color: "rgba(255,255,255,0.8)", fontSize: 12, fontWeight: 600,
+          padding: "6px 12px", borderRadius: 8, whiteSpace: "nowrap",
+          backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.1)",
+        }}>
+          {isAr ? "تحتاج مساعدة؟" : "Need help?"}
+        </span>
+        <div style={{
+          width: 56, height: 56, borderRadius: "50%", background: "#25D366",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 4px 20px rgba(37,211,102,0.4)",
+          transition: "transform 0.3s",
+        }}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+        </div>
+      </a>
     </section>
   );
 }
