@@ -362,7 +362,7 @@ export default function Booking() {
   const formValid = form.name.trim().length >= 2 && isValidPhone(form.phone) && form.carMake.trim().length >= 2 && form.preferredDate.length > 0;
   const formMissing = !formValid ? [
     ...(form.name.trim().length < 2 ? [isAr ? "الاسم" : "Name"] : []),
-    ...(!isValidPhone(form.phone) ? [isAr ? "رقم الجوال" : "Phone"] : []),
+    ...(!isValidPhone(form.phone) ? [isAr ? "رقم الجوال (مثال: 05xxxxxxxx)" : "Phone (e.g. 05xxxxxxxx)"] : []),
     ...(form.carMake.trim().length < 2 ? [isAr ? "نوع السيارة" : "Car Make"] : []),
     ...(form.preferredDate.length === 0 ? [isAr ? "التاريخ" : "Date"] : []),
   ] : [];
@@ -1175,18 +1175,28 @@ export default function Booking() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column" as const, gap: 14, marginBottom: 32 }}>
-              {[
-                { k: "name" as const, ph: t.booking.namePh, tp: "text" },
-                { k: "phone" as const, ph: t.booking.phonePh, tp: "tel" },
-                { k: "carMake" as const, ph: t.booking.carMakePh, tp: "text" },
-              ].map(f => (
-                <input key={f.k} id={`booking-${f.k}`} type={f.tp} value={form[f.k]} onChange={e => setForm({...form, [f.k]: e.target.value})}
-                  placeholder={f.ph} aria-label={f.ph} autoComplete={f.k === "name" ? "name" : f.k === "phone" ? "tel" : undefined}
-                  dir={f.k === "phone" ? "ltr" : undefined}
+              <input id="booking-name" type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})}
+                placeholder={t.booking.namePh} aria-label={t.booking.namePh} autoComplete="name"
+                onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
+                onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
+                style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s" }} />
+              <div>
+                <input id="booking-phone" type="tel" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})}
+                  placeholder={isAr ? "05xxxxxxxx :رقم الجوال" : "Phone: 05xxxxxxxx"} aria-label={t.booking.phonePh} autoComplete="tel" dir="ltr"
                   onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
-                  onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
-                  style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s", textAlign: f.k === "phone" ? ("left" as const) : undefined }} />
-              ))}
+                  onBlur={e => { e.currentTarget.style.borderColor = form.phone && !isValidPhone(form.phone) ? "#f44336" : "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
+                  style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: `1px solid ${form.phone && !isValidPhone(form.phone) ? "rgba(244,67,54,0.5)" : "rgba(255,255,255,0.08)"}`, color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s", textAlign: "left" as const }} />
+                {form.phone && !isValidPhone(form.phone) && (
+                  <p style={{ fontSize: 11, color: "#f44336", marginTop: 4 }}>
+                    {isAr ? "صيغة مقبولة: 05xxxxxxxx أو +966xxxxxxxxx" : "Accepted: 05xxxxxxxx or +966xxxxxxxxx"}
+                  </p>
+                )}
+              </div>
+              <input id="booking-carMake" type="text" value={form.carMake} onChange={e => setForm({...form, carMake: e.target.value})}
+                placeholder={t.booking.carMakePh} aria-label={t.booking.carMakePh}
+                onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
+                onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
+                style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s" }} />
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                 <input type="text" id="booking-carYear" value={form.carYear} onChange={e => setForm({...form, carYear: e.target.value})}
                   placeholder={t.booking.carYearPh} aria-label={t.booking.carYearPh}
