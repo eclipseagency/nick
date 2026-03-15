@@ -155,7 +155,7 @@ export default function ContactPage() {
           </div>
           <div className="reveal" style={{ borderRadius: 16, overflow: "hidden", border: "1px solid rgba(246,190,0,0.25)" }}>
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d463878.15454555294!2d46.54398815!3d24.7135517!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2f03890d489399%3A0xba974d1c98e79fd5!2sRiyadh%20Saudi%20Arabia!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1810.25!2d46.6846706!3d24.8361322!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2efb98afe87757%3A0xff5e5750a8dfbb71!2sNick%20RIYADH!5e0!3m2!1sen!2ssa!4v1709900000000"
               width="100%" height="400" style={{ border: 0, display: "block" }}
               allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"
               title="NICK Location - Riyadh"
