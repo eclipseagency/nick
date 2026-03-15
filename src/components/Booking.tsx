@@ -363,15 +363,15 @@ export default function Booking() {
           </div>
         </div>
 
-        {/* Trust Bar */}
+        {/* Trust Bar with embedded Google Maps place card */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 32, flexWrap: "wrap" }}>
-          <div style={{
-            display: "flex", alignItems: "center", gap: 8, padding: "8px 18px", borderRadius: 12,
-            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-          }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#F6BE00"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            <span style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>Nick RIYADH</span>
-            <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{isAr ? "الرياض، المملكة العربية السعودية" : "Riyadh, Saudi Arabia"}</span>
+          <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)", width: "100%", maxWidth: 400, height: 160 }}>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1810.25!2d46.6846706!3d24.8361322!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2efb98afe87757%3A0xff5e5750a8dfbb71!2sNick%20RIYADH!5e0!3m2!1sen!2ssa!4v1709900000000"
+              width="100%" height="100%" style={{ border: 0 }}
+              allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+              title="Nick RIYADH"
+            />
           </div>
           <div style={{
             display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 12,
