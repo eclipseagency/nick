@@ -35,7 +35,7 @@ export default function Booking() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [detailsOpenId, setDetailsOpenId] = useState<string | null>(null);
   const [selAddons, setSelAddons] = useState<Record<string, string[]>>({});
-  const [form, setForm] = useState({ name: "", phone: "", notes: "", carMake: "", preferredDate: "" });
+  const [form, setForm] = useState({ name: "", phone: "", notes: "", preferredDate: "", birthDate: "" });
   const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
   const [orderSent, setOrderSent] = useState(false);
   const [bookingError, setBookingError] = useState("");
@@ -246,8 +246,8 @@ export default function Booking() {
         body: JSON.stringify({
           customer_name: form.name,
           customer_phone: form.phone,
-          customer_notes: form.notes || null,
-          car_make: form.carMake,
+          customer_notes: [form.notes, form.birthDate ? `Birthday: ${form.birthDate}` : ""].filter(Boolean).join(" | ") || null,
+          car_make: null,
           preferred_date: form.preferredDate,
           car_size: size,
           package_id: null,
@@ -290,11 +290,10 @@ export default function Booking() {
     const cleaned = phone.replace(/[\s\-()]/g, "");
     return /^(\+966|966|05|5)\d{8}$/.test(cleaned);
   };
-  const formValid = form.name.trim().length >= 2 && isValidPhone(form.phone) && form.carMake.trim().length >= 2 && form.preferredDate.length > 0;
+  const formValid = form.name.trim().length >= 2 && isValidPhone(form.phone) && form.preferredDate.length > 0;
   const formMissing = !formValid ? [
     ...(form.name.trim().length < 2 ? [isAr ? "الاسم" : "Name"] : []),
     ...(!isValidPhone(form.phone) ? [isAr ? "رقم الجوال (مثال: 05xxxxxxxx)" : "Phone (e.g. 05xxxxxxxx)"] : []),
-    ...(form.carMake.trim().length < 2 ? [isAr ? "نوع السيارة" : "Car Make"] : []),
     ...(form.preferredDate.length === 0 ? [isAr ? "التاريخ" : "Date"] : []),
   ] : [];
 
@@ -921,11 +920,6 @@ export default function Booking() {
                 </p>
               )}
             </div>
-            <input id="booking-carMake" type="text" value={form.carMake} onChange={e => setForm({...form, carMake: e.target.value})}
-              placeholder={t.booking.carMakePh} aria-label={t.booking.carMakePh}
-              onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
-              onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
-              style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s" }} />
             {/* Preferred date picker */}
             <div>
               <label style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 6 }}>{t.booking.preferredDateLabel}</label>
@@ -944,6 +938,20 @@ export default function Booking() {
                   {isAr ? "بعض التواريخ محجوزة بالكامل" : "Some dates are fully booked"}
                 </p>
               )}
+            </div>
+            {/* Birthday — for special offers */}
+            <div>
+              <label style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 6 }}>
+                {isAr ? "تاريخ ميلادك (للحصول على عرض خاص)" : "Your birthday (for a special offer)"}
+              </label>
+              <input type="date" id="booking-birthday" aria-label={isAr ? "تاريخ الميلاد" : "Birthday"} value={form.birthDate}
+                onChange={e => setForm({...form, birthDate: e.target.value})}
+                onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
+                onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
+                style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: form.birthDate ? "#fff" : "rgba(255,255,255,0.35)", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s", colorScheme: "dark" }} />
+              <p style={{ fontSize: 10, color: "rgba(246,190,0,0.5)", marginTop: 4 }}>
+                {isAr ? "🎂 احصل على خصم خاص في عيد ميلادك" : "🎂 Get a special discount on your birthday"}
+              </p>
             </div>
             <textarea id="booking-notes" aria-label={t.booking.notesPh} value={form.notes} onChange={e => setForm({...form, notes: e.target.value})}
               placeholder={t.booking.notesPh} rows={3}
@@ -1139,13 +1147,6 @@ export default function Booking() {
                     </div>
                   )}
 
-                  {/* Car details */}
-                  {form.carMake && (
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                      <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{isAr ? "السيارة" : "Car"}</span>
-                      <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{form.carMake}</span>
-                    </div>
-                  )}
 
                   {/* Services */}
                   <div style={{ padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
@@ -1198,7 +1199,7 @@ export default function Booking() {
                   </div>
                 )}
 
-                <button onClick={() => { setOrderSent(false); setConfirmationNumber(""); setBookingError(""); setSel([]); setSelAddons({}); setForm({ name: "", phone: "", notes: "", carMake: "", preferredDate: "" }); setSize(null); scrollToSection(step1Ref); }} className="btn-gold" style={{ marginTop: 8, animation: "fadeUp 0.5s ease-out 0.4s both", padding: "14px 40px" }}>
+                <button onClick={() => { setOrderSent(false); setConfirmationNumber(""); setBookingError(""); setSel([]); setSelAddons({}); setForm({ name: "", phone: "", notes: "", preferredDate: "", birthDate: "" }); setSize(null); scrollToSection(step1Ref); }} className="btn-gold" style={{ marginTop: 8, animation: "fadeUp 0.5s ease-out 0.4s both", padding: "14px 40px" }}>
                   {isAr ? "حجز جديد" : "New Booking"}
                 </button>
               </div>
