@@ -939,19 +939,16 @@ export default function Booking() {
                 </p>
               )}
             </div>
-            {/* Birthday — for special offers */}
+            {/* Birthday — subtle, no mention of offers */}
             <div>
               <label style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 6 }}>
-                {isAr ? "تاريخ ميلادك (للحصول على عرض خاص)" : "Your birthday (for a special offer)"}
+                {isAr ? "تاريخ الميلاد" : "Date of Birth"}
               </label>
-              <input type="date" id="booking-birthday" aria-label={isAr ? "تاريخ الميلاد" : "Birthday"} value={form.birthDate}
+              <input type="date" id="booking-birthday" aria-label={isAr ? "تاريخ الميلاد" : "Date of Birth"} value={form.birthDate}
                 onChange={e => setForm({...form, birthDate: e.target.value})}
                 onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
                 onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
                 style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: form.birthDate ? "#fff" : "rgba(255,255,255,0.35)", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s", colorScheme: "dark" }} />
-              <p style={{ fontSize: 10, color: "rgba(246,190,0,0.5)", marginTop: 4 }}>
-                {isAr ? "🎂 احصل على خصم خاص في عيد ميلادك" : "🎂 Get a special discount on your birthday"}
-              </p>
             </div>
             <textarea id="booking-notes" aria-label={t.booking.notesPh} value={form.notes} onChange={e => setForm({...form, notes: e.target.value})}
               placeholder={t.booking.notesPh} rows={3}
