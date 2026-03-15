@@ -385,6 +385,67 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ── Certificates ── */}
+      <section style={{ padding: "96px 0", overflow: "hidden" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+          <div className="reveal" style={{ textAlign: "center", marginBottom: 64 }}>
+            <span className="section-badge">{isAr ? "الشهادات" : "Certifications"}</span>
+            <h2 style={{ fontFamily: fontDisplay, fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 700, lineHeight: 1.15 }}>
+              <span style={{ color: "#fff" }}>{isAr ? "معتمدون " : "Certified "}</span>
+              <span className="gold-text">{isAr ? "دولياً" : "Globally"}</span>
+            </h2>
+            <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 16, lineHeight: 1.7, maxWidth: 560, margin: "16px auto 0" }}>
+              {isAr
+                ? "منتجات NICK حاصلة على شهادات الجودة والمطابقة الدولية من جهات معتمدة عالمياً"
+                : "NICK products hold international quality and conformity certificates from globally recognized bodies"}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 reveal">
+            {Array.from({ length: 10 }, (_, i) => (
+              <div
+                key={i}
+                style={{
+                  position: "relative",
+                  aspectRatio: "3/4",
+                  borderRadius: 12,
+                  overflow: "hidden",
+                  background: "#fff",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  cursor: "pointer",
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(246,190,0,0.15)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}
+                onClick={() => window.open(`/images/certs/cert-${i + 1}.jpg`, "_blank")}
+              >
+                <Image
+                  src={`/images/certs/cert-${i + 1}.jpg`}
+                  alt={`${isAr ? "شهادة" : "Certificate"} ${i + 1}`}
+                  fill
+                  className="object-contain"
+                  style={{ padding: 4 }}
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Trust badges */}
+          <div className="reveal" style={{ display: "flex", flexWrap: "wrap" as const, justifyContent: "center", gap: 24, marginTop: 48 }}>
+            {["CE", "REACH", "RoHS", "LUCID"].map(badge => (
+              <div key={badge} style={{
+                padding: "10px 24px", borderRadius: 10,
+                background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.15)",
+                color: "#F6BE00", fontSize: 14, fontWeight: 700, letterSpacing: "0.05em",
+              }}>
+                {badge}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA Section ── */}
       <section style={{ padding: "96px 0" }}>
         <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px", textAlign: "center" }}>
