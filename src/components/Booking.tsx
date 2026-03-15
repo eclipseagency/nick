@@ -379,6 +379,16 @@ export default function Booking() {
           </div>
         </div>
 
+        {/* Google Maps Reviews Embed */}
+        <div style={{ marginBottom: 40, borderRadius: 16, overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)", maxWidth: 800, margin: "0 auto 40px" }}>
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d900!2d46.6846706!3d24.8361322!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2efb98afe87757%3A0xff5e5750a8dfbb71!2sNick%20RIYADH!5e0!3m2!1sen!2ssa!4v1709900000000"
+            width="100%" height="250" style={{ border: 0, display: "block" }}
+            allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+            title="Nick RIYADH - Google Maps Reviews"
+          />
+        </div>
+
         {/* Steps — scroll-to anchors */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 48 }}>
           {[{ n: 1, l: t.booking.step1, ref: step1Ref, done: step1Done }, { n: 2, l: t.booking.step2, ref: step2Ref, done: step2Done }, { n: 3, l: t.booking.step3, ref: step3Ref, done: false }].map((s, i) => (
