@@ -530,18 +530,6 @@ export default function Booking() {
                           </span>
                         );
                       })()}
-                      {/* Category pill — only if not popular (to avoid overlap) */}
-                      {!s.popular && (
-                        <span style={{
-                          position: "absolute", top: 10, ...(dir === "rtl" ? { right: 10 } : { left: 10 }),
-                          padding: "3px 10px", fontSize: 10, fontWeight: 700, borderRadius: 100,
-                          background: "rgba(246,190,0,0.15)", color: "#F6BE00", backdropFilter: "blur(8px)",
-                          border: "1px solid rgba(246,190,0,0.2)",
-                          textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.05em",
-                        }}>
-                          {categories.find(c => c.id === s.cat)?.label}
-                        </span>
-                      )}
                       {/* Price badge */}
                       <span style={{
                         position: "absolute", bottom: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
