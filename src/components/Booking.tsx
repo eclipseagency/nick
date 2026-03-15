@@ -315,20 +315,25 @@ export default function Booking() {
         </div>
 
         {/* Discount Badge — floating banner */}
-        <div style={{
-          textAlign: "center", marginBottom: 32,
-        }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
           <div style={{
-            display: "inline-flex", alignItems: "center", gap: 10,
-            padding: "10px 28px", borderRadius: 100,
-            background: "linear-gradient(135deg, rgba(76,175,80,0.15), rgba(76,175,80,0.05))",
-            border: "1px solid rgba(76,175,80,0.3)",
-            animation: "fadeUp 0.5s ease-out",
+            display: "inline-flex", alignItems: "center", gap: 12,
+            padding: "14px 32px", borderRadius: 16,
+            background: "linear-gradient(135deg, rgba(246,190,0,0.12), rgba(246,190,0,0.04))",
+            border: "1px solid rgba(246,190,0,0.3)",
+            animation: "goldPulse 2s ease-in-out infinite",
+            boxShadow: "0 0 24px rgba(246,190,0,0.1)",
           }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
-            </svg>
-            <span style={{ color: "#4CAF50", fontWeight: 700, fontSize: 16, fontFamily: fontDisplay }}>{t.booking.discountBadge}</span>
+            <span style={{ fontSize: 24 }}>&#9770;</span>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: dir === "rtl" ? "flex-end" : "flex-start" }}>
+              <span style={{ color: "#F6BE00", fontWeight: 800, fontSize: 18, fontFamily: fontDisplay }}>
+                {isAr ? "خصم يصل إلى ٤٠٪" : "Up to 40% Off"}
+              </span>
+              <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, fontWeight: 500 }}>
+                {isAr ? "بمناسبة شهر رمضان الكريم" : "Ramadan Special Offer"}
+              </span>
+            </div>
+            <span style={{ fontSize: 24 }}>&#9770;</span>
           </div>
         </div>
 
@@ -513,7 +518,7 @@ export default function Booking() {
                         padding: "5px 12px", background: "#F6BE00", color: "#000", fontSize: 13, fontWeight: 700, borderRadius: 8,
                         display: "flex", alignItems: "center", gap: 6,
                       }}>
-                        {size && s.pBefore && <span style={{ textDecoration: "line-through", opacity: 0.45, fontSize: 11 }}>{s.pBefore[size].toLocaleString()}</span>}
+                        {size && s.pBefore && <span style={{ textDecoration: "line-through", opacity: 0.5, fontSize: 11, color: "rgba(255,0,0,0.7)" }}>{s.pBefore[size].toLocaleString()}</span>}
                         {size ? s.p[size].toLocaleString() : "—"} {cur}
                       </span>
                       {/* Checkmark */}
@@ -761,7 +766,7 @@ export default function Booking() {
                               </div>
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", alignItems: dir === "rtl" ? "flex-start" : "flex-end", whiteSpace: "nowrap" }}>
-                              {size && s.pBefore && <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, textDecoration: "line-through" }}>{s.pBefore[size].toLocaleString()} {cur}</span>}
+                              {size && s.pBefore && <span style={{ color: "rgba(255,80,80,0.6)", fontSize: 11, textDecoration: "line-through" }}>{s.pBefore[size].toLocaleString()} {cur}</span>}
                               <span style={{ color: "#F6BE00", fontWeight: 700, fontSize: 14 }}>{size ? s.p[size].toLocaleString() : 0} {cur}</span>
                             </div>
                           </div>
@@ -1090,7 +1095,7 @@ export default function Booking() {
                         <div key={id} style={{ display: "flex", justifyContent: "space-between", padding: "3px 0" }}>
                           <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>{s.name}</span>
                           <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            {size && s.pBefore && <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, textDecoration: "line-through" }}>{s.pBefore[size].toLocaleString()}</span>}
+                            {size && s.pBefore && <span style={{ color: "rgba(255,80,80,0.5)", fontSize: 11, textDecoration: "line-through" }}>{s.pBefore[size].toLocaleString()}</span>}
                             <span style={{ color: "rgba(246,190,0,0.7)", fontSize: 12 }}>{size ? s.p[size].toLocaleString() : 0} {cur}</span>
                           </span>
                         </div>
