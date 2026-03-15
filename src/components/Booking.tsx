@@ -335,7 +335,7 @@ export default function Booking() {
             <span style={{ fontSize: 24 }}>&#9770;</span>
             <div style={{ display: "flex", flexDirection: "column", alignItems: dir === "rtl" ? "flex-end" : "flex-start" }}>
               <span style={{ color: "#F6BE00", fontWeight: 800, fontSize: 18, fontFamily: fontDisplay }}>
-                {isAr ? "خصم يصل إلى ٤٠٪" : "Up to 40% Off"}
+                {isAr ? "خصم يصل حتى ٤٠٪" : "Up to 40% Off"}
               </span>
               <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, fontWeight: 500 }}>
                 {isAr ? "بمناسبة شهر رمضان الكريم" : "Ramadan Special Offer"}
