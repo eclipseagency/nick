@@ -564,16 +564,26 @@ export default function Booking() {
                           }}
                         >
                           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                            {s.details.map((d, di) => (
+                            {s.details.map((dt, di) => (
                               <li key={di} style={{
                                 display: "flex", alignItems: "flex-start", gap: 8,
                                 padding: "4px 0", fontSize: 12, color: "rgba(255,255,255,0.85)", lineHeight: 1.5,
                               }}>
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ marginTop: 3, flexShrink: 0 }}><path d="M3.5 6L5.25 7.75L8.5 4.5" stroke="#F6BE00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                {d}
+                                {dt}
                               </li>
                             ))}
                           </ul>
+                          {s.parts.length > 1 && (
+                            <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+                              <div style={{ fontSize: 10, color: "#F6BE00", fontWeight: 700, marginBottom: 6, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.06em" }}>{t.booking.coverageAreas}</div>
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                                {s.parts.map(p => (
+                                  <span key={p} style={{ padding: "2px 8px", fontSize: 10, borderRadius: 100, background: "rgba(246,190,0,0.1)", color: "rgba(255,255,255,0.7)", border: "1px solid rgba(246,190,0,0.2)" }}>{p}</span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
