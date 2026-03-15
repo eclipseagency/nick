@@ -87,7 +87,7 @@ export default function Hero() {
       id="hero"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}
+      style={{ position: "relative", minHeight: slide.hasText ? "100vh" : "clamp(400px, 56vw, 100vh)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", transition: "min-height 0.6s ease" }}
     >
       {/* Slide backgrounds — all rendered, only current visible */}
       {slides.map((s, i) => (
@@ -105,8 +105,8 @@ export default function Hero() {
             alt={`NICK slide ${i + 1}`}
             fill
             style={{
-              objectFit: "cover",
-              objectPosition: s.hasText ? "center" : "center 30%",
+              objectFit: s.hasText ? "cover" : "contain",
+              objectPosition: "center",
             }}
             priority={i === 0}
             quality={90}
