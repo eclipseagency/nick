@@ -10,7 +10,7 @@ export default function Hero() {
   const isAr = locale === "ar";
 
   const slides = [
-    "/images/hero-rhino.png",
+    isAr ? "/images/hero-rhino.png" : "/images/hero-rhino-en.png",
     "/images/hero-slide2.png",
   ];
 
