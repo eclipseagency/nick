@@ -190,6 +190,8 @@ export default function Booking() {
   }, 0);
 
   const total = svcTotal + addonTotal;
+  const totalBefore = sel.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v && size ? (v.pBefore ? v.pBefore[size] : v.p[size]) : 0); }, 0) + addonTotal;
+  const totalSaved = totalBefore - total;
 
   // Animated total count
   useEffect(() => {
@@ -856,6 +858,12 @@ export default function Booking() {
             borderRadius: 14, overflow: "hidden", marginBottom: 32,
             background: "#111", border: "1px solid rgba(246,190,0,0.15)",
           }}>
+            {totalSaved > 0 && (
+              <div style={{ padding: "10px 20px", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ color: "#4CAF50", fontSize: 13, fontWeight: 600 }}>{isAr ? "وفّرت" : "You saved"}</span>
+                <span style={{ color: "#4CAF50", fontSize: 14, fontWeight: 700 }}>{totalSaved.toLocaleString()} {cur}</span>
+              </div>
+            )}
             <div style={{ padding: "16px 20px", background: "rgba(246,190,0,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>{t.booking.totalLabel}</span>
               <span className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 24, fontWeight: 700 }}>{displayTotal.toLocaleString()} {cur}</span>
@@ -1125,6 +1133,16 @@ export default function Booking() {
                     })}
                   </div>
 
+                  {/* Savings */}
+                  {totalSaved > 0 && (
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                      <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#4CAF50", fontSize: 12, fontWeight: 600 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                        {isAr ? "وفّرت" : "You saved"}
+                      </span>
+                      <span style={{ color: "#4CAF50", fontSize: 14, fontWeight: 700 }}>{totalSaved.toLocaleString()} {cur}</span>
+                    </div>
+                  )}
                   {/* Total */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0 4px" }}>
                     <span style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>{isAr ? "الإجمالي" : "Total"}</span>
