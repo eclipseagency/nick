@@ -364,30 +364,37 @@ export default function Booking() {
         </div>
 
         {/* Google Reviews Trust Bar */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 32, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 32, flexWrap: "wrap" }}>
+          <a
+            href="https://www.google.com/maps/place/Nick+RIYADH/@24.8361322,46.6846706,17z"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "flex", alignItems: "center", gap: 8, padding: "8px 18px", borderRadius: 12,
+              background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+              textDecoration: "none", transition: "border-color 0.3s",
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#F6BE00"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>Google Reviews</span>
+            <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{isAr ? "شاهد التقييمات" : "View reviews"}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
           <div style={{
-            display: "flex", alignItems: "center", gap: 8, padding: "8px 16px", borderRadius: 12,
-            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+            display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 12,
+            background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.15)",
           }}>
-            <span style={{ fontSize: 18 }}>⭐</span>
-            <span style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>4.9/5</span>
-            <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>(500+ {isAr ? "تقييم" : "reviews"})</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F6BE00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span style={{ color: "#F6BE00", fontSize: 12, fontWeight: 600 }}>{isAr ? "+٢٧ سنة خبرة" : "27+ Years"}</span>
           </div>
-          {[
-            { ar: "خدمة ممتازة وجودة عالية جدًا", en: "Excellent service and top quality" },
-            { ar: "أفضل محل حماية في الرياض", en: "Best protection shop in Riyadh" },
-            { ar: "نتائج مذهلة، أنصح الجميع", en: "Amazing results, highly recommend" },
-          ].map((review, i) => (
-            <div key={i} style={{
-              padding: "6px 14px", borderRadius: 10,
-              background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)",
-              color: "rgba(255,255,255,0.4)", fontSize: 11, fontStyle: "italic",
-              display: "none",
-            }} className="review-snippet" data-index={i}>
-              &quot;{isAr ? review.ar : review.en}&quot;
-            </div>
-          ))}
-          <style>{`@media(min-width:768px){.review-snippet{display:block!important;}}`}</style>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 12,
+            background: "rgba(76,175,80,0.06)", border: "1px solid rgba(76,175,80,0.15)",
+          }}>
+            <span style={{ color: "#4CAF50", fontSize: 12, fontWeight: 600 }}>{isAr ? "ضمان حتى ١٠ سنوات" : "Up to 10yr Warranty"}</span>
+          </div>
         </div>
 
         {/* Steps — scroll-to anchors */}
@@ -701,26 +708,6 @@ export default function Booking() {
                   }}>&#10005;</button>
                 </div>
 
-                {/* Coverage areas */}
-                {s.parts.length > 1 && (
-                  <div style={{ marginBottom: 20 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#F6BE00", marginBottom: 10, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
-                      {t.booking.coverageAreas}
-                    </div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                      {s.parts.map(p => (
-                        <span key={p} style={{
-                          display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 10,
-                          background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.15)",
-                          color: "rgba(255,255,255,0.7)", fontSize: 12,
-                        }}>
-                          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3.5 6L5.25 7.75L8.5 4.5" stroke="#F6BE00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                          {p}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* Additional services — visual grid */}
                 <div>
