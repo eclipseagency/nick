@@ -15,7 +15,7 @@ interface ApiService {
 type Size = "small" | "large" | null;
 type Category = "ppf" | "tint" | "ceramic";
 
-interface Addon { id: string; name: string; p: { small: number; large: number }; icon: React.ReactNode }
+interface Addon { id: string; name: string; p: { small: number; large: number }; icon: React.ReactNode; imgSmall?: string; imgLarge?: string }
 interface Svc {
   id: string; cat: "ppf" | "tint" | "ceramic"; name: string; w: string; img: string;
   imgSmall?: string; imgLarge?: string;
@@ -113,17 +113,17 @@ export default function Booking() {
   ];
 
   const addons: Addon[] = [
-    { id: "ozone", name: t.booking.addonOzone, p: { small: 100, large: 150 },
+    { id: "ozone", name: t.booking.addonOzone, p: { small: 100, large: 150 }, imgSmall: "/images/addon-ozone-small.png", imgLarge: "/images/addon-ozone-large.png",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2c0 0-3 4-3 7a3 3 0 0 0 6 0c0-3-3-7-3-7z"/><path d="M16 6c0 0-2 3-2 5a2 2 0 0 0 4 0c0-2-2-5-2-5z"/><path d="M12 14v4"/><path d="M8 18h8"/><path d="M6 22h12"/></svg> },
-    { id: "rim-ceramic", name: t.booking.addonRimCeramic, p: { small: 400, large: 400 },
+    { id: "rim-ceramic", name: t.booking.addonRimCeramic, p: { small: 400, large: 400 }, imgSmall: "/images/addon-rim-small.png", imgLarge: "/images/addon-rim-large.png",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="2" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="22" y2="12"/></svg> },
-    { id: "engine-clean", name: t.booking.addonEngineClean, p: { small: 100, large: 150 },
+    { id: "engine-clean", name: t.booking.addonEngineClean, p: { small: 100, large: 150 }, imgSmall: "/images/addon-engine-small.png", imgLarge: "/images/addon-engine-large.png",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> },
-    { id: "remove-tint", name: t.booking.addonRemoveTint, p: { small: 200, large: 300 },
+    { id: "remove-tint", name: t.booking.addonRemoveTint, p: { small: 200, large: 300 }, imgSmall: "/images/addon-remove-tint-small.png", imgLarge: "/images/addon-remove-tint-large.png",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> },
     { id: "remove-partial", name: t.booking.addonRemovePartial, p: { small: 250, large: 350 },
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="8" y1="12" x2="16" y2="12"/></svg> },
-    { id: "remove-front", name: t.booking.addonRemoveFront, p: { small: 400, large: 500 },
+    { id: "remove-front", name: t.booking.addonRemoveFront, p: { small: 400, large: 500 }, imgSmall: "/images/addon-remove-front-small.png", imgLarge: "/images/addon-remove-front-large.png",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> },
     { id: "remove-full", name: t.booking.addonRemoveFull, p: { small: 1200, large: 1400 },
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="22" height="12" rx="3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><line x1="8" y1="10" x2="16" y2="14"/><line x1="16" y1="10" x2="8" y2="14"/></svg> },
@@ -659,12 +659,14 @@ export default function Booking() {
                             </div>
                           )}
                           <div style={{
-                            width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
+                            width: 52, height: 52, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
                             background: isChecked ? "rgba(246,190,0,0.15)" : "rgba(255,255,255,0.04)",
                             color: isChecked ? "#F6BE00" : "rgba(255,255,255,0.3)",
-                            transition: "all 0.25s",
+                            transition: "all 0.25s", overflow: "hidden", position: "relative",
                           }}>
-                            {addon.icon}
+                            {((size === "small" && addon.imgSmall) || (size === "large" && addon.imgLarge)) ? (
+                              <Image src={size === "large" ? addon.imgLarge! : addon.imgSmall!} alt={addon.name} fill className="object-cover" />
+                            ) : addon.icon}
                           </div>
                           <span style={{ color: isChecked ? "#fff" : "rgba(255,255,255,0.45)", fontSize: 11, lineHeight: 1.3 }}>{addon.name}</span>
                           <span style={{ color: "#F6BE00", fontSize: 12, fontWeight: 700 }}>{price} {cur}</span>
