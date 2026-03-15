@@ -1,9 +1,21 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
+
+interface ApiService {
+  id: string; category: string; name_en: string; name_ar: string;
+  price_small: number; price_large: number; warranty: string | null;
+  image: string | null; image_small: string | null; image_large: string | null;
+  popular: boolean; active: boolean; sort_order: number;
+}
+interface ApiPackage {
+  id: string; name_en: string; name_ar: string; desc_en: string | null; desc_ar: string | null;
+  tier: string; discount: number; warranty_en: string | null; warranty_ar: string | null;
+  service_ids: string[]; active: boolean; sort_order: number;
+}
 
 type Size = "small" | "large" | null;
 type Category = "packages" | "ppf" | "tint" | "ceramic";
@@ -32,6 +44,8 @@ export default function Booking() {
   const [confirmationNumber, setConfirmationNumber] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [displayTotal, setDisplayTotal] = useState(0);
+  const [apiServices, setApiServices] = useState<ApiService[]>([]);
+  const [apiPackages, setApiPackages] = useState<ApiPackage[]>([]);
   const [activePack, setActivePack] = useState<string | null>(null);
   const [slideDir, setSlideDir] = useState<"forward" | "back">("forward");
   const detailRef = useRef<HTMLDivElement>(null);
@@ -120,28 +134,38 @@ export default function Booking() {
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="22" height="12" rx="3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><line x1="8" y1="10" x2="16" y2="14"/><line x1="16" y1="10" x2="8" y2="14"/></svg> },
   ];
 
+  // Build price override map from API data
+  const priceMap = useMemo(() => {
+    const m: Record<string, { small: number; large: number }> = {};
+    apiServices.forEach(s => { m[s.id] = { small: s.price_small, large: s.price_large }; });
+    return m;
+  }, [apiServices]);
+
+  // Use API prices when available, fallback to hardcoded
+  const sp = (id: string, fallback: { small: number; large: number }) => priceMap[id] || fallback;
+
   const svcs: Svc[] = [
-    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: { small: 16500, large: 18500 }, w: "5yr", img: "/images/DSC03279.jpg", imgSmall: "/images/ppf-color-small.png", imgLarge: "/images/ppf-color-large.png", addonTier: "high", parts: [t.booking.fullBody] },
-    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: { small: 12000, large: 14500 }, w: "10yr", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody] },
-    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: { small: 14000, large: 15500 }, w: "10yr", img: "/images/DSC03235.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody], popular: true },
-    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: { small: 13450, large: 15450 }, w: "10yr", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody] },
-    { id: "ppf-front-rear", cat: "ppf", name: t.booking.svcPpfFrontRear, p: { small: 4770, large: 5500 }, w: "10yr", img: "/images/DSC03279.jpg", imgSmall: "/images/ppf-front-rear-small.png", imgLarge: "/images/ppf-front-rear-large.png", addonTier: "high",
+    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: sp("ppf-color", { small: 16500, large: 18500 }), w: "5yr", img: "/images/DSC03279.jpg", imgSmall: "/images/ppf-color-small.png", imgLarge: "/images/ppf-color-large.png", addonTier: "high", parts: [t.booking.fullBody] },
+    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: sp("ppf-clear75", { small: 12000, large: 14500 }), w: "10yr", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody] },
+    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: sp("ppf-clear85", { small: 14000, large: 15500 }), w: "10yr", img: "/images/DSC03235.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody], popular: true },
+    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: sp("ppf-matte", { small: 13450, large: 15450 }), w: "10yr", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody] },
+    { id: "ppf-front-rear", cat: "ppf", name: t.booking.svcPpfFrontRear, p: sp("ppf-front-rear", { small: 4770, large: 5500 }), w: "10yr", img: "/images/DSC03279.jpg", imgSmall: "/images/ppf-front-rear-small.png", imgLarge: "/images/ppf-front-rear-large.png", addonTier: "high",
       parts: [t.booking.fullHood, t.booking.fullFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges, t.booking.rearBumper] },
-    { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: { small: 3660, large: 5600 }, w: "10yr", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-front-small.png", imgLarge: "/images/ppf-front-large.png", addonTier: "high",
+    { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: sp("ppf-front", { small: 3660, large: 5600 }), w: "10yr", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-front-small.png", imgLarge: "/images/ppf-front-large.png", addonTier: "high",
       parts: [t.booking.fullHood, t.booking.fullFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges] },
-    { id: "ppf-partial-rear", cat: "ppf", name: t.booking.svcPpfPartialRear, p: { small: 2770, large: 4800 }, w: "10yr", img: "/images/DSC03235.jpg", imgSmall: "/images/ppf-partial-rear-small.png", imgLarge: "/images/ppf-partial-rear-large.png", addonTier: "low",
+    { id: "ppf-partial-rear", cat: "ppf", name: t.booking.svcPpfPartialRear, p: sp("ppf-partial-rear", { small: 2770, large: 4800 }), w: "10yr", img: "/images/DSC03235.jpg", imgSmall: "/images/ppf-partial-rear-small.png", imgLarge: "/images/ppf-partial-rear-large.png", addonTier: "low",
       parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges, t.booking.rearBumper] },
-    { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: { small: 1850, large: 2900 }, w: "10yr", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-partial-small.png", imgLarge: "/images/ppf-partial-large.png", addonTier: "low",
+    { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: sp("ppf-partial", { small: 1850, large: 2900 }), w: "10yr", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-partial-small.png", imgLarge: "/images/ppf-partial-large.png", addonTier: "low",
       parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges] },
-    { id: "ppf-windshield", cat: "ppf", name: t.booking.svcPpfWindshield, p: { small: 1000, large: 1000 }, w: "10yr", img: "/images/DSC03174.jpg", imgSmall: "/images/ppf-front-small.png", imgLarge: "/images/ppf-front-large.png", addonTier: "low", parts: [t.booking.frontWindshield] },
-    { id: "tint-full", cat: "tint", name: t.booking.svcTintFull, p: { small: 2400, large: 2800 }, w: "10yr", img: "/images/DSC03136.jpg", addonTier: "low", parts: [t.booking.allGlass], popular: true },
-    { id: "tint-front", cat: "tint", name: t.booking.svcTintFront, p: { small: 1160, large: 1300 }, w: "10yr", img: "/images/DSC03174.jpg", addonTier: "high", parts: [t.booking.frontWindshield] },
-    { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: { small: 2300, large: 2500 }, w: "1yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
-    { id: "ceramic-int-3", cat: "ceramic", name: t.booking.svcCeramicInt3, p: { small: 2900, large: 3100 }, w: "3yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
-    { id: "ceramic-int-5", cat: "ceramic", name: t.booking.svcCeramicInt5, p: { small: 3200, large: 3400 }, w: "5yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
-    { id: "ceramic-ext-1", cat: "ceramic", name: t.booking.svcCeramicExt1, p: { small: 1350, large: 1950 }, w: "1yr", img: "/images/DSC03018.jpg", addonTier: "high", parts: [t.booking.exteriorBody] },
-    { id: "ceramic-ext-3", cat: "ceramic", name: t.booking.svcCeramicExt3, p: { small: 2250, large: 2850 }, w: "3yr", img: "/images/DSC03018.jpg", addonTier: "low", parts: [t.booking.exteriorBody], popular: true },
-    { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: { small: 3050, large: 3750 }, w: "5yr", img: "/images/DSC03018.jpg", addonTier: "low", parts: [t.booking.exteriorBody] },
+    { id: "ppf-windshield", cat: "ppf", name: t.booking.svcPpfWindshield, p: sp("ppf-windshield", { small: 1000, large: 1000 }), w: "10yr", img: "/images/DSC03174.jpg", imgSmall: "/images/ppf-front-small.png", imgLarge: "/images/ppf-front-large.png", addonTier: "low", parts: [t.booking.frontWindshield] },
+    { id: "tint-full", cat: "tint", name: t.booking.svcTintFull, p: sp("tint-full", { small: 2400, large: 2800 }), w: "10yr", img: "/images/DSC03136.jpg", addonTier: "low", parts: [t.booking.allGlass], popular: true },
+    { id: "tint-front", cat: "tint", name: t.booking.svcTintFront, p: sp("tint-front", { small: 1160, large: 1300 }), w: "10yr", img: "/images/DSC03174.jpg", addonTier: "high", parts: [t.booking.frontWindshield] },
+    { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: sp("ceramic-int-1", { small: 2300, large: 2500 }), w: "1yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
+    { id: "ceramic-int-3", cat: "ceramic", name: t.booking.svcCeramicInt3, p: sp("ceramic-int-3", { small: 2900, large: 3100 }), w: "3yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
+    { id: "ceramic-int-5", cat: "ceramic", name: t.booking.svcCeramicInt5, p: sp("ceramic-int-5", { small: 3200, large: 3400 }), w: "5yr", img: "/images/DSC02995.jpg", addonTier: "low", parts: [t.booking.interiorSurfaces] },
+    { id: "ceramic-ext-1", cat: "ceramic", name: t.booking.svcCeramicExt1, p: sp("ceramic-ext-1", { small: 1350, large: 1950 }), w: "1yr", img: "/images/DSC03018.jpg", addonTier: "high", parts: [t.booking.exteriorBody] },
+    { id: "ceramic-ext-3", cat: "ceramic", name: t.booking.svcCeramicExt3, p: sp("ceramic-ext-3", { small: 2250, large: 2850 }), w: "3yr", img: "/images/DSC03018.jpg", addonTier: "low", parts: [t.booking.exteriorBody], popular: true },
+    { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: sp("ceramic-ext-5", { small: 3050, large: 3750 }), w: "5yr", img: "/images/DSC03018.jpg", addonTier: "low", parts: [t.booking.exteriorBody] },
   ];
 
   const filteredSvcs = category === "packages" ? [] : svcs.filter(s => s.cat === category);
@@ -157,18 +181,24 @@ export default function Booking() {
 
   // Packages — declared before total calc so packDiscount can reference it
   interface Pack { id: string; name: string; desc: string; svcIds: string[]; discount: number; tier: "basic" | "premium" | "vip"; warranty: string }
+
+  // Packages — uses API discount overrides when available
+  const packDisc = (id: string, fallback: number) => {
+    const ap = apiPackages.find(p => p.id === id);
+    return ap ? ap.discount : fallback;
+  };
   const packages: Pack[] = [
     {
       id: "basic", name: t.booking.packBasic, desc: t.booking.packBasicDesc,
-      svcIds: ["ppf-partial", "tint-front", "ceramic-ext-1"], discount: 5, tier: "basic", warranty: isAr ? "٥ سنوات ضمان" : "5yr Warranty",
+      svcIds: ["ppf-partial", "tint-front", "ceramic-ext-1"], discount: packDisc("basic", 5), tier: "basic", warranty: isAr ? "٥ سنوات ضمان" : "5yr Warranty",
     },
     {
       id: "premium", name: t.booking.packPremium, desc: t.booking.packPremiumDesc,
-      svcIds: ["ppf-clear75", "tint-full", "ceramic-ext-3"], discount: 8, tier: "premium", warranty: isAr ? "٧ سنوات ضمان" : "7yr Warranty",
+      svcIds: ["ppf-clear75", "tint-full", "ceramic-ext-3"], discount: packDisc("premium", 8), tier: "premium", warranty: isAr ? "٧ سنوات ضمان" : "7yr Warranty",
     },
     {
       id: "vip", name: t.booking.packVip, desc: t.booking.packVipDesc,
-      svcIds: ["ppf-clear85", "tint-full", "ceramic-ext-5"], discount: 12, tier: "vip", warranty: isAr ? "١٠ سنوات ضمان" : "10yr Warranty",
+      svcIds: ["ppf-clear85", "tint-full", "ceramic-ext-5"], discount: packDisc("vip", 12), tier: "vip", warranty: isAr ? "١٠ سنوات ضمان" : "10yr Warranty",
     },
   ];
 
@@ -229,6 +259,12 @@ export default function Booking() {
       .then(r => r.json())
       .then(d => { if (d.unavailable) setUnavailableDates(d.unavailable); })
       .catch(() => {});
+  }, []);
+
+  // Fetch dynamic services & packages from API
+  useEffect(() => {
+    fetch("/api/services").then(r => r.json()).then((d: ApiService[]) => { if (Array.isArray(d)) setApiServices(d); }).catch(() => {});
+    fetch("/api/packages").then(r => r.json()).then((d: ApiPackage[]) => { if (Array.isArray(d)) setApiPackages(d); }).catch(() => {});
   }, []);
 
   // #8 Get short service names for package cards
@@ -456,7 +492,7 @@ export default function Booking() {
             </p>
 
             {/* #3 Category Tabs — horizontal scroll on mobile */}
-            <div ref={tabsRef} className="booking-tabs-scroll" style={{
+            <div ref={tabsRef} role="tablist" aria-label={isAr ? "فئات الخدمات" : "Service categories"} className="booking-tabs-scroll" style={{
               display: "flex", gap: 8, justifyContent: "center", marginBottom: 32, flexWrap: "nowrap",
               overflowX: "auto", WebkitOverflowScrolling: "touch", paddingBottom: 4,
               scrollbarWidth: "none",
@@ -465,7 +501,7 @@ export default function Booking() {
                 const isActive = category === cat.id;
                 const count = selCount(cat.id);
                 return (
-                  <button key={cat.id} onClick={() => setCategory(cat.id)} style={{
+                  <button key={cat.id} role="tab" aria-selected={isActive} onClick={() => setCategory(cat.id)} style={{
                     display: "flex", alignItems: "center", gap: 8, padding: "10px 20px", borderRadius: 100, cursor: "pointer",
                     fontSize: 13, fontWeight: 600, transition: "all 0.3s", whiteSpace: "nowrap", flexShrink: 0,
                     background: isActive ? "#F6BE00" : "rgba(255,255,255,0.04)",
@@ -1138,20 +1174,21 @@ export default function Booking() {
                 { k: "phone" as const, ph: t.booking.phonePh, tp: "tel" },
                 { k: "carMake" as const, ph: t.booking.carMakePh, tp: "text" },
               ].map(f => (
-                <input key={f.k} type={f.tp} value={form[f.k]} onChange={e => setForm({...form, [f.k]: e.target.value})}
-                  placeholder={f.ph} dir={f.k === "phone" ? "ltr" : undefined}
+                <input key={f.k} id={`booking-${f.k}`} type={f.tp} value={form[f.k]} onChange={e => setForm({...form, [f.k]: e.target.value})}
+                  placeholder={f.ph} aria-label={f.ph} autoComplete={f.k === "name" ? "name" : f.k === "phone" ? "tel" : undefined}
+                  dir={f.k === "phone" ? "ltr" : undefined}
                   onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
                   onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
                   style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s", textAlign: f.k === "phone" ? ("left" as const) : undefined }} />
               ))}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-                <input type="text" value={form.carYear} onChange={e => setForm({...form, carYear: e.target.value})}
-                  placeholder={t.booking.carYearPh}
+                <input type="text" id="booking-carYear" value={form.carYear} onChange={e => setForm({...form, carYear: e.target.value})}
+                  placeholder={t.booking.carYearPh} aria-label={t.booking.carYearPh}
                   onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
                   onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
                   style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s" }} />
-                <input type="text" value={form.carColor} onChange={e => setForm({...form, carColor: e.target.value})}
-                  placeholder={t.booking.carColorPh}
+                <input type="text" id="booking-carColor" value={form.carColor} onChange={e => setForm({...form, carColor: e.target.value})}
+                  placeholder={t.booking.carColorPh} aria-label={t.booking.carColorPh}
                   onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
                   onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
                   style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s" }} />
@@ -1159,7 +1196,7 @@ export default function Booking() {
               {/* Preferred date picker */}
               <div>
                 <label style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 6 }}>{t.booking.preferredDateLabel}</label>
-                <input type="date" value={form.preferredDate}
+                <input type="date" id="booking-date" aria-label={t.booking.preferredDateLabel} value={form.preferredDate}
                   min={new Date().toISOString().slice(0, 10)}
                   onChange={e => {
                     const val = e.target.value;
@@ -1175,7 +1212,7 @@ export default function Booking() {
                   </p>
                 )}
               </div>
-              <textarea value={form.notes} onChange={e => setForm({...form, notes: e.target.value})}
+              <textarea id="booking-notes" aria-label={t.booking.notesPh} value={form.notes} onChange={e => setForm({...form, notes: e.target.value})}
                 placeholder={t.booking.notesPh} rows={3}
                 onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
                 onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
@@ -1215,6 +1252,7 @@ export default function Booking() {
                   <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
                   </svg>
+                  {submitting && <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ animation: "spin 1s linear infinite" }}><path d="M12 2a10 10 0 0 1 10 10" /></svg>}
                   {submitting ? (isAr ? "جاري المعالجة..." : "Processing...") : (isAr ? `احجز وادفع في المحل — ${displayTotal.toLocaleString()} ${cur}` : `Book & Pay at Shop — ${displayTotal.toLocaleString()} ${cur}`)}
                 </button>
 
@@ -1258,46 +1296,163 @@ export default function Booking() {
               <button onClick={() => goStep(2)} className="btn-outline">{t.booking.back}</button>
             </div>
 
-            {/* Success overlay */}
+            {/* Success overlay with confetti */}
             {orderSent && (
               <div style={{
                 position: "fixed", inset: 0, zIndex: 100,
-                background: "rgba(5,5,5,0.9)", backdropFilter: "blur(8px)",
+                background: "rgba(5,5,5,0.92)", backdropFilter: "blur(12px)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 animation: "fadeUp 0.4s ease-out",
+                overflowY: "auto",
               }}>
-                <div style={{ textAlign: "center", maxWidth: 400, padding: 40 }}>
-                  <div style={{
-                    width: 80, height: 80, borderRadius: "50%", background: "#F6BE00",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    margin: "0 auto 24px", animation: "fadeUp 0.5s ease-out 0.1s both",
-                  }}>
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5L20 7" /></svg>
+                {/* Confetti particles */}
+                {Array.from({ length: 40 }).map((_, i) => (
+                  <div key={i} className="confetti-piece" style={{
+                    left: `${Math.random() * 100}%`,
+                    width: `${6 + Math.random() * 8}px`,
+                    height: `${6 + Math.random() * 8}px`,
+                    background: ["#F6BE00", "#FFD54F", "#D4A300", "#fff", "#F6BE00", "#8B6914"][i % 6],
+                    borderRadius: i % 3 === 0 ? "50%" : i % 3 === 1 ? "2px" : "0",
+                    animationDelay: `${Math.random() * 1.5}s`,
+                    animationDuration: `${2 + Math.random() * 2}s`,
+                    opacity: 0.9,
+                  }} />
+                ))}
+
+                <div style={{ textAlign: "center", maxWidth: 440, padding: "40px 24px", position: "relative" }}>
+                  {/* Animated check with pulse ring */}
+                  <div style={{ position: "relative", width: 90, height: 90, margin: "0 auto 28px" }}>
+                    <div style={{
+                      position: "absolute", inset: 0, borderRadius: "50%",
+                      border: "2px solid rgba(246,190,0,0.3)",
+                      animation: "successRing 1.5s ease-out 0.3s both",
+                    }} />
+                    <div style={{
+                      position: "absolute", inset: 0, borderRadius: "50%",
+                      border: "2px solid rgba(246,190,0,0.2)",
+                      animation: "successRing 1.5s ease-out 0.6s both",
+                    }} />
+                    <div style={{
+                      width: 90, height: 90, borderRadius: "50%",
+                      background: "linear-gradient(135deg, #F6BE00, #D4A300)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      animation: "confettiPop 0.5s ease-out 0.1s both",
+                      boxShadow: "0 0 40px rgba(246,190,0,0.4), 0 0 80px rgba(246,190,0,0.15)",
+                    }}>
+                      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12l5 5L20 7" style={{ strokeDasharray: 24, animation: "checkDraw 0.6s ease-out 0.4s both" }} />
+                      </svg>
+                    </div>
                   </div>
-                  <h3 style={{ fontFamily: fontDisplay, fontSize: 28, fontWeight: 700, color: "#F6BE00", marginBottom: 12, animation: "fadeUp 0.5s ease-out 0.2s both" }}>
+
+                  <h3 style={{ fontFamily: fontDisplay, fontSize: 30, fontWeight: 700, color: "#F6BE00", marginBottom: 8, animation: "fadeUp 0.5s ease-out 0.2s both" }}>
                     {isAr ? "تم تأكيد الحجز!" : "Booking Confirmed!"}
                   </h3>
+                  <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 14, marginBottom: 24, animation: "fadeUp 0.5s ease-out 0.25s both" }}>
+                    {t.booking.orderSentSub}
+                  </p>
+
+                  {/* Confirmation number */}
                   {confirmationNumber && (
-                    <div style={{ animation: "fadeUp 0.5s ease-out 0.25s both", marginBottom: 16 }}>
-                      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 14, marginBottom: 8 }}>
-                        {isAr ? "رقم التأكيد:" : "Your confirmation number:"}
-                      </p>
+                    <div style={{ animation: "fadeUp 0.5s ease-out 0.3s both", marginBottom: 24 }}>
                       <div style={{
-                        fontFamily: fontDisplay, fontSize: 32, fontWeight: 700, color: "#F6BE00",
-                        letterSpacing: "0.05em", padding: "12px 24px", borderRadius: 12,
-                        background: "rgba(246,190,0,0.08)", border: "1px solid rgba(246,190,0,0.2)",
+                        fontFamily: fontDisplay, fontSize: 28, fontWeight: 700, color: "#F6BE00",
+                        letterSpacing: "0.08em", padding: "14px 28px", borderRadius: 14,
+                        background: "linear-gradient(135deg, rgba(246,190,0,0.1), rgba(246,190,0,0.04))",
+                        border: "1px solid rgba(246,190,0,0.25)",
                         display: "inline-block",
+                        boxShadow: "0 4px 20px rgba(246,190,0,0.1)",
                       }}>
-                        {confirmationNumber}
+                        #{confirmationNumber}
                       </div>
-                      <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 12, marginTop: 8 }}>
+                      <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginTop: 8, letterSpacing: "0.03em" }}>
                         {isAr ? "احفظ هذا الرقم للمراجعة" : "Save this number for reference"}
                       </p>
                     </div>
                   )}
-                  <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 15, lineHeight: 1.6, animation: "fadeUp 0.5s ease-out 0.3s both" }}>{t.booking.orderSentSub}</p>
-                  <button onClick={() => { setOrderSent(false); setConfirmationNumber(""); setBookingError(""); goStep(1); setSel([]); setSelAddons({}); setForm({ name: "", phone: "", notes: "", carMake: "", carYear: "", carColor: "", preferredDate: "" }); }} className="btn-outline" style={{ marginTop: 32, animation: "fadeUp 0.5s ease-out 0.4s both" }}>
-                    {t.booking.back}
+
+                  {/* Booking summary receipt */}
+                  <div style={{
+                    animation: "fadeUp 0.5s ease-out 0.35s both",
+                    background: "rgba(255,255,255,0.03)", borderRadius: 16,
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    padding: "20px", textAlign: dir === "rtl" ? "right" : "left",
+                    marginBottom: 24,
+                  }}>
+                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14, textAlign: "center" }}>
+                      {isAr ? "ملخص الحجز" : "Booking Summary"}
+                    </div>
+
+                    {/* Vehicle */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                      <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{isAr ? "نوع السيارة" : "Vehicle"}</span>
+                      <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{cars.find(c => c.id === size)?.label}</span>
+                    </div>
+
+                    {/* Customer */}
+                    {form.name && (
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                        <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{isAr ? "العميل" : "Customer"}</span>
+                        <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{form.name}</span>
+                      </div>
+                    )}
+
+                    {/* Car details */}
+                    {form.carMake && (
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                        <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{isAr ? "السيارة" : "Car"}</span>
+                        <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{[form.carMake, form.carYear, form.carColor].filter(Boolean).join(" · ")}</span>
+                      </div>
+                    )}
+
+                    {/* Services */}
+                    <div style={{ padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                      <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>
+                        {isAr ? "الخدمات" : "Services"} ({sel.length})
+                      </span>
+                      {sel.map(id => {
+                        const s = svcs.find(x => x.id === id);
+                        return s ? (
+                          <div key={id} style={{ display: "flex", justifyContent: "space-between", padding: "3px 0" }}>
+                            <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>{s.name}</span>
+                            <span style={{ color: "rgba(246,190,0,0.7)", fontSize: 12 }}>{size ? s.p[size].toLocaleString() : 0} {cur}</span>
+                          </div>
+                        ) : null;
+                      })}
+                    </div>
+
+                    {/* Package discount */}
+                    {activePack && packDiscount > 0 && (
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                        <span style={{ color: "#4CAF50", fontSize: 12 }}>{packages.find(p => p.id === activePack)?.name} {isAr ? "خصم" : "discount"}</span>
+                        <span style={{ color: "#4CAF50", fontSize: 12, fontWeight: 600 }}>-{packDiscount.toLocaleString()} {cur}</span>
+                      </div>
+                    )}
+
+                    {/* Total */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0 4px" }}>
+                      <span style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>{isAr ? "الإجمالي" : "Total"}</span>
+                      <span className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 20, fontWeight: 700 }}>{total.toLocaleString()} {cur}</span>
+                    </div>
+                  </div>
+
+                  {/* Preferred date */}
+                  {form.preferredDate && (
+                    <div style={{ animation: "fadeUp 0.5s ease-out 0.38s both", marginBottom: 20 }}>
+                      <div style={{
+                        display: "inline-flex", alignItems: "center", gap: 8,
+                        padding: "8px 18px", borderRadius: 10,
+                        background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.15)",
+                        color: "rgba(255,255,255,0.5)", fontSize: 13,
+                      }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F6BE00" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+                        {form.preferredDate}
+                      </div>
+                    </div>
+                  )}
+
+                  <button onClick={() => { setOrderSent(false); setConfirmationNumber(""); setBookingError(""); goStep(1); setSel([]); setSelAddons({}); setForm({ name: "", phone: "", notes: "", carMake: "", carYear: "", carColor: "", preferredDate: "" }); }} className="btn-gold" style={{ marginTop: 8, animation: "fadeUp 0.5s ease-out 0.4s both", padding: "14px 40px" }}>
+                    {isAr ? "حجز جديد" : "New Booking"}
                   </button>
                 </div>
               </div>

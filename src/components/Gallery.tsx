@@ -75,6 +75,9 @@ export default function Gallery() {
       {/* Lightbox overlay */}
       {lightbox !== null && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={imgs[lightbox].alt}
           onClick={() => setLightbox(null)}
           style={{
             position: "fixed", inset: 0, zIndex: 100,
@@ -84,7 +87,7 @@ export default function Gallery() {
           }}
         >
           {/* Close button */}
-          <button onClick={() => setLightbox(null)} style={{
+          <button aria-label="Close lightbox" onClick={() => setLightbox(null)} style={{
             position: "absolute", top: 20, right: 20, zIndex: 10,
             width: 44, height: 44, borderRadius: "50%", cursor: "pointer",
             background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)",
@@ -93,6 +96,7 @@ export default function Gallery() {
 
           {/* Prev arrow */}
           <button
+            aria-label="Previous image"
             onClick={(e) => { e.stopPropagation(); navigate(isAr ? 1 : -1); }}
             style={{
               position: "absolute", left: 20, top: "50%", transform: "translateY(-50%)", zIndex: 10,
@@ -121,6 +125,7 @@ export default function Gallery() {
 
           {/* Next arrow */}
           <button
+            aria-label="Next image"
             onClick={(e) => { e.stopPropagation(); navigate(isAr ? -1 : 1); }}
             style={{
               position: "absolute", right: 20, top: "50%", transform: "translateY(-50%)", zIndex: 10,

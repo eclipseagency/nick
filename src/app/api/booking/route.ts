@@ -2,6 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import crypto from "crypto";
 
+// ─── Rate limiter (in-memory, per IP) ────────────────────────────────
+const rateLimitMap = new Map<string, { count: number; reset: number }>();
+const RATE_LIMIT = 5; // max bookings per window
+const RATE_WINDOW = 60 * 60 * 1000; // 1 hour
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.reset) {
+    rateLimitMap.set(ip, { count: 1, reset: now + RATE_WINDOW });
+    return false;
+  }
+  entry.count++;
+  return entry.count > RATE_LIMIT;
+}
+
 // Hardcoded addon prices (mirrors client-side Booking.tsx)
 // addonTier "low" → p.small, addonTier "high" → p.large
 const ADDON_PRICES: Record<string, { small: number; large: number }> = {
@@ -55,6 +71,15 @@ function getAddonPrice(
 }
 
 export async function POST(req: NextRequest) {
+  // Rate limit check
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown";
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { error: "Too many booking requests. Please try again later." },
+      { status: 429 },
+    );
+  }
+
   try {
     const body = await req.json();
 
