@@ -7,7 +7,6 @@ const NAV_ITEMS = [
   { label: "Dashboard", href: "/admin", icon: "grid" },
   { label: "Bookings", href: "/admin/bookings", icon: "calendar" },
   { label: "Services", href: "/admin/services", icon: "layers" },
-  { label: "Packages", href: "/admin/packages", icon: "package" },
   { label: "Settings", href: "/admin/settings", icon: "settings" },
 ];
 

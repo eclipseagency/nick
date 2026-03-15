@@ -16,6 +16,11 @@ interface Service {
   parts_en: string | null;
   parts_ar: string | null;
   addon_tier: string | null;
+  details_en: string | null;
+  details_ar: string | null;
+  tier: string | null;
+  price_before_small: number | null;
+  price_before_large: number | null;
   popular: boolean;
   sort_order: number;
   active: boolean;
@@ -164,6 +169,11 @@ export default function ServicesPage() {
     image: null,
     image_small: null,
     image_large: null,
+    details_en: null,
+    details_ar: null,
+    tier: null,
+    price_before_small: null,
+    price_before_large: null,
     popular: false,
     active: true,
   });
@@ -229,6 +239,11 @@ export default function ServicesPage() {
       image: null,
       image_small: null,
       image_large: null,
+      details_en: null,
+      details_ar: null,
+      tier: null,
+      price_before_small: null,
+      price_before_large: null,
       popular: false,
       active: true,
     });
@@ -410,6 +425,55 @@ export default function ServicesPage() {
                 value={createData.warranty || ""}
                 onChange={(e) => setCreateData({ ...createData, warranty: e.target.value })}
                 placeholder="e.g. 5 years"
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Tier</label>
+              <input
+                style={inputStyle}
+                value={createData.tier || ""}
+                onChange={(e) => setCreateData({ ...createData, tier: e.target.value || null })}
+                placeholder="e.g. SPRINT, TURBO, Plus"
+              />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div>
+                <label style={labelStyle}>Price Before Small (SAR)</label>
+                <input
+                  type="number"
+                  style={inputStyle}
+                  value={createData.price_before_small ?? ""}
+                  onChange={(e) => setCreateData({ ...createData, price_before_small: e.target.value ? Number(e.target.value) : null })}
+                  placeholder="Before discount"
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Price Before Large (SAR)</label>
+                <input
+                  type="number"
+                  style={inputStyle}
+                  value={createData.price_before_large ?? ""}
+                  onChange={(e) => setCreateData({ ...createData, price_before_large: e.target.value ? Number(e.target.value) : null })}
+                  placeholder="Before discount"
+                />
+              </div>
+            </div>
+            <div>
+              <label style={labelStyle}>Details (EN)</label>
+              <textarea
+                style={{ ...inputStyle, minHeight: 80, resize: "vertical" as const }}
+                value={createData.details_en || ""}
+                onChange={(e) => setCreateData({ ...createData, details_en: e.target.value || null })}
+                placeholder="One detail per line"
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Details (AR)</label>
+              <textarea
+                style={{ ...inputStyle, minHeight: 80, resize: "vertical" as const, direction: "rtl" as const }}
+                value={createData.details_ar || ""}
+                onChange={(e) => setCreateData({ ...createData, details_ar: e.target.value || null })}
+                placeholder="تفصيل واحد لكل سطر"
               />
             </div>
 
@@ -655,6 +719,55 @@ export default function ServicesPage() {
                           style={inputStyle}
                           value={editData.warranty || ""}
                           onChange={(e) => setEditData({ ...editData, warranty: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label style={labelStyle}>Tier</label>
+                        <input
+                          style={inputStyle}
+                          value={editData.tier || ""}
+                          onChange={(e) => setEditData({ ...editData, tier: e.target.value || null })}
+                          placeholder="e.g. SPRINT, TURBO, Plus"
+                        />
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                        <div>
+                          <label style={labelStyle}>Price Before Small (SAR)</label>
+                          <input
+                            type="number"
+                            style={inputStyle}
+                            value={editData.price_before_small ?? ""}
+                            onChange={(e) => setEditData({ ...editData, price_before_small: e.target.value ? Number(e.target.value) : null })}
+                            placeholder="Before discount"
+                          />
+                        </div>
+                        <div>
+                          <label style={labelStyle}>Price Before Large (SAR)</label>
+                          <input
+                            type="number"
+                            style={inputStyle}
+                            value={editData.price_before_large ?? ""}
+                            onChange={(e) => setEditData({ ...editData, price_before_large: e.target.value ? Number(e.target.value) : null })}
+                            placeholder="Before discount"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label style={labelStyle}>Details (EN)</label>
+                        <textarea
+                          style={{ ...inputStyle, minHeight: 80, resize: "vertical" as const }}
+                          value={editData.details_en || ""}
+                          onChange={(e) => setEditData({ ...editData, details_en: e.target.value || null })}
+                          placeholder="One detail per line"
+                        />
+                      </div>
+                      <div>
+                        <label style={labelStyle}>Details (AR)</label>
+                        <textarea
+                          style={{ ...inputStyle, minHeight: 80, resize: "vertical" as const, direction: "rtl" as const }}
+                          value={editData.details_ar || ""}
+                          onChange={(e) => setEditData({ ...editData, details_ar: e.target.value || null })}
+                          placeholder="تفصيل واحد لكل سطر"
                         />
                       </div>
 
