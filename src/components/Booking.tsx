@@ -468,6 +468,7 @@ export default function Booking() {
               return (
                 <div key={s.id} style={{ display: "flex", flexDirection: "column" }}>
                   <button onClick={() => toggleSvc(s.id)} style={{
+                    position: "relative",
                     width: "100%", padding: 0, cursor: "pointer", background: "none", border: "none",
                     borderRadius: 14, overflow: "hidden", transition: "all 0.3s",
                     outline: isSelected ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
@@ -525,6 +526,31 @@ export default function Booking() {
                           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 7L5.75 9.25L10.5 4.5" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         </div>
                       )}
+                      {/* Details overlay — shows on top of image when open */}
+                      {isDetailsOpen && (
+                        <div
+                          onClick={(e) => { e.stopPropagation(); setDetailsOpenId(null); }}
+                          style={{
+                            position: "absolute", inset: 0, zIndex: 5,
+                            background: "rgba(0,0,0,0.88)", backdropFilter: "blur(6px)",
+                            display: "flex", flexDirection: "column", justifyContent: "center",
+                            padding: 16, borderRadius: 14,
+                            animation: "fadeUp 0.2s ease-out",
+                          }}
+                        >
+                          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                            {s.details.map((d, di) => (
+                              <li key={di} style={{
+                                display: "flex", alignItems: "flex-start", gap: 8,
+                                padding: "4px 0", fontSize: 12, color: "rgba(255,255,255,0.85)", lineHeight: 1.5,
+                              }}>
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ marginTop: 3, flexShrink: 0 }}><path d="M3.5 6L5.25 7.75L8.5 4.5" stroke="#F6BE00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                {d}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                     {/* Info */}
                     <div style={{ padding: "14px 16px", background: "#111" }}>
@@ -533,27 +559,21 @@ export default function Booking() {
                         <span style={{ fontSize: 10, color: "#F6BE00", border: "1px solid rgba(246,190,0,0.2)", padding: "2px 8px", borderRadius: 100, flexShrink: 0 }}>{s.w}</span>
                       </div>
                       <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", lineHeight: 1.4, marginBottom: 8, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{catDesc[s.cat]}</p>
-                      {/* More Details button — replaces parts pills */}
+                      {/* More Details button — yellow */}
                       <button
                         onClick={(e) => { e.stopPropagation(); setDetailsOpenId(isDetailsOpen ? null : s.id); }}
                         style={{
                           display: "inline-flex", alignItems: "center", gap: 6,
-                          padding: "5px 14px", borderRadius: 100, cursor: "pointer",
-                          background: isDetailsOpen ? "rgba(246,190,0,0.12)" : "rgba(255,255,255,0.04)",
-                          border: isDetailsOpen ? "1px solid rgba(246,190,0,0.3)" : "1px solid rgba(255,255,255,0.08)",
-                          color: isDetailsOpen ? "#F6BE00" : "rgba(255,255,255,0.45)",
-                          fontSize: 11, fontWeight: 600, transition: "all 0.25s",
+                          padding: "6px 16px", borderRadius: 100, cursor: "pointer",
+                          background: "#F6BE00", border: "none", color: "#000",
+                          fontSize: 11, fontWeight: 700, transition: "all 0.25s",
                         }}
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
                         </svg>
                         {t.booking.moreDetails}
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isDetailsOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
-                          <polyline points="6 9 12 15 18 9"/>
-                        </svg>
                       </button>
-                      {/* Selected addons count badge */}
                       {isSelected && svcAddons.length > 0 && (
                         <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 6 }}>
                           <span style={{ fontSize: 10, color: "rgba(246,190,0,0.7)" }}>{svcAddons.length} {t.booking.additionalServices.toLowerCase()}</span>
@@ -561,27 +581,6 @@ export default function Booking() {
                       )}
                     </div>
                   </button>
-                  {/* Details panel — toggled by "More Details" button */}
-                  {isDetailsOpen && (
-                    <div style={{
-                      padding: "14px 16px", background: "#0d0d0d",
-                      border: "1px solid rgba(246,190,0,0.15)", borderTop: "none",
-                      borderRadius: "0 0 14px 14px",
-                      animation: "fadeUp 0.25s ease-out",
-                    }}>
-                      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                        {s.details.map((d, i) => (
-                          <li key={i} style={{
-                            display: "flex", alignItems: "flex-start", gap: 8,
-                            padding: "5px 0", fontSize: 12, color: "rgba(255,255,255,0.6)", lineHeight: 1.5,
-                          }}>
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ marginTop: 3, flexShrink: 0 }}><path d="M3.5 6L5.25 7.75L8.5 4.5" stroke="#F6BE00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                            {d}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                 </div>
               );
             })}
