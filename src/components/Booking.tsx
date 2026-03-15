@@ -103,8 +103,8 @@ export default function Booking() {
   };
 
   const cars = [
-    { id: "small" as const, label: t.booking.carSmall, ex: "Civic, Corolla, Elantra, Camry", img: "/images/small-car-active.png", imgHover: "/images/small-car-hover.png" },
-    { id: "large" as const, label: t.booking.carLarge, ex: "Tahoe, Land Cruiser, S-Class", img: "/images/big-car-active.png", imgHover: "/images/big-car-hover.png" },
+    { id: "small" as const, label: t.booking.carSmall, ex: isAr ? "كامري، أكورد، بورشه، مرسيدس C-Class" : "Camry, Accord, Porsche, Mercedes C-Class", img: "/images/small-car-active.png", imgHover: "/images/small-car-hover.png" },
+    { id: "large" as const, label: t.booking.carLarge, ex: isAr ? "لاندكروزر، باترول، تاهو، مرسيدس G-Class" : "Land Cruiser, Patrol, Tahoe, Mercedes G-Class", img: "/images/big-car-active.png", imgHover: "/images/big-car-hover.png" },
   ];
 
   const categories: { id: Category; label: string; icon: React.ReactNode }[] = [
