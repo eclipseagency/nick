@@ -22,12 +22,12 @@ function isRateLimited(ip: string): boolean {
 // addonTier "low" → p.small, addonTier "high" → p.large
 const ADDON_PRICES: Record<string, { small: number; large: number }> = {
   ozone: { small: 100, large: 150 },
-  "rim-ceramic": { small: 600, large: 700 },
-  "engine-clean": { small: 150, large: 200 },
+  "rim-ceramic": { small: 400, large: 400 },
+  "engine-clean": { small: 100, large: 150 },
   "remove-tint": { small: 200, large: 300 },
-  "remove-partial": { small: 350, large: 450 },
-  "remove-front": { small: 550, large: 650 },
-  "remove-full": { small: 1250, large: 1450 },
+  "remove-partial": { small: 250, large: 350 },
+  "remove-front": { small: 400, large: 500 },
+  "remove-full": { small: 1200, large: 1400 },
 };
 
 // Service → addon tier mapping (mirrors client-side)
