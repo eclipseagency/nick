@@ -508,18 +508,30 @@ export default function Booking() {
                           ★ {t.booking.popular}
                         </span>
                       )}
-                      {/* Tier badge */}
-                      {s.tier && (
-                        <span style={{
-                          position: "absolute", top: s.popular ? 38 : 10, ...(dir === "rtl" ? { right: 10 } : { left: 10 }),
-                          padding: "4px 14px", fontSize: 11, fontWeight: 800, borderRadius: 8, zIndex: 2,
-                          background: "linear-gradient(135deg, #F6BE00, #D4A300)", color: "#000",
-                          letterSpacing: "0.08em", textTransform: "uppercase",
-                          boxShadow: "0 2px 10px rgba(246,190,0,0.4)",
-                        }}>
-                          {s.tier}
-                        </span>
-                      )}
+                      {/* Tier badge — top right with unique colors */}
+                      {s.tier && (() => {
+                        const tierColors: Record<string, { bg: string; color: string; shadow: string }> = {
+                          SPRINT: { bg: "#2196F3", color: "#fff", shadow: "rgba(33,150,243,0.4)" },
+                          TURBO: { bg: "#F44336", color: "#fff", shadow: "rgba(244,67,54,0.4)" },
+                          Max: { bg: "#9C27B0", color: "#fff", shadow: "rgba(156,39,176,0.4)" },
+                          Pro: { bg: "#FF5722", color: "#fff", shadow: "rgba(255,87,34,0.4)" },
+                          Plus: { bg: "#4CAF50", color: "#fff", shadow: "rgba(76,175,80,0.4)" },
+                          Flex: { bg: "#FF9800", color: "#000", shadow: "rgba(255,152,0,0.4)" },
+                          Lite: { bg: "#607D8B", color: "#fff", shadow: "rgba(96,125,139,0.4)" },
+                        };
+                        const tc = tierColors[s.tier] || { bg: "#F6BE00", color: "#000", shadow: "rgba(246,190,0,0.4)" };
+                        return (
+                          <span style={{
+                            position: "absolute", top: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
+                            padding: "4px 14px", fontSize: 11, fontWeight: 800, borderRadius: 8, zIndex: 3,
+                            background: tc.bg, color: tc.color,
+                            letterSpacing: "0.08em", textTransform: "uppercase",
+                            boxShadow: `0 2px 10px ${tc.shadow}`,
+                          }}>
+                            {s.tier}
+                          </span>
+                        );
+                      })()}
                       {/* Category pill — only if not popular (to avoid overlap) */}
                       {!s.popular && (
                         <span style={{
@@ -544,8 +556,8 @@ export default function Booking() {
                       {/* Checkmark */}
                       {isSelected && (
                         <div style={{
-                          position: "absolute", top: 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
-                          width: 26, height: 26, borderRadius: "50%", background: "#F6BE00",
+                          position: "absolute", top: s.tier ? 38 : 10, ...(dir === "rtl" ? { left: 10 } : { right: 10 }),
+                          width: 26, height: 26, borderRadius: "50%", background: "#F6BE00", zIndex: 4,
                           display: "flex", alignItems: "center", justifyContent: "center",
                         }}>
                           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 7L5.75 9.25L10.5 4.5" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
