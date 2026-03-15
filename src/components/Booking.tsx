@@ -363,25 +363,16 @@ export default function Booking() {
           </div>
         </div>
 
-        {/* Google Reviews Trust Bar */}
+        {/* Trust Bar */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 32, flexWrap: "wrap" }}>
-          <a
-            href="https://www.google.com/maps/place/Nick+RIYADH/@24.8361322,46.6846706,17z"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "flex", alignItems: "center", gap: 8, padding: "8px 18px", borderRadius: 12,
-              background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-              textDecoration: "none", transition: "border-color 0.3s",
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
-          >
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8, padding: "8px 18px", borderRadius: 12,
+            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+          }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="#F6BE00"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            <span style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>Google Reviews</span>
-            <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{isAr ? "شاهد التقييمات" : "View reviews"}</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          </a>
+            <span style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>Nick RIYADH</span>
+            <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{isAr ? "الرياض، المملكة العربية السعودية" : "Riyadh, Saudi Arabia"}</span>
+          </div>
           <div style={{
             display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 12,
             background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.15)",
