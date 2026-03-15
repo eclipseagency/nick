@@ -36,12 +36,12 @@ export default function Hero() {
       style={{
         position: "relative",
         width: "100%",
-        paddingTop: 80, /* navbar height */
+        marginTop: 80, /* navbar height */
         background: "#050505",
       }}
     >
-      {/* Image container — aspect ratio driven by the banner images */}
-      <div style={{ position: "relative", width: "100%", aspectRatio: "1440 / 480", maxHeight: "70vh" }}>
+      {/* Image container — matches actual image ratio 1920x600 */}
+      <div style={{ position: "relative", width: "100%", aspectRatio: "1920 / 600" }}>
         {slides.map((src, i) => (
           <div
             key={src}
