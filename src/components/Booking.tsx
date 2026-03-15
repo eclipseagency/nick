@@ -91,7 +91,6 @@ export default function Booking() {
         setSelAddons(a => { const n = { ...a }; conflicting.forEach(cid => delete n[cid]); return n; });
       }
       setDetailId(id);
-      setTimeout(() => detailRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 100);
     }
   };
 
