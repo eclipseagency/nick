@@ -35,7 +35,7 @@ export default function Booking() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [detailsOpenId, setDetailsOpenId] = useState<string | null>(null);
   const [selAddons, setSelAddons] = useState<Record<string, string[]>>({});
-  const [form, setForm] = useState({ name: "", phone: "", notes: "", preferredDate: "", birthDate: "" });
+  const [form, setForm] = useState({ name: "", phone: "", notes: "", preferredDate: "" });
   const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
   const [orderSent, setOrderSent] = useState(false);
   const [bookingError, setBookingError] = useState("");
@@ -246,7 +246,7 @@ export default function Booking() {
         body: JSON.stringify({
           customer_name: form.name,
           customer_phone: form.phone,
-          customer_notes: [form.notes, form.birthDate ? `Birthday: ${form.birthDate}` : ""].filter(Boolean).join(" | ") || null,
+          customer_notes: form.notes || null,
           car_make: null,
           preferred_date: form.preferredDate,
           car_size: size,
@@ -939,17 +939,6 @@ export default function Booking() {
                 </p>
               )}
             </div>
-            {/* Birthday — subtle, no mention of offers */}
-            <div>
-              <label style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 6 }}>
-                {isAr ? "تاريخ الميلاد" : "Date of Birth"}
-              </label>
-              <input type="date" id="booking-birthday" aria-label={isAr ? "تاريخ الميلاد" : "Date of Birth"} value={form.birthDate}
-                onChange={e => setForm({...form, birthDate: e.target.value})}
-                onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
-                onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
-                style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: form.birthDate ? "#fff" : "rgba(255,255,255,0.35)", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s", colorScheme: "dark" }} />
-            </div>
             <textarea id="booking-notes" aria-label={t.booking.notesPh} value={form.notes} onChange={e => setForm({...form, notes: e.target.value})}
               placeholder={t.booking.notesPh} rows={3}
               onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
@@ -1196,7 +1185,7 @@ export default function Booking() {
                   </div>
                 )}
 
-                <button onClick={() => { setOrderSent(false); setConfirmationNumber(""); setBookingError(""); setSel([]); setSelAddons({}); setForm({ name: "", phone: "", notes: "", preferredDate: "", birthDate: "" }); setSize(null); scrollToSection(step1Ref); }} className="btn-gold" style={{ marginTop: 8, animation: "fadeUp 0.5s ease-out 0.4s both", padding: "14px 40px" }}>
+                <button onClick={() => { setOrderSent(false); setConfirmationNumber(""); setBookingError(""); setSel([]); setSelAddons({}); setForm({ name: "", phone: "", notes: "", preferredDate: "" }); setSize(null); scrollToSection(step1Ref); }} className="btn-gold" style={{ marginTop: 8, animation: "fadeUp 0.5s ease-out 0.4s both", padding: "14px 40px" }}>
                   {isAr ? "حجز جديد" : "New Booking"}
                 </button>
               </div>
