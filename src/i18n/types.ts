@@ -197,18 +197,21 @@ export interface Dictionary {
     svcPpfClear75: string;
     svcPpfClear85: string;
     svcPpfMatte: string;
-    svcPpfFrontRear: string;
     svcPpfFront: string;
-    svcPpfPartialRear: string;
     svcPpfPartial: string;
-    svcPpfWindshield: string;
+    svcWrapping: string;
+    svcPpfInterior: string;
     // Tint services
-    svcTintFull: string;
-    svcTintFront: string;
+    svcTintPlus: string;
+    svcTintFlex: string;
+    svcTintLite: string;
+    svcTintFrontMax: string;
+    svcTintFrontPro: string;
+    svcTintFrontPlus: string;
+    svcTintFrontFlex: string;
+    svcTintFrontLite: string;
     // Ceramic services
     svcCeramicInt1: string;
-    svcCeramicInt3: string;
-    svcCeramicInt5: string;
     svcCeramicExt1: string;
     svcCeramicExt3: string;
     svcCeramicExt5: string;

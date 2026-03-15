@@ -72,9 +72,10 @@ export default function Booking() {
 
   // Mutually exclusive groups — selecting one auto-removes others in same group
   const exclusiveGroups: string[][] = [
-    ["ppf-color", "ppf-clear75", "ppf-clear85", "ppf-matte"], // full body PPF — pick one
-    ["ppf-front-rear", "ppf-front", "ppf-partial-rear", "ppf-partial"], // partial PPF — pick one
-    ["ceramic-int-1", "ceramic-int-3", "ceramic-int-5"], // interior ceramic — pick one tier
+    ["ppf-color", "ppf-clear75", "ppf-clear85", "ppf-matte", "wrapping"], // full body PPF — pick one
+    ["tint-plus", "tint-flex", "tint-lite"], // full car tint — pick one
+    ["tint-front-max", "tint-front-pro", "tint-front-plus", "tint-front-flex", "tint-front-lite"], // front windshield tint — pick one
+    ["ceramic-int-1"], // interior ceramic — only one tier
     ["ceramic-ext-1", "ceramic-ext-3", "ceramic-ext-5"], // exterior ceramic — pick one tier
   ];
 
@@ -150,20 +151,21 @@ export default function Booking() {
     { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: sp("ppf-clear75", { small: 9780, large: 11380 }), pBefore: { small: 12000, large: 14000 }, w: "10yr", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody] },
     { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: sp("ppf-clear85", { small: 10780, large: 12180 }), pBefore: { small: 13000, large: 15000 }, w: "10yr", img: "/images/DSC03235.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody], popular: true },
     { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: sp("ppf-matte", { small: 11380, large: 12980 }), pBefore: { small: 14000, large: 16000 }, w: "10yr", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-matte-small.png", imgLarge: "/images/ppf-matte-large.png", addonTier: "low", parts: [t.booking.fullBody] },
-    { id: "ppf-front-rear", cat: "ppf", name: t.booking.svcPpfFrontRear, p: sp("ppf-front-rear", { small: 4770, large: 5500 }), w: "10yr", img: "", imgSmall: "/images/ppf-front-rear-small.png", imgLarge: "/images/ppf-front-rear-large.png", addonTier: "high",
-      parts: [t.booking.fullHood, t.booking.fullFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges, t.booking.rearBumper] },
+    { id: "wrapping", cat: "ppf", name: t.booking.svcWrapping, p: sp("wrapping", { small: 8780, large: 10780 }), pBefore: { small: 11000, large: 13000 }, w: "3yr", img: "", addonTier: "low", parts: [t.booking.fullBody] },
     { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: sp("ppf-front", { small: 2980, large: 4780 }), pBefore: { small: 3660, large: 5660 }, w: "10yr", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-front-small.png", imgLarge: "/images/ppf-front-large.png", addonTier: "high",
       parts: [t.booking.fullHood, t.booking.fullFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges] },
-    { id: "ppf-partial-rear", cat: "ppf", name: t.booking.svcPpfPartialRear, p: sp("ppf-partial-rear", { small: 2770, large: 4800 }), w: "10yr", img: "", imgSmall: "/images/ppf-partial-rear-small.png", imgLarge: "/images/ppf-partial-rear-large.png", addonTier: "low",
-      parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges, t.booking.rearBumper] },
     { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: sp("ppf-partial", { small: 1680, large: 2680 }), pBefore: { small: 2000, large: 3200 }, w: "10yr", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-partial-small.png", imgLarge: "/images/ppf-partial-large.png", addonTier: "low",
       parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges] },
-    { id: "ppf-windshield", cat: "ppf", name: t.booking.svcPpfWindshield, p: sp("ppf-windshield", { small: 1000, large: 1000 }), w: "10yr", img: "", addonTier: "low", parts: [t.booking.frontWindshield] },
-    { id: "tint-full", cat: "tint", name: t.booking.svcTintFull, p: sp("tint-full", { small: 1380, large: 1580 }), pBefore: { small: 1600, large: 1800 }, w: "10yr", img: "", addonTier: "low", parts: [t.booking.allGlass], popular: true },
-    { id: "tint-front", cat: "tint", name: t.booking.svcTintFront, p: sp("tint-front", { small: 375, large: 475 }), w: "10yr", img: "", addonTier: "high", parts: [t.booking.frontWindshield] },
+    { id: "ppf-interior", cat: "ppf", name: t.booking.svcPpfInterior, p: sp("ppf-interior", { small: 1180, large: 1580 }), pBefore: { small: 1400, large: 1950 }, w: "10yr", img: "", addonTier: "low", parts: [t.booking.interiorSurfaces] },
+    { id: "tint-plus", cat: "tint", name: t.booking.svcTintPlus, p: sp("tint-plus", { small: 1380, large: 1580 }), pBefore: { small: 1600, large: 1800 }, w: "10yr", img: "", addonTier: "low", parts: [t.booking.allGlass], popular: true },
+    { id: "tint-flex", cat: "tint", name: t.booking.svcTintFlex, p: sp("tint-flex", { small: 1180, large: 1380 }), pBefore: { small: 1300, large: 1500 }, w: "8yr", img: "", addonTier: "low", parts: [t.booking.allGlass] },
+    { id: "tint-lite", cat: "tint", name: t.booking.svcTintLite, p: sp("tint-lite", { small: 900, large: 1080 }), pBefore: { small: 1000, large: 1200 }, w: "5yr", img: "", addonTier: "low", parts: [t.booking.allGlass] },
+    { id: "tint-front-max", cat: "tint", name: t.booking.svcTintFrontMax, p: sp("tint-front-max", { small: 780, large: 880 }), w: "10yr", img: "", addonTier: "high", parts: [t.booking.frontWindshield] },
+    { id: "tint-front-pro", cat: "tint", name: t.booking.svcTintFrontPro, p: sp("tint-front-pro", { small: 660, large: 760 }), w: "10yr", img: "", addonTier: "high", parts: [t.booking.frontWindshield] },
+    { id: "tint-front-plus", cat: "tint", name: t.booking.svcTintFrontPlus, p: sp("tint-front-plus", { small: 375, large: 475 }), w: "10yr", img: "", addonTier: "high", parts: [t.booking.frontWindshield] },
+    { id: "tint-front-flex", cat: "tint", name: t.booking.svcTintFrontFlex, p: sp("tint-front-flex", { small: 225, large: 325 }), w: "8yr", img: "", addonTier: "high", parts: [t.booking.frontWindshield] },
+    { id: "tint-front-lite", cat: "tint", name: t.booking.svcTintFrontLite, p: sp("tint-front-lite", { small: 185, large: 285 }), w: "5yr", img: "", addonTier: "high", parts: [t.booking.frontWindshield] },
     { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: sp("ceramic-int-1", { small: 1880, large: 2180 }), pBefore: { small: 2350, large: 2750 }, w: "1yr", img: "", addonTier: "low", parts: [t.booking.interiorSurfaces] },
-    { id: "ceramic-int-3", cat: "ceramic", name: t.booking.svcCeramicInt3, p: sp("ceramic-int-3", { small: 2900, large: 3100 }), w: "3yr", img: "", addonTier: "low", parts: [t.booking.interiorSurfaces] },
-    { id: "ceramic-int-5", cat: "ceramic", name: t.booking.svcCeramicInt5, p: sp("ceramic-int-5", { small: 3200, large: 3400 }), w: "5yr", img: "", addonTier: "low", parts: [t.booking.interiorSurfaces] },
     { id: "ceramic-ext-1", cat: "ceramic", name: t.booking.svcCeramicExt1, p: sp("ceramic-ext-1", { small: 1180, large: 1280 }), pBefore: { small: 1550, large: 1750 }, w: "1yr", img: "", addonTier: "high", parts: [t.booking.exteriorBody] },
     { id: "ceramic-ext-3", cat: "ceramic", name: t.booking.svcCeramicExt3, p: sp("ceramic-ext-3", { small: 1480, large: 1780 }), pBefore: { small: 2550, large: 2750 }, w: "3yr", img: "", addonTier: "low", parts: [t.booking.exteriorBody], popular: true },
     { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: sp("ceramic-ext-5", { small: 1780, large: 1980 }), pBefore: { small: 2950, large: 3250 }, w: "5yr", img: "", addonTier: "low", parts: [t.booking.exteriorBody] },
@@ -192,15 +194,15 @@ export default function Booking() {
   const packages: Pack[] = [
     {
       id: "basic", name: t.booking.packBasic, desc: t.booking.packBasicDesc,
-      svcIds: ["ppf-partial", "tint-front", "ceramic-ext-1"], discount: packDisc("basic", 5), tier: "basic", warranty: isAr ? "٥ سنوات ضمان" : "5yr Warranty",
+      svcIds: ["ppf-partial", "tint-front-plus", "ceramic-ext-1"], discount: packDisc("basic", 5), tier: "basic", warranty: isAr ? "٥ سنوات ضمان" : "5yr Warranty",
     },
     {
       id: "premium", name: t.booking.packPremium, desc: t.booking.packPremiumDesc,
-      svcIds: ["ppf-clear75", "tint-full", "ceramic-ext-3"], discount: packDisc("premium", 8), tier: "premium", warranty: isAr ? "٧ سنوات ضمان" : "7yr Warranty",
+      svcIds: ["ppf-clear75", "tint-plus", "ceramic-ext-3"], discount: packDisc("premium", 8), tier: "premium", warranty: isAr ? "٧ سنوات ضمان" : "7yr Warranty",
     },
     {
       id: "vip", name: t.booking.packVip, desc: t.booking.packVipDesc,
-      svcIds: ["ppf-clear85", "tint-full", "ceramic-ext-5"], discount: packDisc("vip", 12), tier: "vip", warranty: isAr ? "١٠ سنوات ضمان" : "10yr Warranty",
+      svcIds: ["ppf-clear85", "tint-plus", "ceramic-ext-5"], discount: packDisc("vip", 12), tier: "vip", warranty: isAr ? "١٠ سنوات ضمان" : "10yr Warranty",
     },
   ];
 
