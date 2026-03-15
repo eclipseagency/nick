@@ -150,7 +150,7 @@ export default function Booking() {
     { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: sp("ppf-clear75", { small: 9780, large: 11380 }), pBefore: { small: 12000, large: 14000 }, w: "10yr", tier: "SPRINT", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +7.5", "Film thickness 7.5mm+"), ...ppfBase] },
     { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: sp("ppf-clear85", { small: 10780, large: 12180 }), pBefore: { small: 13000, large: 15000 }, w: "10yr", tier: "TURBO", img: "/images/DSC03235.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +8.5", "Film thickness 8.5mm+"), ...ppfBase], popular: true },
     { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: sp("ppf-matte", { small: 11380, large: 12980 }), pBefore: { small: 14000, large: 16000 }, w: "10yr", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-matte-small.png", imgLarge: "/images/ppf-matte-large.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +8.5", "Film thickness 8.5mm+"), ...ppfBase] },
-    { id: "wrapping", cat: "ppf", name: t.booking.svcWrapping, p: sp("wrapping", { small: 8780, large: 10780 }), pBefore: { small: 11000, large: 13000 }, w: "3yr", img: "/images/wrapping.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("تغيير لون السيارة بدون رش", "Color change without paint spray"), d("متوفر بألوان متعددة (مطفي – لامع – ساتان - كاربون)", "Available in multiple finishes (matte, gloss, satin, carbon)"), d("قابل للإزالة دون التأثير على الطلاء", "Removable without affecting original paint"), d("تركيب احترافي بدقة عالية", "Professional high-precision installation")] },
+    { id: "wrapping", cat: "ppf", name: t.booking.svcWrapping, p: sp("wrapping", { small: 8780, large: 10780 }), pBefore: { small: 11000, large: 13000 }, w: "3yr", img: "/images/wrapping.png", imgSmall: "/images/wrapping.png", imgLarge: "/images/wrapping.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("تغيير لون السيارة بدون رش", "Color change without paint spray"), d("متوفر بألوان متعددة (مطفي – لامع – ساتان - كاربون)", "Available in multiple finishes (matte, gloss, satin, carbon)"), d("قابل للإزالة دون التأثير على الطلاء", "Removable without affecting original paint"), d("تركيب احترافي بدقة عالية", "Professional high-precision installation")] },
     { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: sp("ppf-front", { small: 2980, large: 4780 }), pBefore: { small: 3660, large: 5660 }, w: "10yr", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-front-small.png", imgLarge: "/images/ppf-front-large.png", addonTier: "high",
       parts: [t.booking.fullHood, t.booking.fullFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges], details: [d("سماكة فلم الحماية +7.5", "Film thickness 7.5mm+"), ...ppfBase] },
     { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: sp("ppf-partial", { small: 1680, large: 2680 }), pBefore: { small: 2000, large: 3200 }, w: "10yr", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-partial-small.png", imgLarge: "/images/ppf-partial-large.png", addonTier: "low",
@@ -437,8 +437,8 @@ export default function Booking() {
           </div>
         </div>
 
-        {/* ==================== STEP 2 — Services ==================== */}
-        <div ref={step2Ref} style={{ marginTop: 80, scrollMarginTop: 80 }}>
+        {/* ==================== STEP 2 — Services (only visible after car selection) ==================== */}
+        <div ref={step2Ref} style={{ marginTop: 80, scrollMarginTop: 80, display: size ? "block" : "none" }}>
           <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", fontSize: 14, marginBottom: 24 }}>
             {t.booking.pricesFor} <strong style={{ color: "#F6BE00" }}>{cars.find(c => c.id === size)?.label || "—"}</strong> {t.booking.selectOneOrMore}
           </p>
@@ -757,8 +757,8 @@ export default function Booking() {
           </div>
         </div>
 
-        {/* ==================== STEP 3 — Confirm & Book ==================== */}
-        <div ref={step3Ref} style={{ marginTop: 80, scrollMarginTop: 80, maxWidth: 600, margin: "80px auto 0" }}>
+        {/* ==================== STEP 3 — Confirm & Book (only visible after services selected) ==================== */}
+        <div ref={step3Ref} style={{ marginTop: 80, scrollMarginTop: 80, maxWidth: 600, margin: "80px auto 0", display: sel.length > 0 ? "block" : "none" }}>
           {/* Vehicle header */}
           {size && (
             <div style={{ borderRadius: 14, background: "#111", border: "1px solid rgba(255,255,255,0.08)", overflow: "hidden", marginBottom: 20 }}>
