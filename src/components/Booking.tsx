@@ -858,17 +858,28 @@ export default function Booking() {
                     <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em", marginBottom: 10 }}>
                       {t.booking.additionalServices}
                     </div>
-                    {allAddons.map(({ addon, price }) => (
-                      <div key={addon.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(246,190,0,0.08)", color: "#F6BE00", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                            {addon.icon}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: 10 }}>
+                      {allAddons.map(({ addon, price }) => {
+                        const addonImg = size === "large" ? addon.imgLarge : addon.imgSmall;
+                        return (
+                          <div key={addon.id} style={{ borderRadius: 10, overflow: "hidden", background: "#0a0a0a", border: "1px solid rgba(246,190,0,0.15)" }}>
+                            {addonImg ? (
+                              <div style={{ position: "relative", width: "100%", aspectRatio: "1" }}>
+                                <Image src={addonImg} alt={addon.name} fill className="object-cover" />
+                              </div>
+                            ) : (
+                              <div style={{ width: "100%", aspectRatio: "1", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(246,190,0,0.06)", color: "#F6BE00" }}>
+                                <div style={{ transform: "scale(1.5)" }}>{addon.icon}</div>
+                              </div>
+                            )}
+                            <div style={{ padding: "8px 10px" }}>
+                              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginBottom: 2 }}>{addon.name}</div>
+                              <div style={{ color: "#F6BE00", fontWeight: 700, fontSize: 12 }}>{price.toLocaleString()} {cur}</div>
+                            </div>
                           </div>
-                          <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>{addon.name}</span>
-                        </div>
-                        <span style={{ color: "#F6BE00", fontWeight: 600, fontSize: 13 }}>{price.toLocaleString()} {cur}</span>
-                      </div>
-                    ))}
+                        );
+                      })}
+                    </div>
                   </div>
                 );
               })()}
