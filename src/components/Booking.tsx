@@ -360,6 +360,12 @@ export default function Booking() {
     return /^(\+966|966|05|5)\d{8}$/.test(cleaned);
   };
   const formValid = form.name.trim().length >= 2 && isValidPhone(form.phone) && form.carMake.trim().length >= 2 && form.preferredDate.length > 0;
+  const formMissing = !formValid ? [
+    ...(form.name.trim().length < 2 ? [isAr ? "الاسم" : "Name"] : []),
+    ...(!isValidPhone(form.phone) ? [isAr ? "رقم الجوال" : "Phone"] : []),
+    ...(form.carMake.trim().length < 2 ? [isAr ? "نوع السيارة" : "Car Make"] : []),
+    ...(form.preferredDate.length === 0 ? [isAr ? "التاريخ" : "Date"] : []),
+  ] : [];
 
   const selCount = (cat: Category) => {
     if (cat === "packages") return activePack ? 1 : 0;
@@ -1221,6 +1227,19 @@ export default function Booking() {
 
             <div style={{ marginBottom: 24 }}>
               <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em", marginBottom: 16 }}>{t.booking.paymentMethod}</div>
+
+              {/* Missing fields hint */}
+              {formMissing.length > 0 && (
+                <div style={{
+                  marginBottom: 14, padding: "10px 16px", borderRadius: 12,
+                  background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.15)",
+                  color: "rgba(246,190,0,0.8)", fontSize: 12, lineHeight: 1.5,
+                  display: "flex", alignItems: "center", gap: 8,
+                }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span>{isAr ? "يرجى إكمال:" : "Please complete:"} {formMissing.join(", ")}</span>
+                </div>
+              )}
 
               {/* Error banner */}
               {bookingError && (
