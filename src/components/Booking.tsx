@@ -379,27 +379,6 @@ export default function Booking() {
           </div>
         </div>
 
-        {/* Google Reviews Widget — Elfsight */}
-        <script dangerouslySetInnerHTML={{ __html: `
-          (function fixElfsight(){
-            function fix(){
-              var el=document.getElementById('google-reviews-widget');
-              if(!el)return;
-              el.querySelectorAll('a[href*="elfsight.com"]').forEach(function(a){a.remove();});
-              el.querySelectorAll('[class*="Background__Overlay"]').forEach(function(o){o.style.display='none';});
-              el.querySelectorAll('img').forEach(function(img){img.style.maxHeight='100px';img.style.objectFit='cover';});
-            }
-            fix();
-            var observer=new MutationObserver(fix);
-            var target=document.getElementById('google-reviews-widget');
-            if(target)observer.observe(target,{childList:true,subtree:true});
-            setInterval(fix,1000);
-          })();
-        ` }} />
-        <div id="google-reviews-widget" style={{ maxWidth: 900, margin: "0 auto 40px" }} dangerouslySetInnerHTML={{ __html: `
-          <script src="https://elfsightcdn.com/platform.js" async></script>
-          <div class="elfsight-app-16019ab9-11d9-48b7-bc63-eec7d5d2d062" data-elfsight-app-lazy></div>
-        ` }} />
 
         {/* Steps — scroll-to anchors */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 48 }}>
@@ -793,25 +772,6 @@ export default function Booking() {
           </div>
         </div>
 
-        {/* Before/After Mini Gallery — only when services selected */}
-        {sel.length > 0 && (
-          <div style={{ marginTop: 40, marginBottom: 24 }}>
-            <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "none", justifyContent: "center" }}>
-              {["/images/DSC03279.jpg", "/images/DSC03292.jpg", "/images/DSC03235.jpg"].map((img, i) => (
-                <a key={i} href="#gallery" style={{
-                  flexShrink: 0, width: 140, height: 100, borderRadius: 12, overflow: "hidden",
-                  border: "2px solid rgba(246,190,0,0.2)", position: "relative",
-                  transition: "border-color 0.3s",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(246,190,0,0.5)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(246,190,0,0.2)"; }}
-                >
-                  <Image src={img} alt={`Work sample ${i + 1}`} fill className="object-cover" />
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* ==================== STEP 3 — Confirm & Book (only visible after services selected) ==================== */}
         <div ref={step3Ref} style={{ marginTop: 80, scrollMarginTop: 80, maxWidth: 600, margin: "80px auto 0", display: sel.length > 0 ? "block" : "none" }}>
