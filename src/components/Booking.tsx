@@ -381,18 +381,19 @@ export default function Booking() {
 
         {/* Google Reviews Widget — Elfsight */}
         <script dangerouslySetInnerHTML={{ __html: `
-          (function hideElfsightBranding(){
-            function remove(){
+          (function fixElfsight(){
+            function fix(){
               var el=document.getElementById('google-reviews-widget');
               if(!el)return;
-              var links=el.querySelectorAll('a[href*="elfsight.com"]');
-              links.forEach(function(a){a.remove();});
+              el.querySelectorAll('a[href*="elfsight.com"]').forEach(function(a){a.remove();});
+              el.querySelectorAll('[class*="Background__Overlay"]').forEach(function(o){o.style.display='none';});
+              el.querySelectorAll('img').forEach(function(img){img.style.maxHeight='100px';img.style.objectFit='cover';});
             }
-            remove();
-            var observer=new MutationObserver(remove);
+            fix();
+            var observer=new MutationObserver(fix);
             var target=document.getElementById('google-reviews-widget');
             if(target)observer.observe(target,{childList:true,subtree:true});
-            setInterval(remove,1000);
+            setInterval(fix,1000);
           })();
         ` }} />
         <div id="google-reviews-widget" style={{ maxWidth: 900, margin: "0 auto 40px" }} dangerouslySetInnerHTML={{ __html: `
