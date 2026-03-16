@@ -379,10 +379,10 @@ export default function Booking() {
           </div>
         </div>
 
-        {/* Google Reviews Widget — paste Elfsight/OpenWidget code inside this div */}
-        <div id="google-reviews-widget" style={{ maxWidth: 900, margin: "0 auto 40px", minHeight: 60 }} dangerouslySetInnerHTML={{ __html: `
-          <!-- PASTE YOUR GOOGLE REVIEWS WIDGET CODE HERE -->
-          <!-- Example: <script src="https://static.elfsight.com/platform/platform.js" async></script><div class="elfsight-app-XXXXXXX" data-elfsight-app-lazy></div> -->
+        {/* Google Reviews Widget — Elfsight */}
+        <div id="google-reviews-widget" style={{ maxWidth: 900, margin: "0 auto 40px" }} dangerouslySetInnerHTML={{ __html: `
+          <script src="https://elfsightcdn.com/platform.js" async></script>
+          <div class="elfsight-app-16019ab9-11d9-48b7-bc63-eec7d5d2d062" data-elfsight-app-lazy></div>
         ` }} />
 
         {/* Steps — scroll-to anchors */}
