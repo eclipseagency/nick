@@ -122,11 +122,11 @@ export default function Booking() {
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> },
     { id: "remove-tint", name: t.booking.addonRemoveTint, p: { small: 200, large: 300 }, imgSmall: "/images/addon-remove-tint-small.png", imgLarge: "/images/addon-remove-tint-large.png",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> },
-    { id: "remove-partial", name: t.booking.addonRemovePartial, p: { small: 250, large: 350 },
+    { id: "remove-partial", name: t.booking.addonRemovePartial, p: { small: 250, large: 350 }, imgSmall: "/images/addon-remove-partial-small.png", imgLarge: "/images/addon-remove-partial-large.png",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="8" y1="12" x2="16" y2="12"/></svg> },
     { id: "remove-front", name: t.booking.addonRemoveFront, p: { small: 400, large: 500 }, imgSmall: "/images/addon-remove-front-small.png", imgLarge: "/images/addon-remove-front-large.png",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> },
-    { id: "remove-full", name: t.booking.addonRemoveFull, p: { small: 1200, large: 1400 },
+    { id: "remove-full", name: t.booking.addonRemoveFull, p: { small: 1200, large: 1400 }, imgSmall: "/images/addon-remove-full-small.png", imgLarge: "/images/addon-remove-full-large.png",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="22" height="12" rx="3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><line x1="8" y1="10" x2="16" y2="14"/><line x1="16" y1="10" x2="8" y2="14"/></svg> },
   ];
 
