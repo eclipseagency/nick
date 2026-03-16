@@ -40,8 +40,8 @@ export default function Hero() {
         background: "#050505",
       }}
     >
-      {/* Image container — matches actual image ratio 1920x600 */}
-      <div style={{ position: "relative", width: "100%", aspectRatio: "1920 / 600" }}>
+      {/* Image container — fits tallest banner (1920x1000) */}
+      <div style={{ position: "relative", width: "100%", aspectRatio: "1920 / 1000", maxHeight: "70vh" }}>
         {slides.map((src, i) => (
           <div
             key={src}
