@@ -381,9 +381,16 @@ export default function Booking() {
 
         {/* Google Reviews Widget — Elfsight */}
         <style dangerouslySetInnerHTML={{ __html: `
-          .elfsight-app-16019ab9-11d9-48b7-bc63-eec7d5d2d062 a[href*="elfsight"], .elfsight-app-16019ab9-11d9-48b7-bc63-eec7d5d2d062 [class*="branding"], .elfsight-app-16019ab9-11d9-48b7-bc63-eec7d5d2d062 [class*="watermark"], .elfsight-app-16019ab9-11d9-48b7-bc63-eec7d5d2d062 [class*="copyright"] { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; }
-          #google-reviews-widget [class*="eapps-google-review"] img { max-height: 120px !important; object-fit: cover !important; }
-          #google-reviews-widget [class*="review-item"], #google-reviews-widget [class*="card"] { max-height: 280px !important; overflow: hidden !important; }
+          #google-reviews-widget a[href*="elfsight.com"] { display: none !important; }
+          #google-reviews-widget div[class*="Attribution"], #google-reviews-widget div[class*="attribution"] { display: none !important; }
+          #google-reviews-widget div[class*="Branding"], #google-reviews-widget div[class*="branding"] { display: none !important; }
+          #google-reviews-widget div[style*="elfsight"] { display: none !important; }
+          #google-reviews-widget > div > div:last-child a[target="_blank"] { display: none !important; }
+          #google-reviews-widget [data-elfsight-app-lazy] + div { display: none !important; }
+          #google-reviews-widget img[src*="elfsight"] { display: none !important; }
+          #google-reviews-widget p:last-child:has(a[href*="elfsight"]) { display: none !important; }
+          #google-reviews-widget [class*="PoweredBy"], #google-reviews-widget [class*="powered-by"], #google-reviews-widget [class*="poweredBy"] { display: none !important; }
+          #google-reviews-widget iframe + div, #google-reviews-widget [class*="Footer"], #google-reviews-widget [class*="footer"] { display: none !important; }
         ` }} />
         <div id="google-reviews-widget" style={{ maxWidth: 900, margin: "0 auto 40px" }} dangerouslySetInnerHTML={{ __html: `
           <script src="https://elfsightcdn.com/platform.js" async></script>
