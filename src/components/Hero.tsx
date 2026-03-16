@@ -11,7 +11,7 @@ export default function Hero() {
 
   const slides = [
     isAr ? "/images/hero-rhino.png" : "/images/hero-rhino-en.png",
-    "/images/hero-slide2.png",
+    isAr ? "/images/hero-slide2.png" : "/images/hero-slide2-en.png",
   ];
 
   const [current, setCurrent] = useState(0);
