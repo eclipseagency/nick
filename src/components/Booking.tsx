@@ -380,6 +380,11 @@ export default function Booking() {
         </div>
 
         {/* Google Reviews Widget — Elfsight */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          .elfsight-app-16019ab9-11d9-48b7-bc63-eec7d5d2d062 a[href*="elfsight"], .elfsight-app-16019ab9-11d9-48b7-bc63-eec7d5d2d062 [class*="branding"], .elfsight-app-16019ab9-11d9-48b7-bc63-eec7d5d2d062 [class*="watermark"], .elfsight-app-16019ab9-11d9-48b7-bc63-eec7d5d2d062 [class*="copyright"] { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; }
+          #google-reviews-widget [class*="eapps-google-review"] img { max-height: 120px !important; object-fit: cover !important; }
+          #google-reviews-widget [class*="review-item"], #google-reviews-widget [class*="card"] { max-height: 280px !important; overflow: hidden !important; }
+        ` }} />
         <div id="google-reviews-widget" style={{ maxWidth: 900, margin: "0 auto 40px" }} dangerouslySetInnerHTML={{ __html: `
           <script src="https://elfsightcdn.com/platform.js" async></script>
           <div class="elfsight-app-16019ab9-11d9-48b7-bc63-eec7d5d2d062" data-elfsight-app-lazy></div>
