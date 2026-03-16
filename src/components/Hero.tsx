@@ -40,8 +40,8 @@ export default function Hero() {
         background: "#050505",
       }}
     >
-      {/* Image container — fits tallest banner (1920x1000) */}
-      <div style={{ position: "relative", width: "100%", aspectRatio: "1920 / 1000", maxHeight: "70vh" }}>
+      {/* Image container */}
+      <div style={{ position: "relative", width: "100%", aspectRatio: "1920 / 1000" }}>
         {slides.map((src, i) => (
           <div
             key={src}
@@ -55,7 +55,7 @@ export default function Hero() {
               src={src}
               alt={`NICK slide ${i + 1}`}
               fill
-              style={{ objectFit: "cover", objectPosition: "center" }}
+              style={{ objectFit: "contain", objectPosition: "center" }}
               priority={i === 0}
               quality={90}
             />
