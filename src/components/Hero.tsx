@@ -55,7 +55,7 @@ export default function Hero() {
               src={src}
               alt={`NICK slide ${i + 1}`}
               fill
-              style={{ objectFit: "contain", objectPosition: "center" }}
+              style={{ objectFit: "cover", objectPosition: "center" }}
               priority={i === 0}
               quality={90}
             />
