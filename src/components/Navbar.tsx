@@ -38,7 +38,7 @@ export default function Navbar() {
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px, 4vw, 24px)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Link href="/" style={{ cursor: "pointer" }}>
-          <Image src="/images/logo-white.png" alt="NICK" width={160} height={160} priority style={{ opacity: 0.95, height: 52, width: "auto" }} />
+          <Image src="/images/logo-white.png" alt="NICK" width={160} height={160} priority style={{ opacity: 0.95, height: 80, width: "auto" }} />
         </Link>
 
         {/* Desktop */}
