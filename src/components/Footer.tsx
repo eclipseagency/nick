@@ -21,7 +21,7 @@ export default function Footer() {
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "48px 24px" }}>
         <div className="grid md:grid-cols-4 gap-10">
           <div>
-            <Image src="/images/logo-white.png" alt="NICK" width={120} height={40} style={{ marginBottom: 16 }} />
+            <Image src="/images/logo-white.png" alt="NICK" width={120} height={120} priority style={{ height: 40, width: "auto", marginBottom: 16 }} />
             <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, lineHeight: 1.7, maxWidth: 360, marginBottom: 16 }}>
               {t.footer.desc}
             </p>

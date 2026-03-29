@@ -30,15 +30,15 @@ export default function Navbar() {
   return (
     <nav style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-      padding: scrolled ? "12px 0" : "20px 0",
+      padding: scrolled ? "10px 0" : "14px 0",
       background: scrolled ? "rgba(5,5,5,0.95)" : "transparent",
       backdropFilter: scrolled ? "blur(20px)" : "none",
       borderBottom: scrolled ? "1px solid rgba(246,190,0,0.08)" : "none",
       transition: "all 0.4s",
     }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px, 4vw, 24px)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Link href="/" style={{ cursor: "pointer" }}>
-          <Image src="/images/logo-white.png" alt="NICK" width={110} height={36} priority style={{ opacity: 0.95 }} />
+          <Image src="/images/logo-white.png" alt="NICK" width={110} height={110} priority style={{ opacity: 0.95, height: 36, width: "auto" }} />
         </Link>
 
         {/* Desktop */}
