@@ -15,7 +15,7 @@ interface ApiService {
 type Size = "small" | "large" | null;
 type Category = "ppf" | "tint" | "ceramic";
 
-interface Addon { id: string; name: string; p: { small: number; large: number }; icon: React.ReactNode; imgSmall?: string; imgLarge?: string }
+interface Addon { id: string; name: string; p: { small: number; large: number }; icon: React.ReactNode; imgSmall?: string; imgLarge?: string; bySize?: boolean; exclusive?: string; showFor?: string }
 interface Svc {
   id: string; cat: "ppf" | "tint" | "ceramic"; name: string; w: string; img: string;
   imgSmall?: string; imgLarge?: string;
@@ -35,6 +35,7 @@ export default function Booking() {
   const [sel, setSel] = useState<string[]>([]);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [detailsOpenId, setDetailsOpenId] = useState<string | null>(null);
+  const [windshieldSheetId, setWindshieldSheetId] = useState<string | null>(null);
   const [selAddons, setSelAddons] = useState<Record<string, string[]>>({});
   const [form, setForm] = useState({ name: "", phone: "", notes: "", preferredDate: "" });
   const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
@@ -66,16 +67,23 @@ export default function Booking() {
     setTimeout(() => ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   };
 
+  // Auto-scroll to inline detail panel when it opens
+  useEffect(() => {
+    if (detailId && sel.includes(detailId)) {
+      setTimeout(() => detailRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 100);
+    }
+  }, [detailId, sel]);
+
   // Mutually exclusive groups — selecting one auto-removes others in same group
   const exclusiveGroups: string[][] = [
     ["ppf-color", "ppf-clear75", "ppf-clear85", "ppf-matte", "wrapping"], // full body PPF — pick one
     ["tint-plus", "tint-flex", "tint-lite"], // full car tint — pick one
-    ["tint-front-max", "tint-front-pro", "tint-front-plus", "tint-front-flex", "tint-front-lite"], // front windshield tint — pick one
     ["ceramic-int-1"], // interior ceramic — only one tier
     ["ceramic-ext-1", "ceramic-ext-3", "ceramic-ext-5"], // exterior ceramic — pick one tier
   ];
 
   const toggleSvc = (id: string) => {
+    setSelectedPackage(null); // Clear package when manually selecting
     if (sel.includes(id)) {
       setSel(p => p.filter(x => x !== id));
       setSelAddons(a => { const n = { ...a }; delete n[id]; return n; });
@@ -98,7 +106,16 @@ export default function Booking() {
   const toggleAddon = (svcId: string, addonId: string) => {
     setSelAddons(prev => {
       const cur = prev[svcId] || [];
-      return { ...prev, [svcId]: cur.includes(addonId) ? cur.filter(x => x !== addonId) : [...cur, addonId] };
+      if (cur.includes(addonId)) {
+        return { ...prev, [svcId]: cur.filter(x => x !== addonId) };
+      }
+      // Check for exclusive addon groups — selecting one deselects others in same group
+      const addon = addons.find(a => a.id === addonId);
+      const exclusiveGroup = addon?.exclusive;
+      const cleaned = exclusiveGroup
+        ? cur.filter(id => { const a = addons.find(x => x.id === id); return !a?.exclusive || a.exclusive !== exclusiveGroup; })
+        : cur;
+      return { ...prev, [svcId]: [...cleaned, addonId] };
     });
   };
 
@@ -114,20 +131,35 @@ export default function Booking() {
   ];
 
   const addons: Addon[] = [
-    { id: "ozone", name: t.booking.addonOzone, p: { small: 100, large: 150 }, imgSmall: "/images/addon-ozone-small.png", imgLarge: "/images/addon-ozone-large.png",
+    { id: "ozone", name: t.booking.addonOzone, p: { small: 100, large: 150 }, imgSmall: "/images/addon-ozone-small.webp", imgLarge: "/images/addon-ozone-large.webp",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2c0 0-3 4-3 7a3 3 0 0 0 6 0c0-3-3-7-3-7z"/><path d="M16 6c0 0-2 3-2 5a2 2 0 0 0 4 0c0-2-2-5-2-5z"/><path d="M12 14v4"/><path d="M8 18h8"/><path d="M6 22h12"/></svg> },
-    { id: "rim-ceramic", name: t.booking.addonRimCeramic, p: { small: 400, large: 400 }, imgSmall: "/images/addon-rim-small.png", imgLarge: "/images/addon-rim-large.png",
+    { id: "rim-ceramic", name: t.booking.addonRimCeramic, p: { small: 400, large: 400 }, imgSmall: "/images/addon-rim-small.webp", imgLarge: "/images/addon-rim-large.webp",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="2" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="22" y2="12"/></svg> },
-    { id: "engine-clean", name: t.booking.addonEngineClean, p: { small: 100, large: 150 }, imgSmall: "/images/addon-engine-small.png", imgLarge: "/images/addon-engine-large.png",
+    { id: "engine-clean", name: t.booking.addonEngineClean, p: { small: 100, large: 150 }, imgSmall: "/images/addon-engine-small.webp", imgLarge: "/images/addon-engine-large.webp",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> },
-    { id: "remove-tint", name: t.booking.addonRemoveTint, p: { small: 200, large: 300 }, imgSmall: "/images/addon-remove-tint-small.png", imgLarge: "/images/addon-remove-tint-large.png",
+    { id: "remove-tint", name: t.booking.addonRemoveTint, p: { small: 200, large: 300 }, imgSmall: "/images/addon-remove-tint-small.webp", imgLarge: "/images/addon-remove-tint-large.webp",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> },
-    { id: "remove-partial", name: t.booking.addonRemovePartial, p: { small: 250, large: 350 }, imgSmall: "/images/addon-remove-partial-small.png", imgLarge: "/images/addon-remove-partial-large.png",
+    { id: "remove-partial", name: t.booking.addonRemovePartial, p: { small: 250, large: 350 }, imgSmall: "/images/addon-remove-partial-small.webp", imgLarge: "/images/addon-remove-partial-large.webp",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="8" y1="12" x2="16" y2="12"/></svg> },
-    { id: "remove-front", name: t.booking.addonRemoveFront, p: { small: 400, large: 500 }, imgSmall: "/images/addon-remove-front-small.png", imgLarge: "/images/addon-remove-front-large.png",
+    { id: "remove-front", name: t.booking.addonRemoveFront, p: { small: 400, large: 500 }, imgSmall: "/images/addon-remove-front-small.webp", imgLarge: "/images/addon-remove-front-large.webp",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> },
-    { id: "remove-full", name: t.booking.addonRemoveFull, p: { small: 1200, large: 1400 }, imgSmall: "/images/addon-remove-full-small.png", imgLarge: "/images/addon-remove-full-large.png",
+    { id: "remove-full", name: t.booking.addonRemoveFull, p: { small: 1200, large: 1400 }, imgSmall: "/images/addon-remove-full-small.webp", imgLarge: "/images/addon-remove-full-large.webp",
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="22" height="12" rx="3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><line x1="8" y1="10" x2="16" y2="14"/><line x1="16" y1="10" x2="8" y2="14"/></svg> },
+    { id: "polish", name: t.booking.addonPolish, p: { small: 650, large: 850 },
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg> },
+    { id: "steam-wash", name: t.booking.addonSteamWash, p: { small: 200, large: 300 },
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2c0 0-3 4-3 7a3 3 0 0 0 6 0c0-3-3-7-3-7z"/><path d="M16 6c0 0-2 3-2 5a2 2 0 0 0 4 0c0-2-2-5-2-5z"/><path d="M12 14v4"/><path d="M8 18h8"/><path d="M6 22h12"/></svg> },
+    // Front windshield tint — only shown when a tint service is selected, mutually exclusive, priced by car size
+    { id: "tint-front-max", name: t.booking.svcTintFrontMax, p: { small: 780, large: 880 }, bySize: true, exclusive: "tint-front", showFor: "tint", imgSmall: "/images/addon-tint-front-small.png", imgLarge: "/images/addon-tint-front-large.png",
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="22" height="12" rx="3"/><path d="M5 10h14"/><path d="M12 6v12"/></svg> },
+    { id: "tint-front-pro", name: t.booking.svcTintFrontPro, p: { small: 660, large: 760 }, bySize: true, exclusive: "tint-front", showFor: "tint", imgSmall: "/images/addon-tint-front-small.png", imgLarge: "/images/addon-tint-front-large.png",
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="22" height="12" rx="3"/><path d="M5 10h14"/><path d="M12 6v12"/></svg> },
+    { id: "tint-front-plus", name: t.booking.svcTintFrontPlus, p: { small: 375, large: 475 }, bySize: true, exclusive: "tint-front", showFor: "tint", imgSmall: "/images/addon-tint-front-small.png", imgLarge: "/images/addon-tint-front-large.png",
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="22" height="12" rx="3"/><path d="M5 10h14"/><path d="M12 6v12"/></svg> },
+    { id: "tint-front-flex", name: t.booking.svcTintFrontFlex, p: { small: 225, large: 325 }, bySize: true, exclusive: "tint-front", showFor: "tint", imgSmall: "/images/addon-tint-front-small.png", imgLarge: "/images/addon-tint-front-large.png",
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="22" height="12" rx="3"/><path d="M5 10h14"/><path d="M12 6v12"/></svg> },
+    { id: "tint-front-lite", name: t.booking.svcTintFrontLite, p: { small: 185, large: 285 }, bySize: true, exclusive: "tint-front", showFor: "tint", imgSmall: "/images/addon-tint-front-small.png", imgLarge: "/images/addon-tint-front-large.png",
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="22" height="12" rx="3"/><path d="M5 10h14"/><path d="M12 6v12"/></svg> },
   ];
 
   // Build price override map from API data
@@ -146,29 +178,72 @@ export default function Booking() {
   const tintSideDesc = [d("عازل بتقنية النانو سيراميك المتطورة", "Advanced nano ceramic insulation technology"), d("العازل يشمل الزجاج الجانبي والخلفي فقط", "Covers side and rear windows only")];
 
   const svcs: Svc[] = [
-    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: sp("ppf-color", { small: 11880, large: 14480 }), pBefore: { small: 14500, large: 17500 }, w: "5yr", duration: "6-8 hrs", img: "/images/DSC03279.jpg", imgSmall: "/images/ppf-color-small.png", imgLarge: "/images/ppf-color-large.png", addonTier: "high", parts: [t.booking.fullBody], details: [d("معالجة ذاتية", "Self-healing technology"), d("سماكة فلم الحماية 8.5", "Film thickness 8.5mm"), d("تغيير لون السيارة مع حماية الطلاء في نفس الوقت", "Change car color with paint protection at the same time"), d("مصمم ليكون مقاومًا للغبار", "Designed to be dust-resistant"), d("مصمم خصيصًا لأجواء المملكة العربية السعودية", "Designed for Saudi Arabia's climate")] },
-    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: sp("ppf-clear75", { small: 9780, large: 11380 }), pBefore: { small: 12000, large: 14000 }, w: "10yr", duration: "6-8 hrs", tier: "SPRINT", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +7.5", "Film thickness 7.5mm+"), ...ppfBase] },
-    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: sp("ppf-clear85", { small: 10780, large: 12180 }), pBefore: { small: 13000, large: 15000 }, w: "10yr", duration: "6-8 hrs", tier: "TURBO", img: "/images/DSC03235.jpg", imgSmall: "/images/ppf-fullbody-small.png", imgLarge: "/images/ppf-fullbody-large.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +8.5", "Film thickness 8.5mm+"), ...ppfBase], popular: true },
-    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: sp("ppf-matte", { small: 11380, large: 12980 }), pBefore: { small: 14000, large: 16000 }, w: "10yr", duration: "6-8 hrs", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-matte-small.png", imgLarge: "/images/ppf-matte-large.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +8.5", "Film thickness 8.5mm+"), ...ppfBase] },
-    { id: "wrapping", cat: "ppf", name: t.booking.svcWrapping, p: sp("wrapping", { small: 8780, large: 10780 }), pBefore: { small: 11000, large: 13000 }, w: "3yr", duration: "8-10 hrs", img: "/images/wrapping.png", imgSmall: "/images/wrapping.png", imgLarge: "/images/wrapping.png", addonTier: "low", parts: [t.booking.fullBody], details: [d("تغيير لون السيارة بدون رش", "Color change without paint spray"), d("متوفر بألوان متعددة (مطفي – لامع – ساتان - كاربون)", "Available in multiple finishes (matte, gloss, satin, carbon)"), d("قابل للإزالة دون التأثير على الطلاء", "Removable without affecting original paint"), d("تركيب احترافي بدقة عالية", "Professional high-precision installation")] },
-    { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: sp("ppf-front", { small: 2980, large: 4780 }), pBefore: { small: 3660, large: 5660 }, w: "10yr", duration: "3-4 hrs", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-front-small.png", imgLarge: "/images/ppf-front-large.png", addonTier: "high",
+    // PPF — order per price sheet: SPRINT, TURBO, Matte, Wrapping, Color, Front, Partial, Interior
+    { id: "ppf-clear75", cat: "ppf", name: t.booking.svcPpfClear75, p: sp("ppf-clear75", { small: 9780, large: 11380 }), pBefore: { small: 12000, large: 14000 }, w: "10yr", duration: "6-8 hrs", tier: "SPRINT", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-fullbody-small.webp", imgLarge: "/images/ppf-fullbody-large.webp", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +7.5", "Film thickness 7.5mm+"), ...ppfBase] },
+    { id: "ppf-clear85", cat: "ppf", name: t.booking.svcPpfClear85, p: sp("ppf-clear85", { small: 10780, large: 12180 }), pBefore: { small: 13000, large: 15000 }, w: "10yr", duration: "6-8 hrs", tier: "TURBO", img: "/images/DSC03235.jpg", imgSmall: "/images/ppf-fullbody-small.webp", imgLarge: "/images/ppf-fullbody-large.webp", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +8.5", "Film thickness 8.5mm+"), ...ppfBase], popular: true },
+    { id: "ppf-matte", cat: "ppf", name: t.booking.svcPpfMatte, p: sp("ppf-matte", { small: 11380, large: 12980 }), pBefore: { small: 14000, large: 16000 }, w: "10yr", duration: "6-8 hrs", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-matte-small.webp", imgLarge: "/images/ppf-matte-large.webp", addonTier: "low", parts: [t.booking.fullBody], details: [d("سماكة فلم الحماية +8.5", "Film thickness 8.5mm+"), ...ppfBase] },
+    { id: "wrapping", cat: "ppf", name: t.booking.svcWrapping, p: sp("wrapping", { small: 8780, large: 10780 }), pBefore: { small: 11000, large: 13000 }, w: "3yr", duration: "8-10 hrs", img: "/images/wrapping.webp", imgSmall: "/images/wrapping.webp", imgLarge: "/images/wrapping.webp", addonTier: "low", parts: [t.booking.fullBody], details: [d("تغيير لون السيارة بدون رش", "Color change without paint spray"), d("متوفر بألوان متعددة (مطفي – لامع – ساتان - كاربون)", "Available in multiple finishes (matte, gloss, satin, carbon)"), d("قابل للإزالة دون التأثير على الطلاء", "Removable without affecting original paint"), d("تركيب احترافي بدقة عالية", "Professional high-precision installation")] },
+    { id: "ppf-color", cat: "ppf", name: t.booking.svcPpfColor, p: sp("ppf-color", { small: 11880, large: 14480 }), pBefore: { small: 14500, large: 17500 }, w: "5yr", duration: "6-8 hrs", img: "/images/DSC03279.jpg", imgSmall: "/images/ppf-color-small.webp", imgLarge: "/images/ppf-color-large.webp", addonTier: "high", parts: [t.booking.fullBody], details: [d("معالجة ذاتية", "Self-healing technology"), d("سماكة فلم الحماية 8.5", "Film thickness 8.5mm"), d("تغيير لون السيارة مع حماية الطلاء في نفس الوقت", "Change car color with paint protection at the same time"), d("مصمم ليكون مقاومًا للغبار", "Designed to be dust-resistant"), d("مصمم خصيصًا لأجواء المملكة العربية السعودية", "Designed for Saudi Arabia's climate")] },
+    { id: "ppf-front", cat: "ppf", name: t.booking.svcPpfFront, p: sp("ppf-front", { small: 2980, large: 4780 }), pBefore: { small: 3660, large: 5660 }, w: "10yr", duration: "3-4 hrs", img: "/images/DSC03292.jpg", imgSmall: "/images/ppf-front-small.webp", imgLarge: "/images/ppf-front-large.webp", addonTier: "high",
       parts: [t.booking.fullHood, t.booking.fullFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges], details: [d("سماكة فلم الحماية +7.5", "Film thickness 7.5mm+"), ...ppfBase] },
-    { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: sp("ppf-partial", { small: 1680, large: 2680 }), pBefore: { small: 2000, large: 3200 }, w: "10yr", duration: "2-3 hrs", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-partial-small.png", imgLarge: "/images/ppf-partial-large.png", addonTier: "low",
+    { id: "ppf-partial", cat: "ppf", name: t.booking.svcPpfPartial, p: sp("ppf-partial", { small: 1680, large: 2680 }), pBefore: { small: 2000, large: 3200 }, w: "10yr", duration: "2-3 hrs", img: "/images/DSC03064.jpg", imgSmall: "/images/ppf-partial-small.webp", imgLarge: "/images/ppf-partial-large.webp", addonTier: "low",
       parts: [t.booking.halfHood, t.booking.halfFenders, t.booking.frontBumper, t.booking.frontLights, t.booking.sideMirrors, t.booking.frontPillars, t.booking.doorEdges], details: [d("سماكة فلم الحماية +7.5", "Film thickness 7.5mm+"), ...ppfBase] },
-    { id: "ppf-interior", cat: "ppf", name: t.booking.svcPpfInterior, p: sp("ppf-interior", { small: 1180, large: 1580 }), pBefore: { small: 1400, large: 1950 }, w: "10yr", duration: "1-2 hrs", img: "", imgSmall: "/images/ppf-interior-small.png", imgLarge: "/images/ppf-interior-large.png", addonTier: "low", parts: [t.booking.interiorSurfaces], details: [d("سهولة التنظيف دون التأثير على جودة الأسطح الحساسة", "Easy cleaning without affecting sensitive surfaces"), d("حماية الشاشات والبيانو بلاك والكاربون فايبر من الخدوش", "Protects screens, piano black, and carbon fiber from scratches")] },
-    { id: "tint-plus", cat: "tint", tier: "Plus", name: t.booking.svcTintPlus, p: sp("tint-plus", { small: 1380, large: 1580 }), pBefore: { small: 1600, large: 1800 }, w: "10yr", duration: "2-3 hrs", img: "", imgSmall: "/images/tint-full-small.png", imgLarge: "/images/tint-full-large.png", addonTier: "low", parts: [t.booking.allGlass], details: [d("عازل بتقنية النانو سيراميك المتطورة", "Advanced nano ceramic insulation technology"), d("العازل يشمل الزجاج الجانبي والخلفي فقط", "Covers side and rear windows only")], popular: true },
-    { id: "tint-flex", cat: "tint", tier: "Flex", name: t.booking.svcTintFlex, p: sp("tint-flex", { small: 1180, large: 1380 }), pBefore: { small: 1300, large: 1500 }, w: "8yr", duration: "2-3 hrs", img: "", imgSmall: "/images/tint-full-small.png", imgLarge: "/images/tint-full-large.png", addonTier: "low", parts: [t.booking.allGlass], details: [...tintSideDesc] },
-    { id: "tint-lite", cat: "tint", tier: "Lite", name: t.booking.svcTintLite, p: sp("tint-lite", { small: 900, large: 1080 }), pBefore: { small: 1000, large: 1200 }, w: "5yr", duration: "2-3 hrs", img: "", imgSmall: "/images/tint-full-small.png", imgLarge: "/images/tint-full-large.png", addonTier: "low", parts: [t.booking.allGlass], details: [...tintSideDesc] },
-    { id: "tint-front-max", cat: "tint", tier: "Max", name: t.booking.svcTintFrontMax, p: sp("tint-front-max", { small: 780, large: 880 }), w: "10yr", duration: "30-45 min", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("قوة في العزل", "Strong insulation"), d("يدعم رؤية القيادة الليلية", "Supports night driving visibility"), d("يقلل من توهج حرارة الشمس", "Reduces sun heat glare"), d("يظهر باللون الأرجواني الفريد كزجاج سيارة رولزرويس", "Unique purple tint like Rolls-Royce windshield"), d("مدعوم بتقنية الرش المغناطيسي المزدوج", "Dual magnetic sputtering technology")] },
-    { id: "tint-front-pro", cat: "tint", tier: "Pro", name: t.booking.svcTintFrontPro, p: sp("tint-front-pro", { small: 660, large: 760 }), w: "10yr", duration: "30-45 min", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("قوة في العزل", "Strong insulation"), d("يدعم رؤية القيادة الليلية", "Supports night driving visibility"), d("يقلل من توهج حرارة الشمس", "Reduces sun heat glare"), d("مدعوم بتقنية الرش المغناطيسي المزدوج", "Dual magnetic sputtering technology")] },
-    { id: "tint-front-plus", cat: "tint", tier: "Plus", name: t.booking.svcTintFrontPlus, p: sp("tint-front-plus", { small: 375, large: 475 }), w: "10yr", duration: "30-45 min", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("عازل بتقنية النانو سيراميك المتطورة", "Advanced nano ceramic insulation")] },
-    { id: "tint-front-flex", cat: "tint", tier: "Flex", name: t.booking.svcTintFrontFlex, p: sp("tint-front-flex", { small: 225, large: 325 }), w: "8yr", duration: "30-45 min", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("عازل حراري بتقنية النانو سيراميك", "Nano ceramic thermal insulation")] },
-    { id: "tint-front-lite", cat: "tint", tier: "Lite", name: t.booking.svcTintFrontLite, p: sp("tint-front-lite", { small: 185, large: 285 }), w: "5yr", duration: "30-45 min", img: "", imgSmall: "/images/tint-windshield-small.png", imgLarge: "/images/tint-windshield-large.png", addonTier: "high", parts: [t.booking.frontWindshield], details: [d("وضوح عالي", "High clarity"), d("عازل حراري بتقنية النانو سيراميك", "Nano ceramic thermal insulation")] },
-    { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: sp("ceramic-int-1", { small: 1880, large: 2180 }), pBefore: { small: 2350, large: 2750 }, w: "1yr", duration: "2-3 hrs", img: "", imgSmall: "/images/ceramic-int-small.png", imgLarge: "/images/ceramic-int-large.png", addonTier: "low", parts: [t.booking.interiorSurfaces], details: [d("سهولة التنظيف", "Easy to clean"), d("مقاومة تسرب المواد السائلة داخل المراتب", "Liquid spill resistance for seats")] },
-    { id: "ceramic-ext-1", cat: "ceramic", name: t.booking.svcCeramicExt1, p: sp("ceramic-ext-1", { small: 1180, large: 1280 }), pBefore: { small: 1550, large: 1750 }, w: "1yr", duration: "3-5 hrs", img: "", imgSmall: "/images/ceramic-ext1-small.png", imgLarge: "/images/ceramic-ext1-large.png", addonTier: "high", parts: [t.booking.exteriorBody], details: [d("تلميع ساطع", "Brilliant shine"), d("4 طبقات خلال فترة الضمان", "4 layers during warranty period")] },
-    { id: "ceramic-ext-3", cat: "ceramic", name: t.booking.svcCeramicExt3, p: sp("ceramic-ext-3", { small: 1480, large: 1780 }), pBefore: { small: 2550, large: 2750 }, w: "3yr", duration: "3-5 hrs", img: "", imgSmall: "/images/ceramic-ext3-small.png", imgLarge: "/images/ceramic-ext3-large.png", addonTier: "low", parts: [t.booking.exteriorBody], details: [d("تلميع ساطع", "Brilliant shine"), d("10 طبقات خلال فترة الضمان", "10 layers during warranty period")], popular: true },
-    { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: sp("ceramic-ext-5", { small: 1780, large: 1980 }), pBefore: { small: 2950, large: 3250 }, w: "5yr", duration: "3-5 hrs", img: "", imgSmall: "/images/ceramic-ext5-small.png", imgLarge: "/images/ceramic-ext5-large.png", addonTier: "low", parts: [t.booking.exteriorBody], details: [d("تلميع ساطع", "Brilliant shine"), d("12 طبقة خلال فترة الضمان", "12 layers during warranty period")] },
+    { id: "ppf-interior", cat: "ppf", name: t.booking.svcPpfInterior, p: sp("ppf-interior", { small: 1180, large: 1580 }), pBefore: { small: 1400, large: 1950 }, w: "10yr", duration: "1-2 hrs", img: "", imgSmall: "/images/ppf-interior-small.webp", imgLarge: "/images/ppf-interior-large.webp", addonTier: "low", parts: [t.booking.interiorSurfaces], details: [d("سهولة التنظيف دون التأثير على جودة الأسطح الحساسة", "Easy cleaning without affecting sensitive surfaces"), d("حماية الشاشات والبيانو بلاك والكاربون فايبر من الخدوش", "Protects screens, piano black, and carbon fiber from scratches")] },
+    // Tint — order: Plus, Flex, Lite, Windshield PPF
+    { id: "tint-plus", cat: "tint", tier: "Plus", name: t.booking.svcTintPlus, p: sp("tint-plus", { small: 1380, large: 1580 }), pBefore: { small: 1500, large: 1700 }, w: "10yr", duration: "2-3 hrs", img: "", imgSmall: "/images/tint-full-small.webp", imgLarge: "/images/tint-full-large.webp", addonTier: "low", parts: [t.booking.allGlass], details: [d("عازل بتقنية النانو سيراميك المتطورة", "Advanced nano ceramic insulation technology"), d("العازل يشمل الزجاج الجانبي والخلفي فقط", "Covers side and rear windows only")], popular: true },
+    { id: "tint-flex", cat: "tint", tier: "Flex", name: t.booking.svcTintFlex, p: sp("tint-flex", { small: 1180, large: 1380 }), pBefore: { small: 1300, large: 1500 }, w: "8yr", duration: "2-3 hrs", img: "", imgSmall: "/images/tint-full-small.webp", imgLarge: "/images/tint-full-large.webp", addonTier: "low", parts: [t.booking.allGlass], details: [...tintSideDesc] },
+    { id: "tint-lite", cat: "tint", tier: "Lite", name: t.booking.svcTintLite, p: sp("tint-lite", { small: 900, large: 1080 }), pBefore: { small: 1000, large: 1200 }, w: "5yr", duration: "2-3 hrs", img: "", imgSmall: "/images/tint-full-small.webp", imgLarge: "/images/tint-full-large.webp", addonTier: "low", parts: [t.booking.allGlass], details: [...tintSideDesc] },
+    { id: "windshield-ppf", cat: "tint", name: t.booking.svcWindshieldPpf, p: sp("windshield-ppf", { small: 880, large: 980 }), pBefore: { small: 1000, large: 1200 }, w: "—", duration: "1 hr", img: "", imgSmall: "/images/tint-windshield-small.webp", imgLarge: "/images/tint-windshield-large.webp", addonTier: "low", parts: [t.booking.frontWindshield], details: [d("حماية الزجاج الأمامي من الخدوش والحصى", "Protects windshield from scratches and gravel"), d("وضوح عالي بدون تأثير على الرؤية", "High clarity with no impact on visibility")] },
+    // Ceramic — order: ext 1yr, ext 3yr, ext 5yr, int
+    { id: "ceramic-ext-1", cat: "ceramic", name: t.booking.svcCeramicExt1, p: sp("ceramic-ext-1", { small: 1180, large: 1280 }), pBefore: { small: 1550, large: 1750 }, w: "1yr", duration: "3-5 hrs", img: "", imgSmall: "/images/ceramic-ext1-small.webp", imgLarge: "/images/ceramic-ext1-large.webp", addonTier: "high", parts: [t.booking.exteriorBody], details: [d("تلميع ساطع", "Brilliant shine"), d("4 طبقات خلال فترة الضمان", "4 layers during warranty period")] },
+    { id: "ceramic-ext-3", cat: "ceramic", name: t.booking.svcCeramicExt3, p: sp("ceramic-ext-3", { small: 1480, large: 1780 }), pBefore: { small: 2550, large: 2750 }, w: "3yr", duration: "3-5 hrs", img: "", imgSmall: "/images/ceramic-ext3-small.webp", imgLarge: "/images/ceramic-ext3-large.webp", addonTier: "low", parts: [t.booking.exteriorBody], details: [d("تلميع ساطع", "Brilliant shine"), d("10 طبقات خلال فترة الضمان", "10 layers during warranty period")], popular: true },
+    { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: sp("ceramic-ext-5", { small: 1780, large: 1980 }), pBefore: { small: 2950, large: 3250 }, w: "5yr", duration: "3-5 hrs", img: "", imgSmall: "/images/ceramic-ext5-small.webp", imgLarge: "/images/ceramic-ext5-large.webp", addonTier: "low", parts: [t.booking.exteriorBody], details: [d("تلميع ساطع", "Brilliant shine"), d("12 طبقة خلال فترة الضمان", "12 layers during warranty period")] },
+    { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: sp("ceramic-int-1", { small: 1880, large: 2180 }), pBefore: { small: 2350, large: 2750 }, w: "1yr", duration: "2-3 hrs", img: "", imgSmall: "/images/ceramic-int-small.webp", imgLarge: "/images/ceramic-int-large.webp", addonTier: "low", parts: [t.booking.interiorSurfaces], details: [d("سهولة التنظيف", "Easy to clean"), d("مقاومة تسرب المواد السائلة داخل المراتب", "Liquid spill resistance for seats")] },
   ];
+
+  // Packages — predefined bundles from price sheet
+  interface Package { id: string; name: string; desc: string; serviceIds: string[]; addonIds: string[]; color: string }
+  const packages: Package[] = [
+    { id: "pack-plus", name: t.booking.packPlus, desc: t.booking.packPlusDesc, color: "#4CAF50",
+      serviceIds: ["ppf-clear85", "tint-plus", "ppf-interior", "ceramic-int-1", "windshield-ppf"],
+      addonIds: ["ozone", "rim-ceramic", "polish", "steam-wash", "tint-front-pro"] },
+    { id: "pack-flex", name: t.booking.packFlex, desc: t.booking.packFlexDesc, color: "#FF9800",
+      serviceIds: ["ppf-clear75", "tint-flex", "ppf-interior", "ceramic-int-1", "windshield-ppf"],
+      addonIds: ["ozone", "rim-ceramic", "polish", "steam-wash", "tint-front-pro"] },
+    { id: "pack-matte", name: t.booking.packMatte, desc: t.booking.packMatteDesc, color: "#9C27B0",
+      serviceIds: ["ppf-matte", "tint-plus", "ppf-interior", "ceramic-int-1", "windshield-ppf"],
+      addonIds: ["ozone", "rim-ceramic", "polish", "steam-wash", "tint-front-pro"] },
+    { id: "pack-front", name: t.booking.packFront, desc: t.booking.packFrontDesc, color: "#2196F3",
+      serviceIds: ["ceramic-ext-1", "tint-flex"],
+      addonIds: ["polish", "steam-wash"] },
+  ];
+
+  const selectPackage = (pkg: Package) => {
+    if (selectedPackage === pkg.id) {
+      // Deselect package — clear everything
+      setSelectedPackage(null);
+      setSel([]);
+      setSelAddons({});
+      return;
+    }
+    setSelectedPackage(pkg.id);
+    // Set the services
+    setSel(pkg.serviceIds);
+    // Set addons — distribute to the first service that matches the addon's showFor or the first service
+    const newAddons: Record<string, string[]> = {};
+    const regularAddonIds = pkg.addonIds.filter(aid => !addons.find(a => a.id === aid)?.showFor);
+    const tintAddonIds = pkg.addonIds.filter(aid => addons.find(a => a.id === aid)?.showFor === "tint");
+    // Assign regular addons to first service
+    if (regularAddonIds.length > 0 && pkg.serviceIds.length > 0) {
+      newAddons[pkg.serviceIds[0]] = regularAddonIds;
+    }
+    // Assign tint addons to the tint service
+    const tintSvc = pkg.serviceIds.find(sid => svcs.find(s => s.id === sid)?.cat === "tint");
+    if (tintAddonIds.length > 0 && tintSvc) {
+      newAddons[tintSvc] = [...(newAddons[tintSvc] || []), ...tintAddonIds];
+    }
+    setSelAddons(newAddons);
+  };
 
   const filteredSvcs = svcs.filter(s => s.cat === category);
   const detailSvc = detailId ? svcs.find(s => s.id === detailId) : null;
@@ -180,7 +255,10 @@ export default function Booking() {
   const hasCoverageImg = (s: Svc) => (size === "large" && !!s.imgLarge) || (size === "small" && !!s.imgSmall);
   const hasAnyImg = (s: Svc) => hasCoverageImg(s) || !!s.img;
 
-  const getAddonPrice = (addon: Addon, tier: "low" | "high") => tier === "high" ? addon.p.large : addon.p.small;
+  const getAddonPrice = (addon: Addon, tier: "low" | "high") => {
+    if (addon.bySize && size) return addon.p[size]; // priced by car size
+    return tier === "high" ? addon.p.large : addon.p.small;
+  };
 
   const svcTotal = sel.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v && size ? v.p[size] : 0); }, 0);
   const addonTotal = Object.entries(selAddons).reduce((s, [svcId, addonIds]) => {
@@ -303,11 +381,11 @@ export default function Booking() {
 
   // Determine which "step" is currently active based on scroll (simplified: use state)
   // For the step indicators, we derive from user progress
-  // Ramadan countdown — ends ~April 4, 2026
+  // Eid countdown — ends ~April 15, 2026
   const [ramadanDays, setRamadanDays] = useState(0);
   useEffect(() => {
     const calcDays = () => {
-      const end = new Date("2026-04-04T23:59:59");
+      const end = new Date("2026-04-15T23:59:59");
       const now = new Date();
       const diff = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
       setRamadanDays(Math.max(0, diff));
@@ -317,41 +395,59 @@ export default function Booking() {
     return () => clearInterval(timer);
   }, []);
 
+  // Lock body scroll when windshield sheet is open
+  const sheetOpen = !!(windshieldSheetId && sel.includes(windshieldSheetId));
+  useEffect(() => {
+    if (sheetOpen) {
+      document.body.style.overflow = "hidden";
+      return () => { document.body.style.overflow = ""; };
+    }
+  }, [sheetOpen]);
+
   const step1Done = !!size;
   const step2Done = sel.length > 0;
 
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   return (
-    <section id="booking" ref={(el) => { (ref as React.MutableRefObject<HTMLElement | null>).current = el; sectionRef.current = el; }} style={{ padding: "96px 0", position: "relative", overflow: "hidden" }}>
+    <section id="booking" ref={(el) => { (ref as React.MutableRefObject<HTMLElement | null>).current = el; sectionRef.current = el; }} style={{ padding: isMobile ? "60px 0" : "96px 0", position: "relative", overflow: "hidden" }}>
       {/* Epic background */}
       <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(246,190,0,0.06) 0%, transparent 60%), linear-gradient(180deg, #050505 0%, #0a0a0a 50%, #050505 100%)", pointerEvents: "none" }} />
       <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 600, height: 1, background: "linear-gradient(90deg, transparent, rgba(246,190,0,0.3), transparent)", pointerEvents: "none" }} />
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", position: "relative" }}>
-        <div className="reveal" style={{ textAlign: "center", maxWidth: 600, margin: "0 auto 48px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "0 16px" : "0 24px", position: "relative" }}>
+        <div className="reveal" style={{ textAlign: "center", maxWidth: 600, margin: isMobile ? "0 auto 32px" : "0 auto 48px" }}>
           <span className="section-badge">{t.booking.badge}</span>
-          <h2 style={{ fontFamily: fontDisplay, fontSize: "clamp(32px, 6vw, 52px)", fontWeight: 800, marginBottom: 16, lineHeight: 1.1 }}>
+          <h2 style={{ fontFamily: fontDisplay, fontSize: "clamp(28px, 6vw, 52px)", fontWeight: 800, marginBottom: 12, lineHeight: 1.1 }}>
             <span style={{ color: "#fff" }}>{t.booking.heading1}</span><span className="gold-text">{t.booking.heading2}</span>
           </h2>
-          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 17, lineHeight: 1.6 }}>{t.booking.subtitle}</p>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: isMobile ? 15 : 17, lineHeight: 1.6 }}>{t.booking.subtitle}</p>
         </div>
 
         {/* Discount Badge — floating banner */}
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
+        <div style={{ textAlign: "center", marginBottom: isMobile ? 24 : 32 }}>
           <div style={{
-            display: "inline-flex", alignItems: "center", gap: 12,
-            padding: "14px 32px", borderRadius: 16,
+            display: "inline-flex", alignItems: "center", gap: isMobile ? 8 : 12,
+            padding: isMobile ? "12px 18px" : "14px 32px", borderRadius: 16,
             background: "linear-gradient(135deg, rgba(246,190,0,0.12), rgba(246,190,0,0.04))",
             border: "1px solid rgba(246,190,0,0.3)",
             animation: "goldPulse 2s ease-in-out infinite",
             boxShadow: "0 0 24px rgba(246,190,0,0.1)",
           }}>
-            <span style={{ fontSize: 24 }}>&#9770;</span>
+            {!isMobile && <span style={{ fontSize: 24 }}>&#127881;</span>}
             <div style={{ display: "flex", flexDirection: "column", alignItems: dir === "rtl" ? "flex-end" : "flex-start" }}>
-              <span style={{ color: "#F6BE00", fontWeight: 800, fontSize: 18, fontFamily: fontDisplay }}>
-                {isAr ? "خصم يصل حتى ٤٠٪" : "Up to 40% Off"}
+              <span style={{ color: "#F6BE00", fontWeight: 800, fontSize: isMobile ? 15 : 18, fontFamily: fontDisplay }}>
+                {isAr ? "خصومات العيد حتى ٤٠٪" : "Eid Sale — Up to 40% Off"}
               </span>
-              <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, fontWeight: 500 }}>
-                {isAr ? "بمناسبة شهر رمضان الكريم" : "Ramadan Special Offer"}
+              <span style={{ color: "rgba(255,255,255,0.5)", fontSize: isMobile ? 11 : 12, fontWeight: 500 }}>
+                {isAr ? "بمناسبة عيد الفطر المبارك" : "Eid Al-Fitr Special Offer"}
               </span>
               {ramadanDays > 0 && (
                 <span style={{ color: "rgba(246,190,0,0.7)", fontSize: 11, fontWeight: 600, marginTop: 2 }}>
@@ -359,7 +455,7 @@ export default function Booking() {
                 </span>
               )}
             </div>
-            <span style={{ fontSize: 24 }}>&#9770;</span>
+            <span style={{ fontSize: 24 }}>&#127881;</span>
           </div>
         </div>
 
@@ -381,7 +477,7 @@ export default function Booking() {
 
 
         {/* Steps — scroll-to anchors */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 48 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: isMobile ? 32 : 48 }}>
           {[{ n: 1, l: t.booking.step1, ref: step1Ref, done: step1Done }, { n: 2, l: t.booking.step2, ref: step2Ref, done: step2Done }, { n: 3, l: t.booking.step3, ref: step3Ref, done: false }].map((s, i) => (
             <div key={s.n} style={{ display: "flex", alignItems: "center" }}>
               <button onClick={() => scrollToSection(s.ref)} style={{
@@ -389,25 +485,25 @@ export default function Booking() {
                 cursor: "pointer",
               }}>
                 <div style={{
-                  width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 15, fontWeight: 700, transition: "all 0.3s",
+                  width: isMobile ? 38 : 44, height: isMobile ? 38 : 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: isMobile ? 13 : 15, fontWeight: 700, transition: "all 0.3s",
                   background: s.done || s.n === 1 ? "#F6BE00" : "rgba(255,255,255,0.04)", color: s.done || s.n === 1 ? "#000" : "rgba(255,255,255,0.3)",
                   border: s.done || s.n === 1 ? "none" : "1px solid rgba(255,255,255,0.1)",
                   boxShadow: s.done || s.n === 1 ? "0 0 20px rgba(246,190,0,0.25)" : "none",
                 }}>
                   {s.done ? "\u2713" : s.n}
                 </div>
-                <span style={{ fontSize: 11, marginTop: 8, color: s.done || s.n === 1 ? "#F6BE00" : "rgba(255,255,255,0.25)", fontWeight: s.done || s.n === 1 ? 600 : 400 }}>{s.l}</span>
+                <span style={{ fontSize: isMobile ? 10 : 11, marginTop: 6, color: s.done || s.n === 1 ? "#F6BE00" : "rgba(255,255,255,0.25)", fontWeight: s.done || s.n === 1 ? 600 : 400 }}>{s.l}</span>
               </button>
-              {i < 2 && <div style={{ width: 70, height: 2, margin: "0 12px", marginBottom: 22, background: s.done ? "linear-gradient(90deg, #F6BE00, rgba(246,190,0,0.3))" : "rgba(255,255,255,0.06)", borderRadius: 1 }} />}
+              {i < 2 && <div style={{ width: isMobile ? 40 : 70, height: 2, margin: isMobile ? "0 8px" : "0 12px", marginBottom: 22, background: s.done ? "linear-gradient(90deg, #F6BE00, rgba(246,190,0,0.3))" : "rgba(255,255,255,0.06)", borderRadius: 1 }} />}
             </div>
           ))}
         </div>
 
         {/* ==================== STEP 1 — Car Selection ==================== */}
         <div ref={step1Ref} style={{ scrollMarginTop: 100 }}>
-          <p style={{ textAlign: "center", color: "rgba(255,255,255,0.45)", fontSize: 15, marginBottom: 40, fontWeight: 500 }}>{t.booking.step1instruction}</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 24, maxWidth: 760, margin: "0 auto" }}>
+          <p style={{ textAlign: "center", color: "rgba(255,255,255,0.45)", fontSize: isMobile ? 14 : 15, marginBottom: isMobile ? 24 : 40, fontWeight: 500 }}>{t.booking.step1instruction}</p>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: isMobile ? 16 : 24, maxWidth: 760, margin: "0 auto" }}>
             {cars.map((c) => {
               const active = size === c.id;
               return (
@@ -432,7 +528,7 @@ export default function Booking() {
                   if (active2) active2.style.opacity = "1";
                 }}
               >
-                <div style={{ position: "relative", height: 320 }}>
+                <div style={{ position: "relative", height: isMobile ? 220 : 320 }}>
                   <Image data-active="true" src={c.img} alt={c.label} fill className="object-cover" style={{ transition: "opacity 0.6s ease", objectPosition: "center 30%" }} />
                   <Image data-hover="true" src={c.imgHover} alt={c.label + " hover"} fill className="object-cover" style={{ transition: "opacity 0.6s ease", opacity: 0, objectPosition: "center 30%" }} />
                   {/* Cinematic gradient overlays */}
@@ -443,9 +539,9 @@ export default function Booking() {
                   )}
                 </div>
                 {/* Text at top */}
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, padding: "24px 20px" }}>
-                  <div style={{ color: active ? "#F6BE00" : "#fff", fontWeight: 800, fontSize: 22, marginBottom: 6, fontFamily: fontDisplay, transition: "color 0.3s" }}>{c.label}</div>
-                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, fontWeight: 500 }}>{c.ex}</div>
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, padding: isMobile ? "16px 16px" : "24px 20px" }}>
+                  <div style={{ color: active ? "#F6BE00" : "#fff", fontWeight: 800, fontSize: isMobile ? 18 : 22, marginBottom: 4, fontFamily: fontDisplay, transition: "color 0.3s" }}>{c.label}</div>
+                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: isMobile ? 11 : 12, fontWeight: 500 }}>{c.ex}</div>
                 </div>
                 {/* Bottom gradient label */}
                 <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px", textAlign: "center" }}>
@@ -464,9 +560,9 @@ export default function Booking() {
             })}
           </div>
           {/* Continue button */}
-          <div style={{ textAlign: "center", marginTop: 48 }}>
+          <div style={{ textAlign: "center", marginTop: isMobile ? 28 : 48 }}>
             <button onClick={() => size && scrollToSection(step2Ref)} disabled={!size} className="btn-gold" style={{
-              opacity: size ? 1 : 0.3, transition: "all 0.4s", padding: "16px 48px", fontSize: 16, fontWeight: 700,
+              opacity: size ? 1 : 0.3, transition: "all 0.4s", padding: isMobile ? "14px 32px" : "16px 48px", fontSize: isMobile ? 14 : 16, fontWeight: 700,
               boxShadow: size ? "0 0 30px rgba(246,190,0,0.2)" : "none",
             }}>{t.booking.chooseServices}</button>
           </div>
@@ -508,6 +604,71 @@ export default function Booking() {
                 </button>
               );
             })}
+          </div>
+
+          {/* Packages Section */}
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 16 }}>
+              <div style={{ height: 1, flex: 1, maxWidth: 80, background: "rgba(246,190,0,0.2)" }} />
+              <span style={{ color: "#F6BE00", fontSize: 13, fontWeight: 700, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>{t.booking.packagesTitle}</span>
+              <div style={{ height: 1, flex: 1, maxWidth: 80, background: "rgba(246,190,0,0.2)" }} />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 12 }}>
+              {packages.map(pkg => {
+                const isActive = selectedPackage === pkg.id;
+                // Calculate package total
+                const pkgSvcTotal = pkg.serviceIds.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v && size ? v.p[size] : 0); }, 0);
+                const pkgAddonTotal = pkg.addonIds.reduce((s, aid) => {
+                  const addon = addons.find(a => a.id === aid);
+                  if (!addon) return s;
+                  if (addon.bySize && size) return s + addon.p[size];
+                  return s + addon.p.small;
+                }, 0);
+                const pkgTotal = pkgSvcTotal + pkgAddonTotal;
+                // Before price
+                const pkgBeforeTotal = pkg.serviceIds.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v && size ? (v.pBefore ? v.pBefore[size] : v.p[size]) : 0); }, 0) + pkgAddonTotal;
+                const pkgSaved = pkgBeforeTotal - pkgTotal;
+                return (
+                  <button key={pkg.id} onClick={() => selectPackage(pkg)}
+                    style={{
+                      position: "relative", padding: isMobile ? "14px 16px" : "18px 20px", borderRadius: 14, cursor: "pointer",
+                      background: isActive ? `linear-gradient(135deg, ${pkg.color}15, ${pkg.color}08)` : "rgba(255,255,255,0.02)",
+                      border: isActive ? `2px solid ${pkg.color}` : "2px solid rgba(255,255,255,0.06)",
+                      textAlign: dir === "rtl" ? "right" : "left", transition: "all 0.3s",
+                      boxShadow: isActive ? `0 0 20px ${pkg.color}25` : "none",
+                    }}
+                    onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = `${pkg.color}60`; e.currentTarget.style.transform = "translateY(-2px)"; } }}
+                    onMouseLeave={e => { if (!isActive) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.transform = ""; } }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                      <div>
+                        <span style={{ color: isActive ? pkg.color : "#fff", fontWeight: 800, fontSize: isMobile ? 14 : 16, fontFamily: fontDisplay }}>{pkg.name}</span>
+                        {pkgSaved > 0 && size && (
+                          <span style={{ display: "inline-block", marginInlineStart: 8, padding: "2px 8px", borderRadius: 100, fontSize: 10, fontWeight: 700, background: "rgba(76,175,80,0.15)", color: "#4CAF50", border: "1px solid rgba(76,175,80,0.3)" }}>
+                            {t.booking.packSave} {pkgSaved.toLocaleString()} {cur}
+                          </span>
+                        )}
+                      </div>
+                      {isActive && (
+                        <div style={{ width: 24, height: 24, borderRadius: "50%", background: pkg.color, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 7L5.75 9.25L10.5 4.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        </div>
+                      )}
+                    </div>
+                    <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", lineHeight: 1.4, marginBottom: 8 }}>{pkg.desc}</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      {size && pkgBeforeTotal > pkgTotal && (
+                        <span style={{ textDecoration: "line-through", fontSize: 12, color: "rgba(255,80,80,0.5)" }}>{pkgBeforeTotal.toLocaleString()}</span>
+                      )}
+                      <span style={{ color: "#F6BE00", fontWeight: 700, fontSize: 15 }}>{size ? pkgTotal.toLocaleString() : "—"} {cur}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            <div style={{ textAlign: "center", marginTop: 16 }}>
+              <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>{t.booking.orPickIndividual}</span>
+            </div>
           </div>
 
           {/* Service Cards — 3 column grid */}
@@ -668,19 +829,21 @@ export default function Booking() {
             })}
           </div>
 
-          {/* Detail panel — inline expanded below the service card */}
+          {/* Inline addons panel — below service grid */}
           {detailSvc && sel.includes(detailSvc.id) && (() => {
             const s = detailSvc;
             const svcAddons = selAddons[s.id] || [];
+            const regularAddons = addons.filter(a => !a.showFor);
+            const isTint = s.cat === "tint";
             return (
               <div ref={detailRef} style={{
                 marginTop: 16, background: "#0d0d0d", borderRadius: 14,
                 border: "2px solid #F6BE00",
-                padding: 24, animation: "fadeUp 0.3s ease-out",
+                padding: isMobile ? 16 : 24, animation: "fadeUp 0.3s ease-out",
               }}>
                 {/* Header */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                     <span style={{ color: "#F6BE00", fontWeight: 700, fontSize: 16 }}>{s.name}</span>
                     <span style={{ fontSize: 11, color: "#F6BE00", border: "1px solid rgba(246,190,0,0.2)", padding: "2px 10px", borderRadius: 100 }}>{s.w}</span>
                   </div>
@@ -691,90 +854,208 @@ export default function Booking() {
                   }}>&#10005;</button>
                 </div>
 
-
-                {/* Additional services — visual grid */}
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#F6BE00", marginBottom: 12, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
-                    {t.booking.additionalServices}
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
-                    {addons.map(addon => {
-                      const price = getAddonPrice(addon, s.addonTier);
-                      const isChecked = svcAddons.includes(addon.id);
-                      const hasImg = (size === "small" && addon.imgSmall) || (size === "large" && addon.imgLarge);
-                      return (
-                        <button key={addon.id}
-                          onClick={(e) => { e.stopPropagation(); toggleAddon(s.id, addon.id); }}
-                          style={{
-                            display: "flex", flexDirection: "column", padding: 0, borderRadius: 14, cursor: "pointer", overflow: "hidden",
-                            background: isChecked ? "rgba(246,190,0,0.06)" : "rgba(255,255,255,0.02)",
-                            border: isChecked ? "2px solid rgba(246,190,0,0.4)" : "2px solid rgba(255,255,255,0.06)",
-                            transition: "all 0.25s", textAlign: "center", position: "relative",
-                          }}
-                          onMouseEnter={e => { if (!isChecked) e.currentTarget.style.borderColor = "rgba(246,190,0,0.2)"; }}
-                          onMouseLeave={e => { if (!isChecked) e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
-                        >
+                {/* Regular addons grid */}
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#F6BE00", marginBottom: 12, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>
+                  {t.booking.additionalServices}
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(200px, 1fr))", gap: 10 }}>
+                  {regularAddons.map(addon => {
+                    const price = getAddonPrice(addon, s.addonTier);
+                    const isChecked = svcAddons.includes(addon.id);
+                    const hasImg = (size === "small" && addon.imgSmall) || (size === "large" && addon.imgLarge);
+                    return (
+                      <button key={addon.id}
+                        onClick={(e) => { e.stopPropagation(); toggleAddon(s.id, addon.id); }}
+                        style={{
+                          display: "flex", alignItems: "center", gap: 12, padding: 10, borderRadius: 12, cursor: "pointer",
+                          background: isChecked ? "rgba(246,190,0,0.08)" : "rgba(255,255,255,0.02)",
+                          border: isChecked ? "2px solid rgba(246,190,0,0.4)" : "2px solid rgba(255,255,255,0.06)",
+                          transition: "all 0.2s", textAlign: dir === "rtl" ? "right" : "left",
+                        }}
+                        onMouseEnter={e => { if (!isChecked) e.currentTarget.style.borderColor = "rgba(246,190,0,0.2)"; }}
+                        onMouseLeave={e => { if (!isChecked) e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
+                      >
+                        <div style={{
+                          width: 64, height: 64, borderRadius: 10, flexShrink: 0, position: "relative", overflow: "hidden",
+                          background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center",
+                          color: isChecked ? "#F6BE00" : "rgba(255,255,255,0.3)",
+                        }}>
+                          {hasImg ? (
+                            <Image src={size === "large" ? addon.imgLarge! : addon.imgSmall!} alt={addon.name} fill className="object-cover" />
+                          ) : (
+                            <div style={{ transform: "scale(1.4)" }}>{addon.icon}</div>
+                          )}
                           {isChecked && (
-                            <div style={{ position: "absolute", top: 8, ...(dir === "rtl" ? { left: 8 } : { right: 8 }), width: 22, height: 22, borderRadius: "50%", background: "#F6BE00", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2 }}>
-                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 6L5 8L9 4" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            <div style={{ position: "absolute", inset: 0, background: "rgba(246,190,0,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <svg width="18" height="18" viewBox="0 0 12 12" fill="none"><path d="M3 6L5 8L9 4" stroke="#F6BE00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                             </div>
                           )}
-                          <div style={{
-                            width: "100%", aspectRatio: "1", position: "relative",
-                            background: "#0a0a0a",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            color: isChecked ? "#F6BE00" : "rgba(255,255,255,0.3)",
-                          }}>
-                            {hasImg ? (
-                              <Image src={size === "large" ? addon.imgLarge! : addon.imgSmall!} alt={addon.name} fill className="object-cover" />
-                            ) : (
-                              <div style={{ transform: "scale(1.8)" }}>{addon.icon}</div>
-                            )}
-                          </div>
-                          <div style={{ padding: "10px 8px", background: "#111", width: "100%" }}>
-                            <span style={{ color: isChecked ? "#fff" : "rgba(255,255,255,0.5)", fontSize: 11, lineHeight: 1.3, display: "block", marginBottom: 4 }}>{addon.name}</span>
-                            <span style={{ color: "#F6BE00", fontSize: 13, fontWeight: 700 }}>{price} {cur}</span>
-                          </div>
-                        </button>
-                      );
-                    })}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <span style={{ color: isChecked ? "#fff" : "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.3, display: "block", marginBottom: 3 }}>{addon.name}</span>
+                          <span style={{ color: "#F6BE00", fontSize: 14, fontWeight: 700 }}>{price} {cur}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Windshield upsell button — only for tint services */}
+                {isTint && (
+                  <button onClick={() => setWindshieldSheetId(s.id)} style={{
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                    width: "100%", marginTop: 16, padding: "14px 20px", borderRadius: 12, cursor: "pointer",
+                    background: "linear-gradient(135deg, rgba(246,190,0,0.1), rgba(246,190,0,0.04))",
+                    border: "1px solid rgba(246,190,0,0.3)",
+                    transition: "all 0.25s",
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.background = "linear-gradient(135deg, rgba(246,190,0,0.15), rgba(246,190,0,0.06))"; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)"; e.currentTarget.style.background = "linear-gradient(135deg, rgba(246,190,0,0.1), rgba(246,190,0,0.04))"; }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F6BE00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="22" height="12" rx="3"/><path d="M5 10h14"/><path d="M12 6v12"/></svg>
+                    <span style={{ color: "#F6BE00", fontSize: 13, fontWeight: 700 }}>
+                      {isAr ? "أضف عازل زجاج أمامي" : "Add Front Windshield Tint"}
+                    </span>
+                    {svcAddons.some(id => addons.find(a => a.id === id)?.showFor) && (
+                      <span style={{ width: 20, height: 20, borderRadius: "50%", background: "#F6BE00", color: "#000", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>&#10003;</span>
+                    )}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F6BE00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                  </button>
+                )}
+              </div>
+            );
+          })()}
+
+          {/* Windshield bottom sheet — only for tint services */}
+          {(() => {
+            const wsId = windshieldSheetId;
+            const wsSvc = wsId ? svcs.find(x => x.id === wsId) : null;
+            if (!wsSvc || !sel.includes(wsId!)) return null;
+            const svcAddons = selAddons[wsId!] || [];
+            const windshieldAddons = addons.filter(a => a.showFor === "tint");
+            const wsCount = svcAddons.filter(id => windshieldAddons.some(a => a.id === id)).length;
+            return (
+              <>
+                <div onClick={() => setWindshieldSheetId(null)} style={{
+                  position: "fixed", inset: 0, zIndex: 90,
+                  background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)",
+                  animation: "sheetFadeIn 0.25s ease-out",
+                }} />
+                <div style={{
+                  position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 91,
+                  background: "#111", borderRadius: "20px 20px 0 0",
+                  border: "1px solid rgba(246,190,0,0.25)", borderBottom: "none",
+                  maxHeight: "70vh", overflowY: "auto",
+                  animation: "sheetSlideUp 0.3s cubic-bezier(0.32,0.72,0,1)",
+                  WebkitOverflowScrolling: "touch",
+                }}>
+                  <div style={{ display: "flex", justifyContent: "center", padding: "12px 0 4px" }}>
+                    <div style={{ width: 36, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.15)" }} />
+                  </div>
+                  <div style={{ padding: "8px 20px 24px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: "#F6BE00" }}>
+                          {isAr ? "عازل زجاج أمامي" : "Front Windshield Tint"}
+                        </span>
+                        <span style={{ fontSize: 10, color: "rgba(246,190,0,0.6)", border: "1px solid rgba(246,190,0,0.15)", padding: "2px 8px", borderRadius: 100 }}>
+                          {isAr ? "اختر واحد" : "pick one"}
+                        </span>
+                      </div>
+                      <button onClick={() => setWindshieldSheetId(null)} style={{
+                        width: 32, height: 32, borderRadius: "50%", cursor: "pointer", flexShrink: 0,
+                        background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                        color: "rgba(255,255,255,0.4)", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>&#10005;</button>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(200px, 1fr))", gap: 10 }}>
+                      {windshieldAddons.map(addon => {
+                        const price = getAddonPrice(addon, wsSvc.addonTier);
+                        const isChecked = svcAddons.includes(addon.id);
+                        const hasImg = (size === "small" && addon.imgSmall) || (size === "large" && addon.imgLarge);
+                        return (
+                          <button key={addon.id}
+                            onClick={(e) => { e.stopPropagation(); toggleAddon(wsId!, addon.id); }}
+                            style={{
+                              display: "flex", alignItems: "center", gap: 12, padding: 10, borderRadius: 12, cursor: "pointer",
+                              background: isChecked ? "rgba(246,190,0,0.08)" : "rgba(255,255,255,0.02)",
+                              border: isChecked ? "2px solid rgba(246,190,0,0.4)" : "2px solid rgba(255,255,255,0.06)",
+                              transition: "all 0.2s", textAlign: dir === "rtl" ? "right" : "left",
+                            }}
+                            onMouseEnter={e => { if (!isChecked) e.currentTarget.style.borderColor = "rgba(246,190,0,0.2)"; }}
+                            onMouseLeave={e => { if (!isChecked) e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
+                          >
+                            <div style={{
+                              width: 64, height: 64, borderRadius: 10, flexShrink: 0, position: "relative", overflow: "hidden",
+                              background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center",
+                              color: isChecked ? "#F6BE00" : "rgba(255,255,255,0.3)",
+                            }}>
+                              {hasImg ? (
+                                <Image src={size === "large" ? addon.imgLarge! : addon.imgSmall!} alt={addon.name} fill className="object-cover" />
+                              ) : (
+                                <div style={{ transform: "scale(1.4)" }}>{addon.icon}</div>
+                              )}
+                              {isChecked && (
+                                <div style={{ position: "absolute", inset: 0, background: "rgba(246,190,0,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                  <svg width="18" height="18" viewBox="0 0 12 12" fill="none"><path d="M3 6L5 8L9 4" stroke="#F6BE00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                </div>
+                              )}
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <span style={{ color: isChecked ? "#fff" : "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.3, display: "block", marginBottom: 3 }}>{addon.name}</span>
+                              <span style={{ color: "#F6BE00", fontSize: 14, fontWeight: 700 }}>{price} {cur}</span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button onClick={() => setWindshieldSheetId(null)} style={{
+                      width: "100%", marginTop: 16, padding: "14px 24px", borderRadius: 12, cursor: "pointer",
+                      background: wsCount > 0 ? "#F6BE00" : "rgba(255,255,255,0.06)",
+                      color: wsCount > 0 ? "#000" : "rgba(255,255,255,0.5)",
+                      border: wsCount > 0 ? "none" : "1px solid rgba(255,255,255,0.1)",
+                      fontSize: 14, fontWeight: 700, transition: "all 0.25s",
+                    }}>
+                      {wsCount > 0
+                        ? `${isAr ? "تم" : "Done"} · ${windshieldAddons.find(a => svcAddons.includes(a.id))?.name || ""}`
+                        : (isAr ? "تخطي" : "Skip")}
+                    </button>
                   </div>
                 </div>
-              </div>
+              </>
             );
           })()}
 
           {/* Sticky floating total bar */}
           <div style={{
-            position: "sticky", bottom: 16, zIndex: 20, marginTop: 24,
-            padding: "16px 24px", borderRadius: 16,
+            position: "sticky", bottom: isMobile ? 8 : 16, zIndex: 20, marginTop: isMobile ? 16 : 24,
+            padding: isMobile ? "12px 14px" : "16px 24px", borderRadius: isMobile ? 14 : 16,
             background: "rgba(17,17,17,0.95)", backdropFilter: "blur(12px)",
             border: sel.length > 0 ? "1px solid rgba(246,190,0,0.25)" : "1px solid rgba(255,255,255,0.08)",
             boxShadow: "0 -4px 24px rgba(0,0,0,0.5)",
             display: "flex", justifyContent: "space-between", alignItems: "center",
-            transition: "all 0.3s",
+            transition: "all 0.3s", gap: 8,
           }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{t.booking.estimatedTotal}</span>
-                {/* Car type tag */}
-                {size && <span style={{
+            <div style={{ minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                <span style={{ color: "rgba(255,255,255,0.4)", fontSize: isMobile ? 10 : 12 }}>{t.booking.estimatedTotal}</span>
+                {size && !isMobile && <span style={{
                   padding: "2px 8px", borderRadius: 100, fontSize: 10, fontWeight: 600,
                   background: "rgba(246,190,0,0.1)", color: "#F6BE00", border: "1px solid rgba(246,190,0,0.2)",
                 }}>{cars.find(c => c.id === size)?.label}</span>}
               </div>
-              <div className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 24, fontWeight: 700, transition: "all 0.3s" }}>{displayTotal.toLocaleString()} {cur}</div>
+              <div className="gold-text" style={{ fontFamily: fontDisplay, fontSize: isMobile ? 20 : 24, fontWeight: 700, transition: "all 0.3s" }}>{displayTotal.toLocaleString()} {cur}</div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>{sel.length} {sel.length > 1 ? t.booking.servicesCount : t.booking.serviceCount}</span>
-              <button onClick={() => sel.length > 0 && scrollToSection(step3Ref)} className="btn-gold" style={{ margin: 0, padding: "10px 28px", opacity: sel.length > 0 ? 1 : 0.3, pointerEvents: sel.length > 0 ? "auto" : "none", transition: "opacity 0.3s" }}>{t.booking.continue}</button>
+            <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 16, flexShrink: 0 }}>
+              {!isMobile && <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>{sel.length} {sel.length > 1 ? t.booking.servicesCount : t.booking.serviceCount}</span>}
+              <button onClick={() => sel.length > 0 && scrollToSection(step3Ref)} className="btn-gold" style={{ margin: 0, padding: isMobile ? "10px 18px" : "10px 28px", fontSize: isMobile ? 12 : 13, opacity: sel.length > 0 ? 1 : 0.3, pointerEvents: sel.length > 0 ? "auto" : "none", transition: "opacity 0.3s" }}>{t.booking.continue}</button>
             </div>
           </div>
         </div>
 
 
         {/* ==================== STEP 3 — Confirm & Book (only visible after services selected) ==================== */}
-        <div ref={step3Ref} style={{ marginTop: 80, scrollMarginTop: 80, maxWidth: 600, margin: "80px auto 0", display: sel.length > 0 ? "block" : "none" }}>
+        <div ref={step3Ref} style={{ marginTop: isMobile ? 48 : 80, scrollMarginTop: 80, maxWidth: 600, margin: isMobile ? "48px auto 0" : "80px auto 0", display: sel.length > 0 ? "block" : "none" }}>
           {/* Vehicle header */}
           {size && (
             <div style={{ borderRadius: 14, background: "#111", border: "1px solid rgba(255,255,255,0.08)", overflow: "hidden", marginBottom: 20 }}>
@@ -874,7 +1155,7 @@ export default function Booking() {
                     <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em", marginBottom: 10 }}>
                       {t.booking.additionalServices}
                     </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: 10 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fill, minmax(130px, 1fr))", gap: 10 }}>
                       {allAddons.map(({ addon, price }) => {
                         const addonImg = size === "large" ? addon.imgLarge : addon.imgSmall;
                         return (
@@ -998,10 +1279,11 @@ export default function Booking() {
                 onClick={() => { saveBooking("cash"); }}
                 disabled={!formValid || submitting}
                 style={{
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                  width: "100%", padding: "16px 20px", borderRadius: 12, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  width: "100%", padding: isMobile ? "14px 14px" : "16px 20px", borderRadius: 12, cursor: "pointer",
                   background: (!formValid || submitting) ? "rgba(246,190,0,0.3)" : "#F6BE00",
-                  border: "none", color: "#000", fontSize: 15, fontWeight: 700,
+                  border: "none", color: "#000", fontSize: isMobile ? 13 : 15, fontWeight: 700,
+                  textAlign: "center" as const,
                   transition: "all 0.3s",
                   opacity: (!formValid || submitting) ? 0.4 : 1,
                 }}
@@ -1072,7 +1354,7 @@ export default function Booking() {
                 }} />
               ))}
 
-              <div style={{ textAlign: "center", maxWidth: 440, padding: "40px 24px", position: "relative" }}>
+              <div style={{ textAlign: "center", maxWidth: 440, padding: isMobile ? "32px 16px" : "40px 24px", position: "relative" }}>
                 {/* Animated check with pulse ring */}
                 <div style={{ position: "relative", width: 90, height: 90, margin: "0 auto 28px" }}>
                   <div style={{

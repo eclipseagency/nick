@@ -205,6 +205,7 @@ export interface Dictionary {
     svcTintPlus: string;
     svcTintFlex: string;
     svcTintLite: string;
+    svcWindshieldPpf: string;
     svcTintFrontMax: string;
     svcTintFrontPro: string;
     svcTintFrontPlus: string;
@@ -241,6 +242,8 @@ export interface Dictionary {
     addonRemovePartial: string;
     addonRemoveFront: string;
     addonRemoveFull: string;
+    addonPolish: string;
+    addonSteamWash: string;
     // Packages
     packagesTitle: string;
     packBasic: string;
@@ -249,6 +252,14 @@ export interface Dictionary {
     packPremiumDesc: string;
     packVip: string;
     packVipDesc: string;
+    packPlus: string;
+    packPlusDesc: string;
+    packFlex: string;
+    packFlexDesc: string;
+    packMatte: string;
+    packMatteDesc: string;
+    packFront: string;
+    packFrontDesc: string;
     packIncludes: string;
     packSave: string;
     packSelect: string;
