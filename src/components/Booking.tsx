@@ -83,7 +83,6 @@ export default function Booking() {
   ];
 
   const toggleSvc = (id: string) => {
-    setSelectedPackage(null); // Clear package when manually selecting
     if (sel.includes(id)) {
       setSel(p => p.filter(x => x !== id));
       setSelAddons(a => { const n = { ...a }; delete n[id]; return n; });
@@ -200,50 +199,6 @@ export default function Booking() {
     { id: "ceramic-ext-5", cat: "ceramic", name: t.booking.svcCeramicExt5, p: sp("ceramic-ext-5", { small: 1780, large: 1980 }), pBefore: { small: 2950, large: 3250 }, w: "5yr", duration: "3-5 hrs", img: "", imgSmall: "/images/ceramic-ext5-small.webp", imgLarge: "/images/ceramic-ext5-large.webp", addonTier: "low", parts: [t.booking.exteriorBody], details: [d("تلميع ساطع", "Brilliant shine"), d("12 طبقة خلال فترة الضمان", "12 layers during warranty period")] },
     { id: "ceramic-int-1", cat: "ceramic", name: t.booking.svcCeramicInt1, p: sp("ceramic-int-1", { small: 1880, large: 2180 }), pBefore: { small: 2350, large: 2750 }, w: "1yr", duration: "2-3 hrs", img: "", imgSmall: "/images/ceramic-int-small.webp", imgLarge: "/images/ceramic-int-large.webp", addonTier: "low", parts: [t.booking.interiorSurfaces], details: [d("سهولة التنظيف", "Easy to clean"), d("مقاومة تسرب المواد السائلة داخل المراتب", "Liquid spill resistance for seats")] },
   ];
-
-  // Packages — predefined bundles from price sheet
-  interface Package { id: string; name: string; desc: string; serviceIds: string[]; addonIds: string[]; color: string }
-  const packages: Package[] = [
-    { id: "pack-plus", name: t.booking.packPlus, desc: t.booking.packPlusDesc, color: "#4CAF50",
-      serviceIds: ["ppf-clear85", "tint-plus", "ppf-interior", "ceramic-int-1", "windshield-ppf"],
-      addonIds: ["ozone", "rim-ceramic", "polish", "steam-wash", "tint-front-pro"] },
-    { id: "pack-flex", name: t.booking.packFlex, desc: t.booking.packFlexDesc, color: "#FF9800",
-      serviceIds: ["ppf-clear75", "tint-flex", "ppf-interior", "ceramic-int-1", "windshield-ppf"],
-      addonIds: ["ozone", "rim-ceramic", "polish", "steam-wash", "tint-front-pro"] },
-    { id: "pack-matte", name: t.booking.packMatte, desc: t.booking.packMatteDesc, color: "#9C27B0",
-      serviceIds: ["ppf-matte", "tint-plus", "ppf-interior", "ceramic-int-1", "windshield-ppf"],
-      addonIds: ["ozone", "rim-ceramic", "polish", "steam-wash", "tint-front-pro"] },
-    { id: "pack-front", name: t.booking.packFront, desc: t.booking.packFrontDesc, color: "#2196F3",
-      serviceIds: ["ceramic-ext-1", "tint-flex"],
-      addonIds: ["polish", "steam-wash"] },
-  ];
-
-  const selectPackage = (pkg: Package) => {
-    if (selectedPackage === pkg.id) {
-      // Deselect package — clear everything
-      setSelectedPackage(null);
-      setSel([]);
-      setSelAddons({});
-      return;
-    }
-    setSelectedPackage(pkg.id);
-    // Set the services
-    setSel(pkg.serviceIds);
-    // Set addons — distribute to the first service that matches the addon's showFor or the first service
-    const newAddons: Record<string, string[]> = {};
-    const regularAddonIds = pkg.addonIds.filter(aid => !addons.find(a => a.id === aid)?.showFor);
-    const tintAddonIds = pkg.addonIds.filter(aid => addons.find(a => a.id === aid)?.showFor === "tint");
-    // Assign regular addons to first service
-    if (regularAddonIds.length > 0 && pkg.serviceIds.length > 0) {
-      newAddons[pkg.serviceIds[0]] = regularAddonIds;
-    }
-    // Assign tint addons to the tint service
-    const tintSvc = pkg.serviceIds.find(sid => svcs.find(s => s.id === sid)?.cat === "tint");
-    if (tintAddonIds.length > 0 && tintSvc) {
-      newAddons[tintSvc] = [...(newAddons[tintSvc] || []), ...tintAddonIds];
-    }
-    setSelAddons(newAddons);
-  };
 
   const filteredSvcs = svcs.filter(s => s.cat === category);
   const detailSvc = detailId ? svcs.find(s => s.id === detailId) : null;
@@ -407,7 +362,6 @@ export default function Booking() {
   const step1Done = !!size;
   const step2Done = sel.length > 0;
 
-  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
@@ -604,71 +558,6 @@ export default function Booking() {
                 </button>
               );
             })}
-          </div>
-
-          {/* Packages Section */}
-          <div style={{ marginBottom: 32 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 16 }}>
-              <div style={{ height: 1, flex: 1, maxWidth: 80, background: "rgba(246,190,0,0.2)" }} />
-              <span style={{ color: "#F6BE00", fontSize: 13, fontWeight: 700, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>{t.booking.packagesTitle}</span>
-              <div style={{ height: 1, flex: 1, maxWidth: 80, background: "rgba(246,190,0,0.2)" }} />
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 12 }}>
-              {packages.map(pkg => {
-                const isActive = selectedPackage === pkg.id;
-                // Calculate package total
-                const pkgSvcTotal = pkg.serviceIds.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v && size ? v.p[size] : 0); }, 0);
-                const pkgAddonTotal = pkg.addonIds.reduce((s, aid) => {
-                  const addon = addons.find(a => a.id === aid);
-                  if (!addon) return s;
-                  if (addon.bySize && size) return s + addon.p[size];
-                  return s + addon.p.small;
-                }, 0);
-                const pkgTotal = pkgSvcTotal + pkgAddonTotal;
-                // Before price
-                const pkgBeforeTotal = pkg.serviceIds.reduce((s, id) => { const v = svcs.find(x => x.id === id); return s + (v && size ? (v.pBefore ? v.pBefore[size] : v.p[size]) : 0); }, 0) + pkgAddonTotal;
-                const pkgSaved = pkgBeforeTotal - pkgTotal;
-                return (
-                  <button key={pkg.id} onClick={() => selectPackage(pkg)}
-                    style={{
-                      position: "relative", padding: isMobile ? "14px 16px" : "18px 20px", borderRadius: 14, cursor: "pointer",
-                      background: isActive ? `linear-gradient(135deg, ${pkg.color}15, ${pkg.color}08)` : "rgba(255,255,255,0.02)",
-                      border: isActive ? `2px solid ${pkg.color}` : "2px solid rgba(255,255,255,0.06)",
-                      textAlign: dir === "rtl" ? "right" : "left", transition: "all 0.3s",
-                      boxShadow: isActive ? `0 0 20px ${pkg.color}25` : "none",
-                    }}
-                    onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = `${pkg.color}60`; e.currentTarget.style.transform = "translateY(-2px)"; } }}
-                    onMouseLeave={e => { if (!isActive) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.transform = ""; } }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-                      <div>
-                        <span style={{ color: isActive ? pkg.color : "#fff", fontWeight: 800, fontSize: isMobile ? 14 : 16, fontFamily: fontDisplay }}>{pkg.name}</span>
-                        {pkgSaved > 0 && size && (
-                          <span style={{ display: "inline-block", marginInlineStart: 8, padding: "2px 8px", borderRadius: 100, fontSize: 10, fontWeight: 700, background: "rgba(76,175,80,0.15)", color: "#4CAF50", border: "1px solid rgba(76,175,80,0.3)" }}>
-                            {t.booking.packSave} {pkgSaved.toLocaleString()} {cur}
-                          </span>
-                        )}
-                      </div>
-                      {isActive && (
-                        <div style={{ width: 24, height: 24, borderRadius: "50%", background: pkg.color, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 7L5.75 9.25L10.5 4.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        </div>
-                      )}
-                    </div>
-                    <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", lineHeight: 1.4, marginBottom: 8 }}>{pkg.desc}</p>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      {size && pkgBeforeTotal > pkgTotal && (
-                        <span style={{ textDecoration: "line-through", fontSize: 12, color: "rgba(255,80,80,0.5)" }}>{pkgBeforeTotal.toLocaleString()}</span>
-                      )}
-                      <span style={{ color: "#F6BE00", fontWeight: 700, fontSize: 15 }}>{size ? pkgTotal.toLocaleString() : "—"} {cur}</span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-            <div style={{ textAlign: "center", marginTop: 16 }}>
-              <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>{t.booking.orPickIndividual}</span>
-            </div>
           </div>
 
           {/* Service Cards — 3 column grid */}
