@@ -11,7 +11,7 @@ import FAQ from "@/components/FAQ";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import CursorGlow from "@/components/CursorGlow";
-import FloatingButtons from "@/components/FloatingButtons";
+import Marquee from "@/components/Marquee";
 
 const siteUrl = "https://nick-fawn.vercel.app";
 
@@ -78,9 +78,9 @@ export default function Home() {
         }}
       />
       <CursorGlow />
-      <FloatingButtons />
       <Navbar />
       <Hero />
+      <Marquee />
       <About />
       <Services />
       <Gallery />
