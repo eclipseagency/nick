@@ -1,14 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import About from "@/components/About";
 import Services from "@/components/Services";
-import Gallery from "@/components/Gallery";
-import BeforeAfter from "@/components/BeforeAfter";
 import Booking from "@/components/Booking";
-import WhyNick from "@/components/WhyNick";
-import Testimonials from "@/components/Testimonials";
-import FAQ from "@/components/FAQ";
-import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import CursorGlow from "@/components/CursorGlow";
 import Marquee from "@/components/Marquee";
@@ -81,15 +74,8 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Marquee />
-      <About />
       <Services />
-      <Gallery />
-      <BeforeAfter />
       <Booking />
-      <WhyNick />
-      <Testimonials />
-      <FAQ />
-      <Contact />
       <Footer />
     </main>
   );
