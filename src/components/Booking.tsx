@@ -373,8 +373,10 @@ export default function Booking() {
   return (
     <section id="booking" ref={(el) => { (ref as React.MutableRefObject<HTMLElement | null>).current = el; sectionRef.current = el; }} style={{ padding: isMobile ? "60px 0" : "96px 0", position: "relative", overflow: "hidden" }}>
       {/* Epic background */}
-      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(246,190,0,0.06) 0%, transparent 60%), linear-gradient(180deg, #050505 0%, #0a0a0a 50%, #050505 100%)", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 600, height: 1, background: "linear-gradient(90deg, transparent, rgba(246,190,0,0.3), transparent)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(246,190,0,0.08) 0%, transparent 50%), linear-gradient(180deg, #050505 0%, #080808 50%, #050505 100%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 800, height: 1, background: "linear-gradient(90deg, transparent, rgba(246,190,0,0.4), transparent)", pointerEvents: "none" }} />
+      {/* Subtle grid pattern */}
+      <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(246,190,0,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(246,190,0,0.015) 1px, transparent 1px)", backgroundSize: "60px 60px", pointerEvents: "none", maskImage: "radial-gradient(ellipse 70% 50% at 50% 30%, black, transparent)" }} />
 
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "0 16px" : "0 24px", position: "relative" }}>
         <div className="reveal" style={{ textAlign: "center", maxWidth: 600, margin: isMobile ? "0 auto 32px" : "0 auto 48px" }}>
@@ -385,31 +387,26 @@ export default function Booking() {
           <p style={{ color: "rgba(255,255,255,0.5)", fontSize: isMobile ? 15 : 17, lineHeight: 1.6 }}>{t.booking.subtitle}</p>
         </div>
 
-        {/* Discount Badge — floating banner */}
+        {/* Discount Badge — premium banner */}
         <div style={{ textAlign: "center", marginBottom: isMobile ? 24 : 32 }}>
           <div style={{
-            display: "inline-flex", alignItems: "center", gap: isMobile ? 8 : 12,
-            padding: isMobile ? "12px 18px" : "14px 32px", borderRadius: 16,
-            background: "linear-gradient(135deg, rgba(246,190,0,0.12), rgba(246,190,0,0.04))",
-            border: "1px solid rgba(246,190,0,0.3)",
-            animation: "goldPulse 2s ease-in-out infinite",
-            boxShadow: "0 0 24px rgba(246,190,0,0.1)",
+            display: "inline-flex", alignItems: "center", gap: isMobile ? 10 : 16,
+            padding: isMobile ? "14px 20px" : "16px 36px", borderRadius: 100,
+            background: "linear-gradient(135deg, rgba(246,190,0,0.08), rgba(246,190,0,0.02))",
+            border: "1px solid rgba(246,190,0,0.2)",
+            backdropFilter: "blur(8px)",
           }}>
-            {!isMobile && <span style={{ fontSize: 24 }}>&#127881;</span>}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: dir === "rtl" ? "flex-end" : "flex-start" }}>
-              <span style={{ color: "#F6BE00", fontWeight: 800, fontSize: isMobile ? 15 : 18, fontFamily: fontDisplay }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#4CAF50", boxShadow: "0 0 8px rgba(76,175,80,0.6)", flexShrink: 0 }} />
+            <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 16, flexWrap: "wrap", justifyContent: "center" }}>
+              <span style={{ color: "#F6BE00", fontWeight: 800, fontSize: isMobile ? 14 : 16, fontFamily: fontDisplay }}>
                 {isAr ? "خصومات العيد حتى ٤٠٪" : "Eid Sale — Up to 40% Off"}
               </span>
-              <span style={{ color: "rgba(255,255,255,0.5)", fontSize: isMobile ? 11 : 12, fontWeight: 500 }}>
-                {isAr ? "بمناسبة عيد الفطر المبارك" : "Eid Al-Fitr Special Offer"}
-              </span>
               {ramadanDays > 0 && (
-                <span style={{ color: "rgba(246,190,0,0.7)", fontSize: 11, fontWeight: 600, marginTop: 2 }}>
-                  {isAr ? `ينتهي العرض خلال ${ramadanDays} يوم` : `Offer ends in ${ramadanDays} days`}
+                <span style={{ padding: "4px 12px", borderRadius: 100, fontSize: 11, fontWeight: 600, background: "rgba(246,190,0,0.1)", color: "rgba(246,190,0,0.8)", border: "1px solid rgba(246,190,0,0.15)" }}>
+                  {isAr ? `${ramadanDays} يوم متبقي` : `${ramadanDays} days left`}
                 </span>
               )}
             </div>
-            <span style={{ fontSize: 24 }}>&#127881;</span>
           </div>
         </div>
 
@@ -430,28 +427,40 @@ export default function Booking() {
         </div>
 
 
-        {/* Steps — scroll-to anchors */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: isMobile ? 32 : 48 }}>
-          {[{ n: 1, l: t.booking.step1, ref: step1Ref, done: step1Done }, { n: 2, l: t.booking.step2, ref: step2Ref, done: step2Done }, { n: 3, l: t.booking.step3, ref: step3Ref, done: false }].map((s, i) => (
-            <div key={s.n} style={{ display: "flex", alignItems: "center" }}>
+        {/* Steps — premium progress indicator */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "center", marginBottom: isMobile ? 32 : 48,
+          padding: isMobile ? "16px 12px" : "20px 32px",
+          background: "rgba(255,255,255,0.02)", borderRadius: 16,
+          border: "1px solid rgba(255,255,255,0.04)",
+          maxWidth: 500, margin: isMobile ? "0 auto 32px" : "0 auto 48px",
+        }}>
+          {[{ n: 1, l: t.booking.step1, ref: step1Ref, done: step1Done }, { n: 2, l: t.booking.step2, ref: step2Ref, done: step2Done }, { n: 3, l: t.booking.step3, ref: step3Ref, done: false }].map((s, i) => {
+            const isActive = (s.n === 1) || (s.n === 2 && step1Done) || (s.n === 3 && step2Done);
+            return (
+            <div key={s.n} style={{ display: "flex", alignItems: "center", flex: i < 2 ? 1 : "none" }}>
               <button onClick={() => scrollToSection(s.ref)} style={{
                 display: "flex", flexDirection: "column", alignItems: "center", background: "none", border: "none", padding: 0,
-                cursor: "pointer",
+                cursor: "pointer", flexShrink: 0,
               }}>
                 <div style={{
-                  width: isMobile ? 38 : 44, height: isMobile ? 38 : 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: isMobile ? 13 : 15, fontWeight: 700, transition: "all 0.3s",
-                  background: s.done || s.n === 1 ? "#F6BE00" : "rgba(255,255,255,0.04)", color: s.done || s.n === 1 ? "#000" : "rgba(255,255,255,0.3)",
-                  border: s.done || s.n === 1 ? "none" : "1px solid rgba(255,255,255,0.1)",
-                  boxShadow: s.done || s.n === 1 ? "0 0 20px rgba(246,190,0,0.25)" : "none",
+                  width: isMobile ? 36 : 42, height: isMobile ? 36 : 42, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: isMobile ? 13 : 14, fontWeight: 700, transition: "all 0.4s",
+                  background: s.done ? "#F6BE00" : isActive ? "rgba(246,190,0,0.15)" : "rgba(255,255,255,0.03)",
+                  color: s.done ? "#000" : isActive ? "#F6BE00" : "rgba(255,255,255,0.2)",
+                  border: s.done ? "2px solid #F6BE00" : isActive ? "2px solid rgba(246,190,0,0.4)" : "2px solid rgba(255,255,255,0.06)",
+                  boxShadow: s.done ? "0 0 16px rgba(246,190,0,0.3)" : "none",
                 }}>
                   {s.done ? "\u2713" : s.n}
                 </div>
-                <span style={{ fontSize: isMobile ? 10 : 11, marginTop: 6, color: s.done || s.n === 1 ? "#F6BE00" : "rgba(255,255,255,0.25)", fontWeight: s.done || s.n === 1 ? 600 : 400 }}>{s.l}</span>
+                <span style={{ fontSize: isMobile ? 9 : 10, marginTop: 6, color: s.done ? "#F6BE00" : isActive ? "rgba(246,190,0,0.7)" : "rgba(255,255,255,0.2)", fontWeight: s.done || isActive ? 600 : 400, letterSpacing: isAr ? "0" : "0.03em" }}>{s.l}</span>
               </button>
-              {i < 2 && <div style={{ width: isMobile ? 40 : 70, height: 2, margin: isMobile ? "0 8px" : "0 12px", marginBottom: 22, background: s.done ? "linear-gradient(90deg, #F6BE00, rgba(246,190,0,0.3))" : "rgba(255,255,255,0.06)", borderRadius: 1 }} />}
+              {i < 2 && <div style={{ flex: 1, height: 2, margin: "0 8px", marginBottom: 20, borderRadius: 1, background: "rgba(255,255,255,0.04)", overflow: "hidden", position: "relative" }}>
+                <div style={{ position: "absolute", inset: 0, width: s.done ? "100%" : "0%", background: "linear-gradient(90deg, #F6BE00, rgba(246,190,0,0.4))", transition: "width 0.6s cubic-bezier(0.4, 0, 0.2, 1)", borderRadius: 1 }} />
+              </div>}
             </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* ==================== STEP 1 — Car Selection ==================== */}
@@ -561,7 +570,7 @@ export default function Booking() {
           </div>
 
           {/* Service Cards — 3 column grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredSvcs.map((s) => {
               const isSelected = sel.includes(s.id);
               const svcAddons = selAddons[s.id] || [];
@@ -571,14 +580,14 @@ export default function Booking() {
                   <button onClick={() => toggleSvc(s.id)} style={{
                     position: "relative",
                     width: "100%", padding: 0, cursor: "pointer", background: "none", border: "none",
-                    borderRadius: 14, overflow: "hidden", transition: "all 0.3s",
+                    borderRadius: 16, overflow: "hidden", transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
                     outline: isSelected ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
                     outlineOffset: -2,
-                    boxShadow: isSelected ? "0 0 20px rgba(246,190,0,0.1)" : "none",
+                    boxShadow: isSelected ? "0 0 24px rgba(246,190,0,0.12), 0 0 0 1px rgba(246,190,0,0.06) inset" : "0 2px 12px rgba(0,0,0,0.3)",
                     textAlign: dir === "rtl" ? "right" : "left",
                   }}
-                    onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.4)"; e.currentTarget.style.outlineColor = "rgba(246,190,0,0.3)"; } }}
-                    onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.outlineColor = "rgba(255,255,255,0.06)"; } }}
+                    onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 12px 32px rgba(0,0,0,0.5)"; e.currentTarget.style.outlineColor = "rgba(246,190,0,0.3)"; } }}
+                    onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.3)"; e.currentTarget.style.outlineColor = "rgba(255,255,255,0.06)"; } }}
                   >
                     {/* Image */}
                     <div style={{ position: "relative", height: hasCoverageImg(s) ? "auto" : 140, aspectRatio: hasCoverageImg(s) ? "1" : undefined, background: "#0a0a0a" }}>
@@ -676,7 +685,7 @@ export default function Booking() {
                       )}
                     </div>
                     {/* Info */}
-                    <div style={{ padding: "14px 16px", background: "#111" }}>
+                    <div style={{ padding: "14px 16px", background: isSelected ? "rgba(17,17,17,1)" : "#111", transition: "background 0.3s" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
                         <span style={{ color: isSelected ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 14 }}>{s.name}</span>
                         <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
@@ -691,14 +700,15 @@ export default function Booking() {
                         </div>
                       </div>
                       <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", lineHeight: 1.4, marginBottom: 8, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{catDesc[s.cat]}</p>
-                      {/* More Details button — yellow */}
+                      {/* More Details button */}
                       <button
                         onClick={(e) => { e.stopPropagation(); setDetailsOpenId(isDetailsOpen ? null : s.id); }}
                         style={{
                           display: "inline-flex", alignItems: "center", gap: 6,
-                          padding: "6px 16px", borderRadius: 100, cursor: "pointer",
-                          background: "#F6BE00", border: "none", color: "#000",
-                          fontSize: 11, fontWeight: 700, transition: "all 0.25s",
+                          padding: "6px 14px", borderRadius: 100, cursor: "pointer",
+                          background: isDetailsOpen ? "rgba(246,190,0,0.15)" : "rgba(246,190,0,0.08)",
+                          border: "1px solid rgba(246,190,0,0.25)", color: "#F6BE00",
+                          fontSize: 11, fontWeight: 600, transition: "all 0.25s",
                         }}
                       >
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -915,15 +925,15 @@ export default function Booking() {
             );
           })()}
 
-          {/* Sticky floating total bar */}
+          {/* Sticky floating total bar — glass */}
           <div style={{
             position: "sticky", bottom: isMobile ? 8 : 16, zIndex: 20, marginTop: isMobile ? 16 : 24,
-            padding: isMobile ? "12px 14px" : "16px 24px", borderRadius: isMobile ? 14 : 16,
-            background: "rgba(17,17,17,0.95)", backdropFilter: "blur(12px)",
-            border: sel.length > 0 ? "1px solid rgba(246,190,0,0.25)" : "1px solid rgba(255,255,255,0.08)",
-            boxShadow: "0 -4px 24px rgba(0,0,0,0.5)",
+            padding: isMobile ? "14px 16px" : "18px 28px", borderRadius: isMobile ? 16 : 20,
+            background: "rgba(10,10,10,0.85)", backdropFilter: "blur(20px) saturate(1.2)",
+            border: sel.length > 0 ? "1px solid rgba(246,190,0,0.2)" : "1px solid rgba(255,255,255,0.06)",
+            boxShadow: sel.length > 0 ? "0 -4px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(246,190,0,0.08) inset" : "0 -4px 24px rgba(0,0,0,0.5)",
             display: "flex", justifyContent: "space-between", alignItems: "center",
-            transition: "all 0.3s", gap: 8,
+            transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)", gap: 8,
           }}>
             <div style={{ minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
@@ -1072,21 +1082,33 @@ export default function Booking() {
             </>
           )}
 
-          {/* Total bar */}
+          {/* Total bar — premium */}
           <div style={{
-            borderRadius: 14, overflow: "hidden", marginBottom: 32,
-            background: "#111", border: "1px solid rgba(246,190,0,0.15)",
+            borderRadius: 16, overflow: "hidden", marginBottom: 32,
+            background: "linear-gradient(135deg, rgba(17,17,17,0.95), rgba(20,20,20,0.95))",
+            border: "1px solid rgba(246,190,0,0.15)",
+            backdropFilter: "blur(8px)",
           }}>
             {totalSaved > 0 && (
-              <div style={{ padding: "10px 20px", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ color: "#4CAF50", fontSize: 13, fontWeight: 600 }}>{isAr ? "وفّرت" : "You saved"}</span>
-                <span style={{ color: "#4CAF50", fontSize: 14, fontWeight: 700 }}>{totalSaved.toLocaleString()} {cur}</span>
+              <div style={{ padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(76,175,80,0.04)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#4CAF50" }} />
+                  <span style={{ color: "#4CAF50", fontSize: 13, fontWeight: 600 }}>{isAr ? "وفّرت" : "You saved"}</span>
+                </div>
+                <span style={{ color: "#4CAF50", fontSize: 15, fontWeight: 800 }}>{totalSaved.toLocaleString()} {cur}</span>
               </div>
             )}
-            <div style={{ padding: "16px 20px", background: "rgba(246,190,0,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ padding: "18px 20px", background: "rgba(246,190,0,0.03)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>{t.booking.totalLabel}</span>
-              <span className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 24, fontWeight: 700 }}>{displayTotal.toLocaleString()} {cur}</span>
+              <span className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em" }}>{displayTotal.toLocaleString()} {cur}</span>
             </div>
+          </div>
+
+          {/* Form section header */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#F6BE00" }} />
+            <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, fontWeight: 600, letterSpacing: isAr ? "0" : "0.08em", textTransform: isAr ? "none" : "uppercase" as const }}>{isAr ? "بيانات الحجز" : "Booking Details"}</span>
+            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
           </div>
 
           <div style={{ display: "flex", flexDirection: "column" as const, gap: 14, marginBottom: 32 }}>
