@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PageHero from "@/components/PageHero";
 import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -103,56 +104,13 @@ export default function ServicesPage() {
     <main ref={ref} dir={dir}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
-
-      {/* ── Hero Banner ── */}
-      <section
-        style={{
-          position: "relative",
-          height: "60vh",
-          minHeight: 400,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "hidden",
-        }}
-      >
-        <Image
-          src="/images/DSC03279.jpg"
-          alt="NICK Services"
-          fill
-          priority
-          className="object-cover"
-          style={{ zIndex: 0 }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(to bottom, rgba(5,5,5,0.7), rgba(5,5,5,0.85))",
-            zIndex: 1,
-          }}
-        />
-        <div className="reveal" style={{ position: "relative", zIndex: 2, textAlign: "center", padding: "0 24px" }}>
-          <span className="section-badge" style={{ marginBottom: 16, display: "inline-block" }}>
-            {t.services.badge}
-          </span>
-          <h1
-            style={{
-              fontFamily: fontDisplay,
-              fontSize: "clamp(32px, 6vw, 56px)",
-              fontWeight: 700,
-              marginBottom: 16,
-              lineHeight: 1.15,
-            }}
-          >
-            <span style={{ color: "#fff" }}>{t.services.heading1}</span>
-            <span className="gold-text">{t.services.heading2}</span>
-          </h1>
-          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 18, maxWidth: 560, margin: "0 auto" }}>
-            {t.services.subtitle}
-          </p>
-        </div>
-      </section>
+      <PageHero
+        image="/images/DSC03279.jpg"
+        badge={t.services.badge}
+        heading1={t.services.heading1}
+        heading2={t.services.heading2}
+        subtitle={t.services.subtitle}
+      />
 
       {/* ── Service Sections ── */}
       {services.map((s, i) => {
@@ -161,7 +119,7 @@ export default function ServicesPage() {
           <section
             key={s.image}
             style={{
-              padding: "80px 0",
+              padding: "clamp(48px, 8vw, 80px) 0",
               background: i % 2 === 0 ? "#050505" : "#0a0a0a",
             }}
           >
@@ -206,7 +164,7 @@ export default function ServicesPage() {
                   <div
                     style={{
                       position: "relative",
-                      height: 400,
+                      height: "clamp(240px, 50vw, 400px)",
                       borderRadius: 16,
                       overflow: "hidden",
                       order: imageFirst ? 0 : 1,

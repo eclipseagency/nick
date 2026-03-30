@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PageHero from "@/components/PageHero";
 import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -61,30 +62,19 @@ export default function ContactPage() {
     <main ref={ref}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
-
-      {/* ── Hero Banner ── */}
-      <section className="reveal" style={{ position: "relative", minHeight: 420, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0 }}>
-          <Image src="/images/DSC03261.jpg" alt="NICK Contact" fill className="object-cover" style={{ objectPosition: "center 40%" }} />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(5,5,5,0.8), rgba(5,5,5,0.95))" }} />
-        </div>
-        <div style={{ position: "relative", zIndex: 1, textAlign: "center", padding: "140px 24px 80px" }}>
-          <h1 style={{ fontFamily: fontDisplay, fontSize: "clamp(32px, 6vw, 52px)", fontWeight: 700, lineHeight: 1.15, marginBottom: 16 }}>
-            <span style={{ color: "#fff" }}>{t.contact.heading1}</span>
-            <span className="gold-text">{t.contact.heading2}</span>
-          </h1>
-          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 17, lineHeight: 1.7, maxWidth: 520, margin: "0 auto" }}>
-            {t.contact.subtitle}
-          </p>
-        </div>
-      </section>
+      <PageHero
+        image="/images/DSC03261.jpg"
+        heading1={t.contact.heading1}
+        heading2={t.contact.heading2}
+        subtitle={t.contact.subtitle}
+      />
 
       {/* ── Contact Info Cards ── */}
-      <section style={{ padding: "80px 0 0" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
-          <div className="reveal" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
+      <section style={{ padding: "clamp(48px, 8vw, 80px) 0 0" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px, 4vw, 24px)" }}>
+          <div className="reveal" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(260px, 100%), 1fr))", gap: "clamp(16px, 3vw, 24px)" }}>
             {/* Location */}
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: "36px 28px", textAlign: "center", transition: "border-color 0.3s" }}
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: "clamp(24px, 4vw, 36px) clamp(16px, 3vw, 28px)", textAlign: "center", transition: "border-color 0.3s" }}
               onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)")}
               onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)")}>
               <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(246,190,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
@@ -105,7 +95,7 @@ export default function ContactPage() {
             </div>
 
             {/* Phone */}
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: "36px 28px", textAlign: "center", transition: "border-color 0.3s" }}
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: "clamp(24px, 4vw, 36px) clamp(16px, 3vw, 28px)", textAlign: "center", transition: "border-color 0.3s" }}
               onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)")}
               onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)")}>
               <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(246,190,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
@@ -122,7 +112,7 @@ export default function ContactPage() {
             </div>
 
             {/* Working Hours */}
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: "36px 28px", textAlign: "center", transition: "border-color 0.3s" }}
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: "clamp(24px, 4vw, 36px) clamp(16px, 3vw, 28px)", textAlign: "center", transition: "border-color 0.3s" }}
               onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(246,190,0,0.3)")}
               onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)")}>
               <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(246,190,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
@@ -144,8 +134,8 @@ export default function ContactPage() {
       </section>
 
       {/* ── Map Section ── */}
-      <section style={{ padding: "80px 0" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+      <section style={{ padding: "clamp(48px, 8vw, 80px) 0" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px, 4vw, 24px)" }}>
           <div className="reveal" style={{ textAlign: "center", marginBottom: 40 }}>
             <span className="section-badge">{isAr ? "موقعنا" : "Our Location"}</span>
             <h2 style={{ fontFamily: fontDisplay, fontSize: "clamp(24px, 4vw, 36px)", fontWeight: 700, color: "#fff", marginTop: 16 }}>
@@ -156,7 +146,7 @@ export default function ContactPage() {
           <div className="reveal" style={{ borderRadius: 16, overflow: "hidden", border: "1px solid rgba(246,190,0,0.25)" }}>
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1810.25!2d46.6846706!3d24.8361322!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2efb98afe87757%3A0xff5e5750a8dfbb71!2sNick%20RIYADH!5e0!3m2!1sen!2ssa!4v1709900000000"
-              width="100%" height="400" style={{ border: 0, display: "block" }}
+              width="100%" height="300" style={{ border: 0, display: "block", maxHeight: "50vh" }}
               allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"
               title="NICK Location - Riyadh"
             />
@@ -165,8 +155,8 @@ export default function ContactPage() {
       </section>
 
       {/* ── Contact Form ── */}
-      <section style={{ padding: "0 0 80px" }}>
-        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 24px" }}>
+      <section style={{ padding: "0 0 clamp(48px, 8vw, 80px)" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 clamp(16px, 4vw, 24px)" }}>
           <div className="reveal" style={{ textAlign: "center", marginBottom: 40 }}>
             <span className="section-badge">{isAr ? "تواصل معنا" : "Get in Touch"}</span>
             <h2 style={{ fontFamily: fontDisplay, fontSize: "clamp(24px, 4vw, 36px)", fontWeight: 700, color: "#fff", marginTop: 16 }}>
@@ -176,7 +166,7 @@ export default function ContactPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="reveal" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, padding: "clamp(28px, 4vw, 48px)" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16, marginBottom: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))", gap: 16, marginBottom: 16 }}>
               <input
                 type="text" required value={form.name}
                 onChange={e => setForm({ ...form, name: e.target.value })}
@@ -193,7 +183,7 @@ export default function ContactPage() {
               />
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16, marginBottom: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))", gap: 16, marginBottom: 16 }}>
               <input
                 type="tel" value={form.phone}
                 onChange={e => setForm({ ...form, phone: e.target.value })}
@@ -260,8 +250,8 @@ export default function ContactPage() {
       </section>
 
       {/* ── Social / Quick Links ── */}
-      <section style={{ padding: "0 0 96px" }}>
-        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 24px" }}>
+      <section style={{ padding: "0 0 clamp(60px, 8vw, 96px)" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 clamp(16px, 4vw, 24px)" }}>
           <div className="reveal" style={{ textAlign: "center" }}>
             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 14, marginBottom: 24 }}>
               {isAr ? "أو تواصل معنا عبر" : "Or reach us via"}

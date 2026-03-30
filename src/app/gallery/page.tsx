@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PageHero from "@/components/PageHero";
 import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -118,53 +119,16 @@ export default function GalleryPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
 
-      {/* Hero Banner */}
-      <section
-        style={{
-          position: "relative",
-          minHeight: 340,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          overflow: "hidden",
-        }}
-      >
-        <Image
-          src="/images/DSC03261.jpg"
-          alt="Gallery hero"
-          fill
-          className="object-cover"
-          priority
-          style={{ zIndex: 0 }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(to bottom, rgba(5,5,5,0.8) 0%, rgba(5,5,5,0.65) 100%)",
-            zIndex: 1,
-          }}
-        />
-        <div style={{ position: "relative", zIndex: 2, padding: "120px 24px 64px" }}>
-          <span className="section-badge">{t.gallery.badge}</span>
-          <h1
-            style={{
-              fontFamily: fontDisplay,
-              fontSize: "clamp(32px, 6vw, 56px)",
-              fontWeight: 700,
-              marginTop: 12,
-            }}
-          >
-            <span style={{ color: "#fff" }}>{t.gallery.heading1}</span>
-            <span className="gold-text">{t.gallery.heading2}</span>
-          </h1>
-        </div>
-      </section>
+      <PageHero
+        image="/images/DSC03261.jpg"
+        badge={t.gallery.badge}
+        heading1={t.gallery.heading1}
+        heading2={t.gallery.heading2}
+      />
 
       {/* Gallery Section */}
-      <section ref={ref} style={{ padding: "64px 0 96px", background: "#050505" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+      <section ref={ref} style={{ padding: "clamp(40px, 6vw, 64px) 0 clamp(60px, 8vw, 96px)", background: "#050505" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(12px, 3vw, 24px)" }}>
 
           {/* Filter Tabs */}
           <div
@@ -354,12 +318,12 @@ export default function GalleryPage() {
             onClick={(e) => { e.stopPropagation(); navigate(isAr ? 1 : -1); }}
             style={{
               position: "absolute",
-              left: 20,
+              left: "max(8px, env(safe-area-inset-left, 8px))",
               top: "50%",
               transform: "translateY(-50%)",
               zIndex: 10,
-              width: 48,
-              height: 48,
+              width: 44,
+              height: 44,
               borderRadius: "50%",
               cursor: "pointer",
               background: "rgba(246,190,0,0.15)",
@@ -396,12 +360,12 @@ export default function GalleryPage() {
             onClick={(e) => { e.stopPropagation(); navigate(isAr ? -1 : 1); }}
             style={{
               position: "absolute",
-              right: 20,
+              right: "max(8px, env(safe-area-inset-right, 8px))",
               top: "50%",
               transform: "translateY(-50%)",
               zIndex: 10,
-              width: 48,
-              height: 48,
+              width: 44,
+              height: 44,
               borderRadius: "50%",
               cursor: "pointer",
               background: "rgba(246,190,0,0.15)",

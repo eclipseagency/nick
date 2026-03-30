@@ -6,6 +6,7 @@ import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PageHero from "@/components/PageHero";
 
 export default function AboutPage() {
   const { t, locale, dir } = useLanguage();
@@ -116,42 +117,18 @@ export default function AboutPage() {
     <main ref={ref}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
-
-      {/* ── Page Hero Banner ── */}
-      <section style={{ position: "relative", minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0 }}>
-          <Image
-            src="/images/DSC03261.jpg"
-            alt="NICK workshop"
-            fill
-            style={{ objectFit: "cover", objectPosition: "center" }}
-            priority
-            quality={90}
-          />
-          <div style={{ position: "absolute", inset: 0, background: "rgba(5,5,5,0.7)" }} />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,5,5,1) 0%, transparent 40%, transparent 80%, rgba(5,5,5,0.6) 100%)" }} />
-        </div>
-        <div style={{ position: "relative", zIndex: 10, textAlign: "center", padding: "160px 24px 80px", maxWidth: 800, margin: "0 auto" }}>
-          <div className="reveal" style={{ display: "inline-flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#F6BE00" }} />
-            <span style={{ color: "#F6BE00", fontSize: 13, fontWeight: 600, letterSpacing: isAr ? "0" : "0.1em", textTransform: isAr ? "none" : "uppercase" as const }}>
-              {isAr ? "من نحن" : "Our Story"}
-            </span>
-          </div>
-          <h1 className="reveal" style={{ fontFamily: fontDisplay, fontSize: "clamp(40px, 8vw, 72px)", fontWeight: 800, lineHeight: 1, letterSpacing: isAr ? "0" : "-0.03em", marginBottom: 20 }}>
-            <span style={{ color: "#fff" }}>{isAr ? "عن " : "About "}</span>
-            <span className="gold-text">NICK</span>
-          </h1>
-          <p className="reveal reveal-delay-1" style={{ color: "rgba(255,255,255,0.55)", fontSize: 18, lineHeight: 1.7, maxWidth: 560, margin: "0 auto" }}>
-            {isAr
-              ? "أكثر من 27 عامًا من التميز في حماية السيارات. من الرياض إلى العالم، نحمي سيارتك بأعلى المعايير."
-              : "Over 27 years of excellence in automotive protection. From Riyadh to the world, we protect your car to the highest standards."}
-          </p>
-        </div>
-      </section>
+      <PageHero
+        image="/images/DSC03261.jpg"
+        badge={isAr ? "من نحن" : "Our Story"}
+        heading1={isAr ? "عن " : "About "}
+        heading2="NICK"
+        subtitle={isAr
+          ? "أكثر من 27 عامًا من التميز في حماية السيارات. من الرياض إلى العالم، نحمي سيارتك بأعلى المعايير."
+          : "Over 27 years of excellence in automotive protection. From Riyadh to the world, we protect your car to the highest standards."}
+      />
 
       {/* ── Company Story ── */}
-      <section style={{ padding: "96px 0", overflow: "hidden" }}>
+      <section style={{ padding: "clamp(48px, 8vw, 96px) 0", overflow: "hidden" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Image */}
@@ -161,8 +138,8 @@ export default function AboutPage() {
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,5,5,0.5), transparent)" }} />
               </div>
               <div style={{
-                position: "absolute", bottom: -20,
-                ...(dir === "rtl" ? { left: -20 } : { right: -20 }),
+                position: "absolute", bottom: -16,
+                ...(dir === "rtl" ? { left: 12 } : { right: 12 }),
                 background: "#111", border: "1px solid rgba(246,190,0,0.2)", borderRadius: 14, padding: "20px 24px", boxShadow: "0 0 20px rgba(246,190,0,0.08)",
               }}>
                 <div className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 32, fontWeight: 700 }}>{t.about.year}</div>
@@ -206,7 +183,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── Timeline ── */}
-      <section style={{ padding: "96px 0", background: "linear-gradient(180deg, transparent 0%, rgba(246,190,0,0.02) 50%, transparent 100%)" }}>
+      <section style={{ padding: "clamp(48px, 8vw, 96px) 0", background: "linear-gradient(180deg, transparent 0%, rgba(246,190,0,0.02) 50%, transparent 100%)" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px" }}>
           <div className="reveal" style={{ textAlign: "center", marginBottom: 64 }}>
             <span className="section-badge">{isAr ? "مسيرتنا" : "Our Journey"}</span>
@@ -233,8 +210,8 @@ export default function AboutPage() {
                 className={`reveal reveal-delay-${Math.min(idx + 1, 4)}`}
                 style={{
                   display: "flex",
-                  gap: 32,
-                  marginBottom: idx < timeline.length - 1 ? 48 : 0,
+                  gap: "clamp(16px, 4vw, 32px)",
+                  marginBottom: idx < timeline.length - 1 ? "clamp(28px, 5vw, 48px)" : 0,
                   alignItems: "flex-start",
                   flexDirection: dir === "rtl" ? "row-reverse" : "row",
                 }}
@@ -256,7 +233,7 @@ export default function AboutPage() {
                   background: "rgba(255,255,255,0.03)",
                   border: "1px solid rgba(255,255,255,0.06)",
                   borderRadius: 14,
-                  padding: "24px 28px",
+                  padding: "clamp(16px, 3vw, 24px) clamp(16px, 3vw, 28px)",
                   flex: 1,
                   transition: "border-color 0.3s, background 0.3s",
                 }}
@@ -274,7 +251,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── Manufacturing Section ── */}
-      <section style={{ padding: "96px 0", overflow: "hidden" }}>
+      <section style={{ padding: "clamp(48px, 8vw, 96px) 0", overflow: "hidden" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Text first on this one */}
@@ -327,7 +304,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── Values Grid ── */}
-      <section style={{ padding: "96px 0", background: "linear-gradient(180deg, transparent 0%, rgba(246,190,0,0.02) 50%, transparent 100%)" }}>
+      <section style={{ padding: "clamp(48px, 8vw, 96px) 0", background: "linear-gradient(180deg, transparent 0%, rgba(246,190,0,0.02) 50%, transparent 100%)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
           <div className="reveal" style={{ textAlign: "center", marginBottom: 64 }}>
             <span className="section-badge">{isAr ? "قيمنا" : "Our Values"}</span>
@@ -386,7 +363,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── Certificates ── */}
-      <section style={{ padding: "96px 0", overflow: "hidden" }}>
+      <section style={{ padding: "clamp(48px, 8vw, 96px) 0", overflow: "hidden" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
           <div className="reveal" style={{ textAlign: "center", marginBottom: 64 }}>
             <span className="section-badge">{isAr ? "الشهادات" : "Certifications"}</span>
@@ -447,13 +424,13 @@ export default function AboutPage() {
       </section>
 
       {/* ── CTA Section ── */}
-      <section style={{ padding: "96px 0" }}>
+      <section style={{ padding: "clamp(48px, 8vw, 96px) 0" }}>
         <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px", textAlign: "center" }}>
           <div className="reveal" style={{
             background: "linear-gradient(135deg, rgba(246,190,0,0.06) 0%, rgba(246,190,0,0.02) 100%)",
             border: "1px solid rgba(246,190,0,0.15)",
             borderRadius: 20,
-            padding: "64px 40px",
+            padding: "clamp(36px, 6vw, 64px) clamp(20px, 5vw, 40px)",
           }}>
             <h2 style={{ fontFamily: fontDisplay, fontSize: "clamp(28px, 5vw, 40px)", fontWeight: 700, lineHeight: 1.15, marginBottom: 16 }}>
               <span style={{ color: "#fff" }}>{isAr ? "جاهز " : "Ready to "}</span>
