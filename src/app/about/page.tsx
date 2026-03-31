@@ -24,45 +24,67 @@ export default function AboutPage() {
   const timeline = [
     {
       year: "1999",
-      title: isAr ? "التأسيس في الرياض" : "Founded in Riyadh",
+      title: isAr ? "تأسيس الشركة" : "Company Founded",
       desc: isAr
-        ? "بدأت NICK رحلتها كشركة رائدة في حماية السيارات في قلب المملكة العربية السعودية"
-        : "NICK began its journey as a pioneering automotive protection company in the heart of Saudi Arabia",
+        ? "تأسست NICK كشركة رائدة في صناعة أفلام حماية السيارات"
+        : "NICK was established as a pioneering company in automotive protection film manufacturing",
+      image: "/images/story/1999.jpg",
+    },
+    {
+      year: "2000",
+      title: isAr ? "الانطلاق وبداية التصنيع" : "Launch & Manufacturing Begins",
+      desc: isAr
+        ? "تم الانطلاق وبداية التصنيع بأحدث خطوط الإنتاج"
+        : "Officially launched and started manufacturing with state-of-the-art production lines",
+      image: "/images/story/2000.jpg",
     },
     {
       year: "2005",
-      title: isAr ? "أول تركيب أفلام حماية PPF" : "First PPF Installation",
+      title: isAr ? "ظهور العلامة التجارية بقوة" : "Brand Emergence in Manufacturing",
       desc: isAr
-        ? "أصبحنا من أوائل الشركات في المنطقة التي تقدم خدمة أفلام حماية الطلاء الاحترافية"
-        : "Became one of the first companies in the region to offer professional paint protection film services",
+        ? "ظهور العلامة التجارية بشكل قوي في عالم التصنيع"
+        : "The brand emerged strongly in the manufacturing world with growing recognition",
+      image: "/images/story/2005.jpg",
     },
     {
       year: "2010",
-      title: isAr ? "مصنعنا الخاص" : "Own Manufacturing Facility",
+      title: isAr ? "انتشار عالمي" : "Global Expansion",
       desc: isAr
-        ? "افتتحنا مصنعنا الخاص لإنتاج أفلام الحماية، مما يضمن أعلى معايير الجودة"
-        : "Opened our own manufacturing facility for protection films, ensuring the highest quality standards",
+        ? "انتشار عالمي وظهور العلامة التجارية بشكل قوي في السوق العالمي"
+        : "Global expansion with strong brand presence in the international market",
+      image: "/images/story/2010.jpg",
     },
     {
       year: "2015",
-      title: isAr ? "أكثر من 10,000 سيارة محمية" : "10,000+ Cars Protected",
+      title: isAr ? "خط إنتاج العوازل الحرارية" : "Thermal Insulation Production Line",
       desc: isAr
-        ? "وصلنا إلى إنجاز حماية أكثر من عشرة آلاف سيارة في المملكة"
-        : "Reached the milestone of protecting over ten thousand vehicles across the Kingdom",
+        ? "انطلاق خط إنتاج تصنيع العوازل الحرارية"
+        : "Launched the thermal insulation manufacturing production line",
+      image: "/images/story/2015.jpg",
     },
     {
-      year: "2020",
-      title: isAr ? "إطلاق خط السيراميك النانو" : "Nano Ceramic Line Launched",
+      year: "2019",
+      title: isAr ? "٢٠٠,٠٠٠ سيارة حول العالم" : "200,000 Cars Worldwide",
       desc: isAr
-        ? "أطلقنا خط طلاء السيراميك النانو المتطور لحماية فائقة ولمعان دائم"
-        : "Launched our advanced nano ceramic coating line for superior protection and lasting shine",
+        ? "تجاوزنا حماية 200,000 سيارة حول العالم وامتدت خدماتنا لتشمل التغليف بالألوان والعازل الحراري"
+        : "Surpassed 200,000 cars protected worldwide, expanding services to include color wrapping and thermal insulation",
+      image: "/images/story/2019.jpg",
     },
     {
-      year: "2024",
-      title: isAr ? "أكثر من 50,000 سيارة وتوسع الخدمات" : "50,000+ Cars, Expanded Services",
+      year: "2022",
+      title: isAr ? "جميع خدمات العناية بالسيارات" : "Full Car Care Services",
       desc: isAr
-        ? "تجاوزنا حماية خمسين ألف سيارة ووسعنا خدماتنا لتشمل العزل الحراري والتغليف بالألوان"
-        : "Surpassed fifty thousand protected cars and expanded services to include thermal insulation and color wrapping",
+        ? "انطلاق العلامة التجارية بشكل كامل لجميع خدمات العناية بالسيارات"
+        : "Full brand launch covering all automotive care services",
+      image: "/images/story/2022.jpg",
+    },
+    {
+      year: "2025",
+      title: isAr ? "أول وكيل بالشرق الأوسط" : "First Middle East Dealer",
+      desc: isAr
+        ? "تم افتتاح أول وكيل للشركة بالشرق الأوسط بعد أن وصلنا إلى تحقيق رقم قياسي في خدمة 20 مليون عميل حول العالم"
+        : "Opened the first authorized dealer in the Middle East after reaching a record 20 million customers worldwide",
+      image: "/images/story/2025.jpg",
     },
   ];
 
@@ -228,21 +250,38 @@ export default function AboutPage() {
                   }} />
                 </div>
 
-                {/* Content */}
+                {/* Content card with image */}
                 <div style={{
                   background: "rgba(255,255,255,0.03)",
                   border: "1px solid rgba(255,255,255,0.06)",
-                  borderRadius: 14,
-                  padding: "clamp(16px, 3vw, 24px) clamp(16px, 3vw, 28px)",
+                  borderRadius: 16,
+                  overflow: "hidden",
                   flex: 1,
                   transition: "border-color 0.3s, background 0.3s",
                 }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(246,190,0,0.2)"; e.currentTarget.style.background = "rgba(246,190,0,0.03)"; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}
                 >
-                  <div className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 24, fontWeight: 700, marginBottom: 4 }}>{item.year}</div>
-                  <div style={{ color: "#fff", fontWeight: 600, fontSize: 16, marginBottom: 6 }}>{item.title}</div>
-                  <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 14, lineHeight: 1.6 }}>{item.desc}</p>
+                  {/* Image */}
+                  {item.image && (
+                    <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", overflow: "hidden" }}>
+                      <Image src={item.image} alt={`NICK ${item.year}`} fill className="object-cover" />
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,17,0.6) 0%, transparent 50%)" }} />
+                      {/* Year overlay on image */}
+                      <div style={{
+                        position: "absolute", bottom: 12,
+                        ...(dir === "rtl" ? { right: 16 } : { left: 16 }),
+                        padding: "4px 14px", borderRadius: 8,
+                        background: "rgba(246,190,0,0.9)", color: "#000",
+                        fontFamily: fontDisplay, fontWeight: 800, fontSize: 18,
+                      }}>{item.year}</div>
+                    </div>
+                  )}
+                  {/* Text */}
+                  <div style={{ padding: "clamp(14px, 3vw, 20px) clamp(16px, 3vw, 24px)" }}>
+                    <div style={{ color: "#fff", fontWeight: 700, fontSize: 17, marginBottom: 6 }}>{item.title}</div>
+                    <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 14, lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
+                  </div>
                 </div>
               </div>
             ))}

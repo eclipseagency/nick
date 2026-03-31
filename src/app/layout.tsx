@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, Tajawal } from "next/font/google";
 import { LanguageProvider } from "@/i18n/LanguageContext";
+import FloatingButtons from "@/components/FloatingButtons";
 import "./globals.css";
 
 const inter = Inter({
@@ -184,7 +185,10 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${spaceGrotesk.variable} ${tajawal.variable} antialiased`}
       >
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          {children}
+          <FloatingButtons />
+        </LanguageProvider>
       </body>
     </html>
   );
