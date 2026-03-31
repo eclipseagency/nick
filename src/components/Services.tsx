@@ -14,6 +14,7 @@ interface CardItem {
   span?: "full" | "1" | "2";
   tall?: boolean;
   overlay?: string;
+  pos?: string;
 }
 
 export default function Services() {
@@ -38,6 +39,7 @@ export default function Services() {
       image: "/images/DSC03279.jpg",
       href: "/services",
       tall: true,
+      pos: "center 40%",
     },
     {
       title: isAr ? "العازل الحراري" : "Thermal Insulation",
@@ -62,6 +64,7 @@ export default function Services() {
     image: "/images/DSC03261.jpg",
     href: "/gallery",
     span: "full",
+    pos: "center 30%",
   };
 
   // Row 3: 3 cards
@@ -69,7 +72,7 @@ export default function Services() {
     {
       title: isAr ? "تغيير لون السيارة" : "Color Wrapping",
       subtitle: isAr ? "غيّر لون سيارتك بدون رش" : "Change your car color without paint",
-      image: "/images/wrapping.webp",
+      image: "/images/DSC03060.jpg",
       href: "/services",
     },
     {
@@ -82,7 +85,7 @@ export default function Services() {
     {
       title: isAr ? "تعرف علينا" : "About Us",
       subtitle: isAr ? "+٢٧ سنة من التميز في حماية السيارات" : "27+ years of automotive protection excellence",
-      image: "/images/IMG_9536.PNG",
+      image: "/images/DSC02995.jpg",
       href: "/about",
     },
   ];
@@ -129,7 +132,7 @@ export default function Services() {
         position: "absolute", inset: 0,
         transition: "transform 0.7s cubic-bezier(0.4,0,0.2,1)",
       }}>
-        <Image src={card.image} alt={card.title} fill className="object-cover" quality={80} sizes={card.span === "full" ? "100vw" : "(max-width:768px) 100vw, 33vw"} />
+        <Image src={card.image} alt={card.title} fill className="object-cover" quality={80} sizes={card.span === "full" ? "100vw" : "(max-width:768px) 100vw, 33vw"} style={{ objectPosition: card.pos || "center" }} />
       </div>
 
       {/* Dark overlay */}
