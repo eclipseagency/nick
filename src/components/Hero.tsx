@@ -100,9 +100,9 @@ export default function Hero() {
   // Stats
   const stats = [
     { n: "27+", l: isAr ? "سنة خبرة" : "Years" },
-    { n: "10K+", l: isAr ? "سيارة محمية" : "Cars Protected" },
+    { n: "20M+", l: isAr ? "مالك سيارة" : "Car Owners" },
     { n: "10", l: isAr ? "سنوات ضمان" : "Yr Warranty" },
-    { n: "4.9★", l: isAr ? "تقييم العملاء" : "Rating" },
+    { n: "4000+", l: isAr ? "فرع حول العالم" : "Branches Worldwide" },
   ];
 
   // Slide-specific text
@@ -198,76 +198,57 @@ export default function Hero() {
         transform: isMobile ? undefined : `translateY(${scrollY * 0.1}px)`,
         transition: "opacity 0.1s linear",
       }}>
-        {/* Badge */}
-        <div className="hero-reveal-1" style={{
-          display: "inline-flex", alignItems: "center", gap: 8,
-          padding: isMobile ? "6px 14px" : "8px 20px", borderRadius: 100, marginBottom: isMobile ? 12 : 28,
-          background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.18)",
-          backdropFilter: "blur(8px)",
-        }}>
-          <div style={{
-            width: 6, height: 6, borderRadius: "50%", background: "#F6BE00",
-            boxShadow: "0 0 8px rgba(246,190,0,0.6)",
-            animation: "goldPulse 2s infinite",
-          }} />
-          <span style={{
-            color: "#F6BE00", fontSize: 11, fontWeight: 600,
-            letterSpacing: isAr ? "0" : "0.12em",
-            textTransform: isAr ? "none" : "uppercase",
-          }}>
-            {isAr ? "منذ ١٩٩٩ — الرياض" : "Est. 1999 — Riyadh"}
-          </span>
-        </div>
 
-        {/* Main heading — re-mounts on slide change for animation */}
-        <div key={textKey}>
-          <h1 className="hero-reveal-2" style={{
-            fontFamily: fontDisplay,
-            fontSize: isMobile ? "clamp(28px, 9vw, 42px)" : "clamp(52px, 7vw, 84px)",
-            fontWeight: 900, lineHeight: 1.05, margin: isMobile ? "0 0 10px" : "0 0 16px",
-            letterSpacing: isAr ? "0" : "-0.025em",
-          }}>
-            <span style={{ color: "#fff", display: "block" }}>{h.line1}</span>
-            <span className="gold-text" style={{ display: "block" }}>{h.line2}</span>
-          </h1>
+        {/* Main heading + CTAs — hidden on video slide */}
+        {slides[current].type !== "video" && (
+          <>
+            <div key={textKey}>
+              <h1 className="hero-reveal-2" style={{
+                fontFamily: fontDisplay,
+                fontSize: isMobile ? "clamp(34px, 11vw, 50px)" : "clamp(52px, 7vw, 84px)",
+                fontWeight: 900, lineHeight: 1.05, margin: "0 0 16px",
+                letterSpacing: isAr ? "0" : "-0.025em",
+              }}>
+                <span style={{ color: "#fff", display: "block" }}>{h.line1}</span>
+                <span className="gold-text" style={{ display: "block" }}>{h.line2}</span>
+              </h1>
 
-          {/* Gold divider line */}
-          <div className="hero-reveal-3" style={{
-            width: isMobile ? 40 : 60, height: 3, borderRadius: 2, margin: isMobile ? "0 auto 10px" : "0 auto 18px",
-            background: "linear-gradient(90deg, transparent, #F6BE00, transparent)",
-          }} />
+              <div className="hero-reveal-3" style={{
+                width: 60, height: 3, borderRadius: 2, margin: "0 auto 18px",
+                background: "linear-gradient(90deg, transparent, #F6BE00, transparent)",
+              }} />
 
-          {/* Subtitle */}
-          <p className="hero-reveal-3" style={{
-            fontSize: isMobile ? 13 : 18,
-            color: "rgba(255,255,255,0.55)",
-            maxWidth: 520, lineHeight: 1.6, margin: isMobile ? "0 auto 16px" : "0 auto 28px",
-            fontWeight: 400,
-          }}>
-            {h.sub}
-          </p>
-        </div>
+              <p className="hero-reveal-3" style={{
+                fontSize: isMobile ? 14 : 18,
+                color: "rgba(255,255,255,0.55)",
+                maxWidth: 520, lineHeight: 1.7, margin: "0 auto 28px",
+                fontWeight: 400,
+              }}>
+                {h.sub}
+              </p>
+            </div>
 
-        {/* CTAs */}
-        <div className="hero-reveal-4" style={{
-          display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center",
-          marginBottom: isMobile ? 16 : 40,
-        }}>
-          <Link href="/booking" className="btn-gold" style={{
-            padding: isMobile ? "14px 28px" : "16px 44px",
-            fontSize: isMobile ? 13 : 15,
-            boxShadow: "0 4px 24px rgba(246,190,0,0.25)",
-          }}>
-            {t.hero.cta1}
-          </Link>
-          <Link href="#services" className="btn-outline" style={{
-            padding: isMobile ? "14px 28px" : "16px 44px",
-            fontSize: isMobile ? 13 : 15,
-            backdropFilter: "blur(8px)",
-          }}>
-            {t.hero.cta2}
-          </Link>
-        </div>
+            <div className="hero-reveal-4" style={{
+              display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center",
+              marginBottom: isMobile ? 28 : 40,
+            }}>
+              <Link href="/booking" className="btn-gold" style={{
+                padding: isMobile ? "14px 28px" : "16px 44px",
+                fontSize: isMobile ? 13 : 15,
+                boxShadow: "0 4px 24px rgba(246,190,0,0.25)",
+              }}>
+                {t.hero.cta1}
+              </Link>
+              <Link href="#services" className="btn-outline" style={{
+                padding: isMobile ? "14px 28px" : "16px 44px",
+                fontSize: isMobile ? 13 : 15,
+                backdropFilter: "blur(8px)",
+              }}>
+                {t.hero.cta2}
+              </Link>
+            </div>
+          </>
+        )}
 
         {/* Stats row */}
         <div className="hero-reveal-5" style={{
