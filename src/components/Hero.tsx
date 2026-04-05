@@ -120,6 +120,7 @@ export default function Hero() {
   ];
   const h = headings[current];
 
+  const isVideoSlide = slides[current].type === "video";
   const parallaxY = isMobile ? 0 : scrollY * 0.35;
   const heroOpacity = Math.max(0, 1 - scrollY / 800);
 
@@ -187,68 +188,75 @@ export default function Hero() {
         </div>
       ))}
 
-      {/* Content — always centered */}
+      {/* Content — centered on image slide, bottom on video slide */}
       <div style={{
         position: "relative", zIndex: 5,
         height: "100%", display: "flex", flexDirection: "column",
-        justifyContent: isMobile ? "flex-end" : "center", alignItems: "center",
-        textAlign: "center", padding: isMobile ? "0 16px 40px" : "0 24px",
+        justifyContent: isVideoSlide ? "flex-end" : "center",
+        alignItems: "center",
+        textAlign: "center",
+        padding: isVideoSlide
+          ? (isMobile ? "0 20px 100px" : "0 24px 140px")
+          : (isMobile ? "0 20px" : "0 24px"),
         maxWidth: 950, margin: "0 auto",
         opacity: heroOpacity,
         transform: isMobile ? undefined : `translateY(${scrollY * 0.1}px)`,
         transition: "opacity 0.1s linear",
       }}>
 
-        {/* Main heading + CTAs — hidden on video slide */}
-        {slides[current].type !== "video" && (
-          <>
-            <div key={textKey}>
-              <h1 className="hero-reveal-2" style={{
-                fontFamily: fontDisplay,
-                fontSize: isMobile ? "clamp(34px, 11vw, 50px)" : "clamp(52px, 7vw, 84px)",
-                fontWeight: 900, lineHeight: 1.05, margin: "0 0 16px",
-                letterSpacing: isAr ? "0" : "-0.025em",
-              }}>
-                <span style={{ color: "#fff", display: "block" }}>{h.line1}</span>
-                <span className="gold-text" style={{ display: "block" }}>{h.line2}</span>
-              </h1>
+        <div key={textKey}>
+          <h1 className="hero-reveal-2" style={{
+            fontFamily: fontDisplay,
+            fontSize: isVideoSlide
+              ? (isMobile ? "clamp(24px, 8vw, 36px)" : "clamp(36px, 5vw, 56px)")
+              : (isMobile ? "clamp(34px, 11vw, 50px)" : "clamp(52px, 7vw, 84px)"),
+            fontWeight: 900, lineHeight: 1.05, margin: "0 0 12px",
+            letterSpacing: isAr ? "0" : "-0.025em",
+          }}>
+            <span style={{ color: "#fff", display: "block" }}>{h.line1}</span>
+            <span className="gold-text" style={{ display: "block" }}>{h.line2}</span>
+          </h1>
 
-              <div className="hero-reveal-3" style={{
-                width: 60, height: 3, borderRadius: 2, margin: "0 auto 18px",
-                background: "linear-gradient(90deg, transparent, #F6BE00, transparent)",
-              }} />
+          {!isVideoSlide && (
+            <div className="hero-reveal-3" style={{
+              width: 60, height: 3, borderRadius: 2, margin: "0 auto 18px",
+              background: "linear-gradient(90deg, transparent, #F6BE00, transparent)",
+            }} />
+          )}
 
-              <p className="hero-reveal-3" style={{
-                fontSize: isMobile ? 14 : 18,
-                color: "rgba(255,255,255,0.55)",
-                maxWidth: 520, lineHeight: 1.7, margin: "0 auto 28px",
-                fontWeight: 400,
-              }}>
-                {h.sub}
-              </p>
-            </div>
+          <p className="hero-reveal-3" style={{
+            fontSize: isVideoSlide ? (isMobile ? 12 : 14) : (isMobile ? 14 : 18),
+            color: "rgba(255,255,255,0.55)",
+            maxWidth: 520, lineHeight: 1.7, margin: "0 auto 20px",
+            fontWeight: 400,
+          }}>
+            {h.sub}
+          </p>
+        </div>
 
-            <div className="hero-reveal-4" style={{
-              display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center",
-              marginBottom: isMobile ? 28 : 40,
-            }}>
-              <Link href="/booking" className="btn-gold" style={{
-                padding: isMobile ? "14px 28px" : "16px 44px",
-                fontSize: isMobile ? 13 : 15,
-                boxShadow: "0 4px 24px rgba(246,190,0,0.25)",
-              }}>
-                {t.hero.cta1}
-              </Link>
-              <Link href="#services" className="btn-outline" style={{
-                padding: isMobile ? "14px 28px" : "16px 44px",
-                fontSize: isMobile ? 13 : 15,
-                backdropFilter: "blur(8px)",
-              }}>
-                {t.hero.cta2}
-              </Link>
-            </div>
-          </>
-        )}
+        <div className="hero-reveal-4" style={{
+          display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center",
+          marginBottom: isVideoSlide ? 16 : (isMobile ? 28 : 40),
+        }}>
+          <Link href="/booking" className="btn-gold" style={{
+            padding: isVideoSlide
+              ? (isMobile ? "10px 22px" : "12px 32px")
+              : (isMobile ? "14px 28px" : "16px 44px"),
+            fontSize: isVideoSlide ? (isMobile ? 11 : 13) : (isMobile ? 13 : 15),
+            boxShadow: "0 4px 24px rgba(246,190,0,0.25)",
+          }}>
+            {t.hero.cta1}
+          </Link>
+          <Link href="#services" className="btn-outline" style={{
+            padding: isVideoSlide
+              ? (isMobile ? "10px 22px" : "12px 32px")
+              : (isMobile ? "14px 28px" : "16px 44px"),
+            fontSize: isVideoSlide ? (isMobile ? 11 : 13) : (isMobile ? 13 : 15),
+            backdropFilter: "blur(8px)",
+          }}>
+            {t.hero.cta2}
+          </Link>
+        </div>
 
         {/* Stats row */}
         <div className="hero-reveal-5" style={{
