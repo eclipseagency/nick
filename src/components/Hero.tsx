@@ -10,6 +10,7 @@ export default function Hero() {
   const isAr = locale === "ar";
   const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const slides = [
     "/images/hero-rhino-new.jpg",
@@ -23,12 +24,40 @@ export default function Hero() {
   const [textKey, setTextKey] = useState(0); // forces re-mount for text animation
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Explicitly play/pause video when slide changes (mobile browsers block autoplay)
+  useEffect(() => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    if (slides[current].type === "video") {
+      vid.currentTime = 0;
+      vid.play().catch(() => {});
+    } else {
+      vid.pause();
+    }
+  }, [current, slides]);
+
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  // On first user touch/interaction, ensure video plays (mobile requirement)
+  useEffect(() => {
+    const tryPlay = () => {
+      const vid = videoRef.current;
+      if (vid && vid.paused && slides[current].type === "video") {
+        vid.play().catch(() => {});
+      }
+    };
+    document.addEventListener("touchstart", tryPlay, { once: true });
+    document.addEventListener("click", tryPlay, { once: true });
+    return () => {
+      document.removeEventListener("touchstart", tryPlay);
+      document.removeEventListener("click", tryPlay);
+    };
+  }, [current, slides]);
 
   // Parallax — desktop only
   useEffect(() => {
@@ -155,19 +184,44 @@ export default function Hero() {
           }}
         >
           <div style={{
-            position: "absolute", inset: isMobile ? "-4%" : "-8%",
-            animation: i === current ? `kenBurns${(i % 2) + 1} 8s ease-in-out forwards` : "none",
-            transform: `translateY(${parallaxY}px)`,
+            position: "absolute",
+            inset: slide.type === "video" ? 0 : "-8%",
+            width: slide.type === "video" ? "100%" : undefined,
+            height: slide.type === "video" ? "100%" : undefined,
+            animation: slide.type === "image" && i === current ? `kenBurns${(i % 2) + 1} 8s ease-in-out forwards` : "none",
+            transform: slide.type === "image" ? `translateY(${parallaxY}px)` : undefined,
           }}>
-            <Image
-              src={src}
-              alt={`NICK slide ${i + 1}`}
-              fill
-              style={{ objectFit: "cover", objectPosition: isMobile ? "60% center" : "center 40%" }}
-              priority={i === 0}
-              quality={90}
-              sizes="100vw"
-            />
+            {slide.type === "video" ? (
+              <video
+                ref={i === 0 ? videoRef : undefined}
+                src={slide.src}
+                autoPlay
+                muted
+                loop
+                playsInline
+                webkit-playsinline="true"
+                preload="auto"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: isMobile ? "center center" : "center 40%",
+                }}
+              />
+            ) : (
+              <Image
+                src={slide.src}
+                alt={`NICK slide ${i + 1}`}
+                fill
+                style={{ objectFit: "cover", objectPosition: "center 40%" }}
+                priority={i === 0}
+                quality={90}
+                sizes="100vw"
+              />
+            )}
           </div>
 
           {/* Cinematic gradient overlays */}
