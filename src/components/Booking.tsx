@@ -538,21 +538,20 @@ export default function Booking() {
           </p>
 
           {/* Category Tabs */}
-          <div role="tablist" aria-label={isAr ? "فئات الخدمات" : "Service categories"} className="booking-tabs-scroll" style={{
-            display: "flex", gap: 8, justifyContent: "center", marginBottom: 32, flexWrap: "nowrap",
-            overflowX: "auto", WebkitOverflowScrolling: "touch", paddingBottom: 4,
-            scrollbarWidth: "none",
+          <div role="tablist" aria-label={isAr ? "فئات الخدمات" : "Service categories"} style={{
+            display: "flex", gap: 8, justifyContent: "center", marginBottom: 32, flexWrap: "wrap",
+            paddingBottom: 4,
             position: "sticky", top: 80, zIndex: 15,
             background: "linear-gradient(180deg, #0a0a0a 0%, #0a0a0a 70%, transparent 100%)",
-            paddingTop: 12,
+            paddingTop: 12, paddingLeft: 12, paddingRight: 12,
           }}>
             {categories.map((cat) => {
               const isActive = category === cat.id;
               const count = selCount(cat.id);
               return (
                 <button key={cat.id} role="tab" aria-selected={isActive} onClick={() => setCategory(cat.id)} style={{
-                  display: "flex", alignItems: "center", gap: 8, padding: "10px 20px", borderRadius: 100, cursor: "pointer",
-                  fontSize: 13, fontWeight: 600, transition: "all 0.3s", whiteSpace: "nowrap", flexShrink: 0,
+                  display: "flex", alignItems: "center", gap: 6, padding: "10px 16px", borderRadius: 100, cursor: "pointer",
+                  fontSize: 13, fontWeight: 600, transition: "all 0.3s",
                   background: isActive ? "#F6BE00" : "rgba(255,255,255,0.04)",
                   color: isActive ? "#000" : "rgba(255,255,255,0.5)",
                   border: isActive ? "1.5px solid #F6BE00" : "1.5px solid rgba(255,255,255,0.08)",

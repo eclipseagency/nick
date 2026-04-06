@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -12,29 +11,8 @@ export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const slides = [
-    "/images/hero-rhino-new.jpg",
-    isAr ? "/images/hero-slide2.webp" : "/images/hero-slide2-en.webp",
-  ];
-
-  const [current, setCurrent] = useState(0);
-  const [paused, setPaused] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [scrollY, setScrollY] = useState(0);
-  const [textKey, setTextKey] = useState(0); // forces re-mount for text animation
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // Explicitly play/pause video when slide changes (mobile browsers block autoplay)
-  useEffect(() => {
-    const vid = videoRef.current;
-    if (!vid) return;
-    if (slides[current].type === "video") {
-      vid.currentTime = 0;
-      vid.play().catch(() => {});
-    } else {
-      vid.pause();
-    }
-  }, [current, slides]);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -43,21 +21,20 @@ export default function Hero() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // On first user touch/interaction, ensure video plays (mobile requirement)
+  // Ensure video plays on mobile (touch/click to unlock autoplay)
   useEffect(() => {
     const tryPlay = () => {
       const vid = videoRef.current;
-      if (vid && vid.paused && slides[current].type === "video") {
-        vid.play().catch(() => {});
-      }
+      if (vid && vid.paused) vid.play().catch(() => {});
     };
+    tryPlay();
     document.addEventListener("touchstart", tryPlay, { once: true });
     document.addEventListener("click", tryPlay, { once: true });
     return () => {
       document.removeEventListener("touchstart", tryPlay);
       document.removeEventListener("click", tryPlay);
     };
-  }, [current, slides]);
+  }, []);
 
   // Parallax — desktop only
   useEffect(() => {
@@ -66,17 +43,6 @@ export default function Hero() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isMobile]);
-
-  const next = useCallback(() => {
-    setCurrent(prev => (prev + 1) % slides.length);
-    setTextKey(k => k + 1);
-  }, [slides.length]);
-
-  useEffect(() => {
-    if (paused) return;
-    timerRef.current = setInterval(next, 7000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [next, paused]);
 
   // ---- Gold dust particles (desktop only) ----
   useEffect(() => {
@@ -126,7 +92,6 @@ export default function Hero() {
     return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
   }, [isMobile]);
 
-  // Stats
   const stats = [
     { n: "27+", l: isAr ? "سنة خبرة" : "Years" },
     { n: "20M+", l: isAr ? "مالك سيارة" : "Car Owners" },
@@ -134,30 +99,17 @@ export default function Hero() {
     { n: "4000+", l: isAr ? "فرع حول العالم" : "Branches Worldwide" },
   ];
 
-  // Slide-specific text
-  const headings = [
-    {
-      line1: isAr ? "حماية بقوة" : "Protection with",
-      line2: isAr ? "وحيد القرن" : "Rhino Strength",
-      sub: isAr ? "أفلام حماية عالية الأداء مصممة للبيئة السعودية" : "High-performance protection films engineered for Saudi roads",
-    },
-    {
-      line1: isAr ? "لمعان أعمق..." : "Deeper Shine...",
-      line2: isAr ? "وحماية أطول" : "Longer Protection",
-      sub: isAr ? "نانو سيراميك وعزل حراري بأحدث التقنيات" : "Nano ceramic coating & thermal insulation with cutting-edge technology",
-    },
-  ];
-  const h = headings[current];
+  const heading = {
+    line1: isAr ? "حماية بقوة" : "Protection with",
+    line2: isAr ? "وحيد القرن" : "Rhino Strength",
+    sub: isAr ? "أفلام حماية عالية الأداء مصممة للبيئة السعودية" : "High-performance protection films engineered for Saudi roads",
+  };
 
-  const isVideoSlide = slides[current].type === "video";
-  const parallaxY = isMobile ? 0 : scrollY * 0.35;
   const heroOpacity = Math.max(0, 1 - scrollY / 800);
 
   return (
     <section
       id="hero"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
       style={{
         position: "relative",
         width: "100%",
@@ -173,139 +125,93 @@ export default function Hero() {
         <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, zIndex: 4, pointerEvents: "none" }} />
       )}
 
-      {/* Background slides with Ken Burns */}
-      {slides.map((src, i) => (
-        <div
-          key={`slide-${i}`}
-          style={{
-            position: "absolute", inset: 0,
-            opacity: i === current ? 1 : 0,
-            transition: "opacity 1.4s ease-in-out",
-          }}
-        >
-          <div style={{
-            position: "absolute",
-            inset: slide.type === "video" ? 0 : "-8%",
-            width: slide.type === "video" ? "100%" : undefined,
-            height: slide.type === "video" ? "100%" : undefined,
-            animation: slide.type === "image" && i === current ? `kenBurns${(i % 2) + 1} 8s ease-in-out forwards` : "none",
-            transform: slide.type === "image" ? `translateY(${parallaxY}px)` : undefined,
-          }}>
-            {slide.type === "video" ? (
-              <video
-                ref={i === 0 ? videoRef : undefined}
-                src={slide.src}
-                autoPlay
-                muted
-                loop
-                playsInline
-                webkit-playsinline="true"
-                preload="auto"
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  objectPosition: isMobile ? "center center" : "center 40%",
-                }}
-              />
-            ) : (
-              <Image
-                src={slide.src}
-                alt={`NICK slide ${i + 1}`}
-                fill
-                style={{ objectFit: "cover", objectPosition: "center 40%" }}
-                priority={i === 0}
-                quality={90}
-                sizes="100vw"
-              />
-            )}
-          </div>
-
-          {/* Cinematic gradient overlays */}
-          <div style={{
-            position: "absolute", inset: 0,
-            background: "linear-gradient(180deg, rgba(5,5,5,0.75) 0%, rgba(5,5,5,0.2) 35%, rgba(5,5,5,0.35) 60%, rgba(5,5,5,0.97) 100%)",
-          }} />
-          {/* Side vignette */}
-          <div style={{
-            position: "absolute", inset: 0,
-            background: "radial-gradient(ellipse 80% 70% at 50% 45%, transparent 30%, rgba(5,5,5,0.6) 100%)",
-          }} />
-          {/* Gold ambient glow */}
-          <div style={{
-            position: "absolute", inset: 0,
-            background: "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(246,190,0,0.05) 0%, transparent 70%)",
-          }} />
+      {/* Video background */}
+      <div style={{ position: "absolute", inset: 0 }}>
+        <div style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
+          <video
+            ref={videoRef}
+            src="/images/hero-video.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            webkit-playsinline="true"
+            preload="auto"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: isMobile ? "center center" : "center 40%",
+            }}
+          />
         </div>
-      ))}
 
-      {/* Content — centered on image slide, bottom on video slide */}
+        {/* Cinematic gradient overlays */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(180deg, rgba(5,5,5,0.75) 0%, rgba(5,5,5,0.2) 35%, rgba(5,5,5,0.35) 60%, rgba(5,5,5,0.97) 100%)",
+        }} />
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse 80% 70% at 50% 45%, transparent 30%, rgba(5,5,5,0.6) 100%)",
+        }} />
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(246,190,0,0.05) 0%, transparent 70%)",
+        }} />
+      </div>
+
+      {/* Content */}
       <div style={{
         position: "relative", zIndex: 5,
         height: "100%", display: "flex", flexDirection: "column",
-        justifyContent: isVideoSlide ? "flex-end" : "center",
+        justifyContent: "flex-end",
         alignItems: "center",
         textAlign: "center",
-        padding: isVideoSlide
-          ? (isMobile ? "0 20px 100px" : "0 24px 140px")
-          : (isMobile ? "0 20px" : "0 24px"),
+        padding: isMobile ? "0 20px 100px" : "0 24px 140px",
         maxWidth: 950, margin: "0 auto",
         opacity: heroOpacity,
         transform: isMobile ? undefined : `translateY(${scrollY * 0.1}px)`,
         transition: "opacity 0.1s linear",
       }}>
-
-        <div key={textKey}>
+        <div>
           <h1 className="hero-reveal-2" style={{
             fontFamily: fontDisplay,
-            fontSize: isVideoSlide
-              ? (isMobile ? "clamp(24px, 8vw, 36px)" : "clamp(36px, 5vw, 56px)")
-              : (isMobile ? "clamp(34px, 11vw, 50px)" : "clamp(52px, 7vw, 84px)"),
+            fontSize: isMobile ? "clamp(24px, 8vw, 36px)" : "clamp(36px, 5vw, 56px)",
             fontWeight: 900, lineHeight: 1.05, margin: "0 0 12px",
             letterSpacing: isAr ? "0" : "-0.025em",
           }}>
-            <span style={{ color: "#fff", display: "block" }}>{h.line1}</span>
-            <span className="gold-text" style={{ display: "block" }}>{h.line2}</span>
+            <span style={{ color: "#fff", display: "block" }}>{heading.line1}</span>
+            <span className="gold-text" style={{ display: "block" }}>{heading.line2}</span>
           </h1>
 
-          {!isVideoSlide && (
-            <div className="hero-reveal-3" style={{
-              width: 60, height: 3, borderRadius: 2, margin: "0 auto 18px",
-              background: "linear-gradient(90deg, transparent, #F6BE00, transparent)",
-            }} />
-          )}
-
           <p className="hero-reveal-3" style={{
-            fontSize: isVideoSlide ? (isMobile ? 12 : 14) : (isMobile ? 14 : 18),
+            fontSize: isMobile ? 12 : 14,
             color: "rgba(255,255,255,0.55)",
             maxWidth: 520, lineHeight: 1.7, margin: "0 auto 20px",
             fontWeight: 400,
           }}>
-            {h.sub}
+            {heading.sub}
           </p>
         </div>
 
         <div className="hero-reveal-4" style={{
           display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center",
-          marginBottom: isVideoSlide ? 16 : (isMobile ? 28 : 40),
+          marginBottom: 16,
         }}>
           <Link href="/booking" className="btn-gold" style={{
-            padding: isVideoSlide
-              ? (isMobile ? "10px 22px" : "12px 32px")
-              : (isMobile ? "14px 28px" : "16px 44px"),
-            fontSize: isVideoSlide ? (isMobile ? 11 : 13) : (isMobile ? 13 : 15),
+            padding: isMobile ? "10px 22px" : "12px 32px",
+            fontSize: isMobile ? 11 : 13,
             boxShadow: "0 4px 24px rgba(246,190,0,0.25)",
           }}>
             {t.hero.cta1}
           </Link>
           <Link href="#services" className="btn-outline" style={{
-            padding: isVideoSlide
-              ? (isMobile ? "10px 22px" : "12px 32px")
-              : (isMobile ? "14px 28px" : "16px 44px"),
-            fontSize: isVideoSlide ? (isMobile ? 11 : 13) : (isMobile ? 13 : 15),
+            padding: isMobile ? "10px 22px" : "12px 32px",
+            fontSize: isMobile ? 11 : 13,
             backdropFilter: "blur(8px)",
           }}>
             {t.hero.cta2}
@@ -341,33 +247,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Slider dots */}
-      <div style={{
-        position: "absolute", bottom: isMobile ? 16 : 28,
-        left: "50%", transform: "translateX(-50%)",
-        zIndex: 10, display: "flex", gap: 10, alignItems: "center",
-      }}>
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            aria-label={`Slide ${i + 1}`}
-            onClick={() => { setCurrent(i); setTextKey(k => k + 1); }}
-            style={{
-              width: i === current ? 32 : 10,
-              height: 10,
-              borderRadius: 5,
-              border: "none",
-              cursor: "pointer",
-              background: i === current ? "#F6BE00" : "rgba(255,255,255,0.2)",
-              transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-              padding: 0,
-              boxShadow: i === current ? "0 0 14px rgba(246,190,0,0.5)" : "none",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Scroll indicator — fades out on scroll */}
+      {/* Scroll indicator */}
       <div style={{
         position: "absolute", bottom: isMobile ? 44 : 70,
         left: "50%",
@@ -390,7 +270,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Bottom fade to page background */}
+      {/* Bottom fade */}
       <div style={{
         position: "absolute", bottom: 0, left: 0, right: 0, height: 120, zIndex: 6,
         background: "linear-gradient(to bottom, transparent, #050505)",
