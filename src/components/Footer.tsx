@@ -56,9 +56,11 @@ export default function Footer() {
             <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, marginBottom: 8 }}>{t.footer.address}</p>
           </div>
         </div>
-        <div style={{ marginTop: 40, paddingTop: 20, borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", flexWrap: "wrap" as const, gap: 8 }}>
+        <div style={{ marginTop: 40, paddingTop: 20, borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" as const, gap: 8 }}>
           <p style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>&copy; {new Date().getFullYear()} NICK. {t.footer.rights}</p>
-          <p style={{ color: "rgba(255,255,255,0.12)", fontSize: 11 }}>{t.footer.location}</p>
+          <a href="https://eclipseagency.net" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.18)", fontSize: 11, textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e => (e.currentTarget.style.color = "rgba(246,190,0,0.5)")} onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.18)")}>
+            {isAr ? "تطوير Eclipse Agency" : "Built by Eclipse Agency"}
+          </a>
         </div>
       </div>
     </footer>
