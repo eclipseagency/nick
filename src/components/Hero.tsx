@@ -113,9 +113,9 @@ export default function Hero() {
       style={{
         position: "relative",
         width: "100%",
-        height: isMobile ? "75dvh" : "100dvh",
-        minHeight: isMobile ? 480 : 650,
-        maxHeight: isMobile ? 600 : undefined,
+        height: isMobile ? "60dvh" : "100dvh",
+        minHeight: isMobile ? 380 : 650,
+        maxHeight: isMobile ? 520 : undefined,
         overflow: "hidden",
         background: "#050505",
       }}
@@ -143,7 +143,7 @@ export default function Hero() {
               left: 0,
               width: "100%",
               height: "100%",
-              objectFit: "cover",
+              objectFit: isMobile ? "contain" : "cover",
               objectPosition: isMobile ? "center center" : "center 40%",
             }}
           />
