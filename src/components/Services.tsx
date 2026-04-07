@@ -35,7 +35,7 @@ export default function Services() {
   const row1: CardItem[] = [
     {
       title: isAr ? "أفلام حماية الطلاء" : "Paint Protection Film",
-      subtitle: isAr ? "حماية غير مرئية ضد الخدوش والحصى" : "Invisible armor against scratches & gravel",
+      subtitle: isAr ? "حماية غير مرئية مقاومة للخدوش والحصى" : "Invisible armor against scratches & gravel",
       image: "/images/DSC03279.jpg",
       href: "/services",
       tall: true,
