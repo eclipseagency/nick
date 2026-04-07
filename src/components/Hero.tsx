@@ -171,7 +171,7 @@ export default function Hero() {
         justifyContent: "flex-end",
         alignItems: "center",
         textAlign: "center",
-        padding: isMobile ? "0 20px 50px" : "0 24px 140px",
+        padding: isMobile ? "0 20px 32px" : "0 24px 140px",
         maxWidth: 950, margin: "0 auto",
         opacity: heroOpacity,
         transform: isMobile ? undefined : `translateY(${scrollY * 0.1}px)`,
