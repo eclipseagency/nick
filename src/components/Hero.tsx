@@ -200,7 +200,7 @@ export default function Hero() {
 
         <div className="hero-reveal-4" style={{
           display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center",
-          marginBottom: 16,
+          marginBottom: isMobile ? 24 : 16,
         }}>
           <Link href="/booking" className="btn-gold" style={{
             padding: isMobile ? "10px 22px" : "12px 32px",
@@ -223,7 +223,8 @@ export default function Hero() {
           display: "grid",
           gridTemplateColumns: isMobile ? "repeat(4, 1fr)" : "repeat(4, auto)",
           gap: isMobile ? 8 : 48,
-          paddingTop: isMobile ? 12 : 20,
+          marginTop: isMobile ? 12 : 0,
+          paddingTop: isMobile ? 16 : 20,
           borderTop: "1px solid rgba(255,255,255,0.07)",
           width: "100%", maxWidth: 600,
         }}>
