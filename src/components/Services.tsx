@@ -31,17 +31,15 @@ export default function Services() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Row 1: About Us — full-width
-  const aboutCard: CardItem = {
-    title: isAr ? "تعرف علينا" : "About Us",
-    subtitle: isAr ? "+٢٧ سنة من التميز في حماية السيارات" : "27+ years of automotive protection excellence",
-    image: "/images/DSC02995.jpg",
-    href: "/about",
-    span: "full",
-  };
-
-  // Row 2: Services + Book Now — 2 cards
-  const row2: CardItem[] = [
+  // Row 1: About Us + Services — 2 cards
+  const topRow: CardItem[] = [
+    {
+      title: isAr ? "تعرف علينا" : "About Us",
+      subtitle: isAr ? "+٢٧ سنة من التميز في حماية السيارات" : "27+ years of automotive protection excellence",
+      image: "/images/DSC02995.jpg",
+      href: "/about",
+      tall: true,
+    },
     {
       title: isAr ? "خدماتنا" : "Services",
       subtitle: isAr ? "أفلام حماية، عازل حراري، نانو سيراميك، تغيير ألوان" : "PPF, thermal insulation, nano ceramic, color wrapping",
@@ -49,6 +47,27 @@ export default function Services() {
       href: "/services",
       tall: true,
       pos: "center 40%",
+    },
+  ];
+
+  // Row 2: Gallery/Portfolio — full-width
+  const galleryCard: CardItem = {
+    title: isAr ? "معرض أعمالنا" : "Our Gallery",
+    subtitle: isAr ? "شاهد أعمالنا على أفخم السيارات" : "See our work on the finest vehicles",
+    image: "/images/DSC03261.jpg",
+    href: "/gallery",
+    span: "full",
+    pos: "center 30%",
+  };
+
+  // Row 3: Contact Us + Book Now — 2 cards
+  const bottomRow: CardItem[] = [
+    {
+      title: isAr ? "تواصل معنا" : "Contact Us",
+      subtitle: isAr ? "زورونا في فرعنا بالرياض — حي النرجس، طريق أنس بن مالك" : "Visit our showroom in Riyadh — Al-Narjis, Anas Ibn Malik Road",
+      image: "/images/DSC03095.jpg",
+      href: "/contact",
+      tall: true,
     },
     {
       title: isAr ? "احجز الآن" : "Book Now",
@@ -59,25 +78,6 @@ export default function Services() {
       overlay: "rgba(246,190,0,0.12)",
     },
   ];
-
-  // Row 3: Gallery/Portfolio — full-width
-  const galleryCard: CardItem = {
-    title: isAr ? "معرض أعمالنا" : "Our Gallery",
-    subtitle: isAr ? "شاهد أعمالنا على أفخم السيارات" : "See our work on the finest vehicles",
-    image: "/images/DSC03261.jpg",
-    href: "/gallery",
-    span: "full",
-    pos: "center 30%",
-  };
-
-  // Row 4: Contact Us — full-width
-  const contactCard: CardItem = {
-    title: isAr ? "تواصل معنا" : "Contact Us",
-    subtitle: isAr ? "زورونا في فرعنا بالرياض — حي النرجس، طريق أنس بن مالك" : "Visit our showroom in Riyadh — Al-Narjis, Anas Ibn Malik Road",
-    image: "/images/DSC03095.jpg",
-    href: "/contact",
-    span: "full",
-  };
 
   const renderCard = (card: CardItem, idx: number, height: number) => (
     <Link
@@ -172,28 +172,29 @@ export default function Services() {
     <section id="services" ref={ref} style={{ padding: isMobile ? "48px 0" : "80px 0", background: "#050505" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 16px" }}>
 
-        {/* Row 1: About Us — full-width */}
-        <div style={{ marginBottom: isMobile ? 14 : 18 }}>
-          {renderCard(aboutCard, 0, isMobile ? 300 : 380)}
-        </div>
-
-        {/* Row 2: Services + Book Now */}
+        {/* Row 1: About Us + Services — 2 cards */}
         <div style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
           gap: isMobile ? 14 : 18,
           marginBottom: isMobile ? 14 : 18,
         }}>
-          {row2.map((card, i) => renderCard(card, i, isMobile ? 340 : 440))}
+          {topRow.map((card, i) => renderCard(card, i, isMobile ? 300 : 420))}
         </div>
 
-        {/* Row 3: Gallery/Portfolio — full-width */}
+        {/* Row 2: Gallery/Portfolio — full-width */}
         <div style={{ marginBottom: isMobile ? 14 : 18 }}>
           {renderCard(galleryCard, 0, isMobile ? 280 : 380)}
         </div>
 
-        {/* Row 4: Contact Us — full-width */}
-        {renderCard(contactCard, 0, isMobile ? 280 : 380)}
+        {/* Row 3: Contact Us + Book Now — 2 cards */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
+          gap: isMobile ? 14 : 18,
+        }}>
+          {bottomRow.map((card, i) => renderCard(card, i, isMobile ? 300 : 420))}
+        </div>
       </div>
     </section>
   );
