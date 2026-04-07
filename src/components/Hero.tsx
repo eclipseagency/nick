@@ -153,7 +153,7 @@ export default function Hero() {
           }}
         >
           <div style={{
-            position: "absolute", inset: "-8%",
+            position: "absolute", inset: isMobile ? "-4%" : "-8%",
             animation: i === current ? `kenBurns${(i % 2) + 1} 8s ease-in-out forwards` : "none",
             transform: `translateY(${parallaxY}px)`,
           }}>
@@ -161,7 +161,7 @@ export default function Hero() {
               src={src}
               alt={`NICK slide ${i + 1}`}
               fill
-              style={{ objectFit: "cover", objectPosition: "center 40%" }}
+              style={{ objectFit: "cover", objectPosition: isMobile ? "center 30%" : "center 40%" }}
               priority={i === 0}
               quality={90}
               sizes="100vw"
@@ -190,8 +190,8 @@ export default function Hero() {
       <div style={{
         position: "relative", zIndex: 5,
         height: "100%", display: "flex", flexDirection: "column",
-        justifyContent: "center", alignItems: "center",
-        textAlign: "center", padding: isMobile ? "0 20px" : "0 24px",
+        justifyContent: isMobile ? "flex-end" : "center", alignItems: "center",
+        textAlign: "center", padding: isMobile ? "0 20px 60px" : "0 24px",
         maxWidth: 950, margin: "0 auto",
         opacity: heroOpacity,
         transform: isMobile ? undefined : `translateY(${scrollY * 0.1}px)`,
