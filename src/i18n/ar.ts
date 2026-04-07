@@ -225,6 +225,8 @@ export const ar: Dictionary = {
     sideMirrors: "المرايات الجانبية",
     frontPillars: "القوائم الأمامية",
     doorEdges: "أطراف الأبواب",
+    behindHandles: "خلف المقابض",
+    roofFront: "مقدمة السقف",
     rearBumper: "الصدام الخلفي",
     frontWindshield: "الزجاج الأمامي",
     allGlass: "جميع النوافذ والزجاج",

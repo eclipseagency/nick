@@ -225,6 +225,8 @@ export const en: Dictionary = {
     sideMirrors: "Side mirrors",
     frontPillars: "Front pillars",
     doorEdges: "Door edges",
+    behindHandles: "Behind handles",
+    roofFront: "Roof front",
     rearBumper: "Rear bumper",
     frontWindshield: "Front windshield",
     allGlass: "All windows & glass",

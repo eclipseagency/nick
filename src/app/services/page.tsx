@@ -252,48 +252,6 @@ export default function ServicesPage() {
                       ))}
                     </div>
 
-                    {/* Process steps */}
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        alignItems: "center",
-                        gap: 8,
-                        marginBottom: 24,
-                        direction: dir,
-                      }}
-                    >
-                      {s.steps.map((step, si) => (
-                        <span key={step} style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                          <span
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              width: 24,
-                              height: 24,
-                              borderRadius: "50%",
-                              background: "rgba(246,190,0,0.15)",
-                              color: "#F6BE00",
-                              fontSize: 11,
-                              fontWeight: 700,
-                              flexShrink: 0,
-                            }}
-                          >
-                            {si + 1}
-                          </span>
-                          <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13, fontWeight: 500 }}>
-                            {step}
-                          </span>
-                          {si < s.steps.length - 1 && (
-                            <span style={{ color: "rgba(246,190,0,0.3)", fontSize: 14, margin: "0 2px" }}>
-                              {isAr ? "\u2190" : "\u2192"}
-                            </span>
-                          )}
-                        </span>
-                      ))}
-                    </div>
-
                     {/* Warranty badge */}
                     <div
                       style={{

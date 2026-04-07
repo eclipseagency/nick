@@ -229,6 +229,8 @@ export interface Dictionary {
     sideMirrors: string;
     frontPillars: string;
     doorEdges: string;
+    behindHandles: string;
+    roofFront: string;
     rearBumper: string;
     frontWindshield: string;
     allGlass: string;
