@@ -131,8 +131,9 @@ export default function Hero() {
       style={{
         position: "relative",
         width: "100%",
-        height: "100dvh",
-        minHeight: isMobile ? 580 : 650,
+        height: isMobile ? "75dvh" : "100dvh",
+        minHeight: isMobile ? 500 : 650,
+        maxHeight: isMobile ? 650 : undefined,
         overflow: "hidden",
         background: "#050505",
       }}
@@ -161,7 +162,7 @@ export default function Hero() {
               src={src}
               alt={`NICK slide ${i + 1}`}
               fill
-              style={{ objectFit: "cover", objectPosition: isMobile ? "center 30%" : "center 40%" }}
+              style={{ objectFit: "cover", objectPosition: isMobile ? "60% center" : "center 40%" }}
               priority={i === 0}
               quality={90}
               sizes="100vw"
@@ -191,7 +192,7 @@ export default function Hero() {
         position: "relative", zIndex: 5,
         height: "100%", display: "flex", flexDirection: "column",
         justifyContent: isMobile ? "flex-end" : "center", alignItems: "center",
-        textAlign: "center", padding: isMobile ? "0 20px 60px" : "0 24px",
+        textAlign: "center", padding: isMobile ? "0 16px 40px" : "0 24px",
         maxWidth: 950, margin: "0 auto",
         opacity: heroOpacity,
         transform: isMobile ? undefined : `translateY(${scrollY * 0.1}px)`,
@@ -200,7 +201,7 @@ export default function Hero() {
         {/* Badge */}
         <div className="hero-reveal-1" style={{
           display: "inline-flex", alignItems: "center", gap: 8,
-          padding: "8px 20px", borderRadius: 100, marginBottom: isMobile ? 20 : 28,
+          padding: isMobile ? "6px 14px" : "8px 20px", borderRadius: 100, marginBottom: isMobile ? 12 : 28,
           background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.18)",
           backdropFilter: "blur(8px)",
         }}>
@@ -222,8 +223,8 @@ export default function Hero() {
         <div key={textKey}>
           <h1 className="hero-reveal-2" style={{
             fontFamily: fontDisplay,
-            fontSize: isMobile ? "clamp(34px, 11vw, 50px)" : "clamp(52px, 7vw, 84px)",
-            fontWeight: 900, lineHeight: 1.05, margin: "0 0 16px",
+            fontSize: isMobile ? "clamp(28px, 9vw, 42px)" : "clamp(52px, 7vw, 84px)",
+            fontWeight: 900, lineHeight: 1.05, margin: isMobile ? "0 0 10px" : "0 0 16px",
             letterSpacing: isAr ? "0" : "-0.025em",
           }}>
             <span style={{ color: "#fff", display: "block" }}>{h.line1}</span>
@@ -232,15 +233,15 @@ export default function Hero() {
 
           {/* Gold divider line */}
           <div className="hero-reveal-3" style={{
-            width: 60, height: 3, borderRadius: 2, margin: "0 auto 18px",
+            width: isMobile ? 40 : 60, height: 3, borderRadius: 2, margin: isMobile ? "0 auto 10px" : "0 auto 18px",
             background: "linear-gradient(90deg, transparent, #F6BE00, transparent)",
           }} />
 
           {/* Subtitle */}
           <p className="hero-reveal-3" style={{
-            fontSize: isMobile ? 14 : 18,
+            fontSize: isMobile ? 13 : 18,
             color: "rgba(255,255,255,0.55)",
-            maxWidth: 520, lineHeight: 1.7, margin: "0 auto 28px",
+            maxWidth: 520, lineHeight: 1.6, margin: isMobile ? "0 auto 16px" : "0 auto 28px",
             fontWeight: 400,
           }}>
             {h.sub}
@@ -250,7 +251,7 @@ export default function Hero() {
         {/* CTAs */}
         <div className="hero-reveal-4" style={{
           display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center",
-          marginBottom: isMobile ? 28 : 40,
+          marginBottom: isMobile ? 16 : 40,
         }}>
           <Link href="/booking" className="btn-gold" style={{
             padding: isMobile ? "14px 28px" : "16px 44px",
@@ -272,8 +273,8 @@ export default function Hero() {
         <div className="hero-reveal-5" style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "repeat(4, 1fr)" : "repeat(4, auto)",
-          gap: isMobile ? 12 : 48,
-          paddingTop: 20,
+          gap: isMobile ? 8 : 48,
+          paddingTop: isMobile ? 12 : 20,
           borderTop: "1px solid rgba(255,255,255,0.07)",
           width: "100%", maxWidth: 600,
         }}>
