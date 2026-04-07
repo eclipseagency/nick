@@ -126,14 +126,13 @@ export default function Hero() {
         <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, zIndex: 4, pointerEvents: "none" }} />
       )}
 
-      {/* ===== MOBILE CARD LAYOUT ===== */}
+      {/* ===== MOBILE LAYOUT ===== */}
       {isMobile ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          {/* Video card */}
+          {/* Video — natural size, no cropping */}
           <div style={{
             position: "relative",
             width: "100%",
-            aspectRatio: "4 / 3",
             borderRadius: 20,
             overflow: "hidden",
           }}>
@@ -147,29 +146,21 @@ export default function Hero() {
               webkit-playsinline="true"
               preload="auto"
               style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
+                display: "block",
                 width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                objectPosition: "center 55%",
+                height: "auto",
               }}
             />
-            {/* Gradient overlays on video card */}
+            {/* Gradient overlay */}
             <div style={{
               position: "absolute", inset: 0,
-              background: "linear-gradient(180deg, rgba(5,5,5,0.3) 0%, rgba(5,5,5,0.05) 40%, rgba(5,5,5,0.5) 80%, rgba(5,5,5,0.95) 100%)",
-            }} />
-            <div style={{
-              position: "absolute", inset: 0,
-              background: "radial-gradient(ellipse 80% 70% at 50% 45%, transparent 30%, rgba(5,5,5,0.4) 100%)",
+              background: "linear-gradient(180deg, rgba(5,5,5,0.15) 0%, rgba(5,5,5,0.0) 30%, rgba(5,5,5,0.45) 70%, rgba(5,5,5,0.95) 100%)",
             }} />
 
-            {/* Text content overlaid at bottom of card */}
+            {/* Text content overlaid at bottom */}
             <div style={{
               position: "absolute", bottom: 0, left: 0, right: 0,
-              zIndex: 5, padding: "0 20px 20px",
+              zIndex: 5, padding: "0 20px 24px",
               textAlign: "center",
             }}>
               <h1 className="hero-reveal-2" style={{
@@ -210,7 +201,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Stats row below the card */}
+          {/* Stats row below */}
           <div className="hero-reveal-5" style={{
             display: "grid",
             gridTemplateColumns: "repeat(4, 1fr)",
