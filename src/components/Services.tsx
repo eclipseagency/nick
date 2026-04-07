@@ -31,34 +31,37 @@ export default function Services() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Row 1: 3 cards
-  const row1: CardItem[] = [
+  // Row 1: About Us — full-width
+  const aboutCard: CardItem = {
+    title: isAr ? "تعرف علينا" : "About Us",
+    subtitle: isAr ? "+٢٧ سنة من التميز في حماية السيارات" : "27+ years of automotive protection excellence",
+    image: "/images/DSC02995.jpg",
+    href: "/about",
+    span: "full",
+  };
+
+  // Row 2: Services + Book Now — 2 cards
+  const row2: CardItem[] = [
     {
-      title: isAr ? "أفلام حماية الطلاء" : "Paint Protection Film",
-      subtitle: isAr ? "حماية غير مرئية مقاومة للخدوش والحصى" : "Invisible armor against scratches & gravel",
+      title: isAr ? "خدماتنا" : "Services",
+      subtitle: isAr ? "أفلام حماية، عازل حراري، نانو سيراميك، تغيير ألوان" : "PPF, thermal insulation, nano ceramic, color wrapping",
       image: "/images/DSC03279.jpg",
       href: "/services",
       tall: true,
       pos: "center 40%",
     },
     {
-      title: isAr ? "العازل الحراري" : "Thermal Insulation",
-      subtitle: isAr ? "عزل بتقنية النانو سيراميك المتطورة" : "Advanced nano ceramic tinting technology",
-      image: "/images/DSC03136.jpg",
-      href: "/services",
+      title: isAr ? "احجز الآن" : "Book Now",
+      subtitle: isAr ? "ابدأ رحلة العناية بسيارتك" : "Start your car care journey",
+      image: "/images/DSC03292.jpg",
+      href: "/booking",
       tall: true,
-    },
-    {
-      title: isAr ? "النانو سيراميك" : "Nano Ceramic",
-      subtitle: isAr ? "لمعان ساطع وحماية طويلة الأمد" : "Brilliant shine & long-lasting protection",
-      image: "/images/DSC03018.jpg",
-      href: "/services",
-      tall: true,
+      overlay: "rgba(246,190,0,0.12)",
     },
   ];
 
-  // Row 2: full-width showroom card
-  const row2: CardItem = {
+  // Row 3: Gallery/Portfolio — full-width
+  const galleryCard: CardItem = {
     title: isAr ? "معرض أعمالنا" : "Our Gallery",
     subtitle: isAr ? "شاهد أعمالنا على أفخم السيارات" : "See our work on the finest vehicles",
     image: "/images/DSC03261.jpg",
@@ -67,31 +70,8 @@ export default function Services() {
     pos: "center 30%",
   };
 
-  // Row 3: 3 cards
-  const row3: CardItem[] = [
-    {
-      title: isAr ? "تغيير لون السيارة" : "Color Wrapping",
-      subtitle: isAr ? "غيّر لون سيارتك بدون رش" : "Change your car color without paint",
-      image: "/images/DSC03060.jpg",
-      href: "/services",
-    },
-    {
-      title: isAr ? "احجز الآن" : "Book Now",
-      subtitle: isAr ? "ابدأ رحلة العناية بسيارتك" : "Start your car care journey",
-      image: "/images/DSC03292.jpg",
-      href: "/booking",
-      overlay: "rgba(246,190,0,0.12)",
-    },
-    {
-      title: isAr ? "تعرف علينا" : "About Us",
-      subtitle: isAr ? "+٢٧ سنة من التميز في حماية السيارات" : "27+ years of automotive protection excellence",
-      image: "/images/DSC02995.jpg",
-      href: "/about",
-    },
-  ];
-
-  // Row 4: full-width contact card
-  const row4: CardItem = {
+  // Row 4: Contact Us — full-width
+  const contactCard: CardItem = {
     title: isAr ? "تواصل معنا" : "Contact Us",
     subtitle: isAr ? "زورونا في فرعنا بالرياض — حي النرجس، طريق أنس بن مالك" : "Visit our showroom in Riyadh — Al-Narjis, Anas Ibn Malik Road",
     image: "/images/DSC03095.jpg",
@@ -192,33 +172,28 @@ export default function Services() {
     <section id="services" ref={ref} style={{ padding: isMobile ? "48px 0" : "80px 0", background: "#050505" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 16px" }}>
 
-        {/* Row 1: 3 tall cards */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-          gap: isMobile ? 14 : 18,
-          marginBottom: isMobile ? 14 : 18,
-        }}>
-          {row1.map((card, i) => renderCard(card, i, isMobile ? 340 : 440))}
-        </div>
-
-        {/* Row 2: full-width gallery card */}
+        {/* Row 1: About Us — full-width */}
         <div style={{ marginBottom: isMobile ? 14 : 18 }}>
-          {renderCard(row2, 0, 380)}
+          {renderCard(aboutCard, 0, isMobile ? 300 : 380)}
         </div>
 
-        {/* Row 3: 3 cards */}
+        {/* Row 2: Services + Book Now */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
           gap: isMobile ? 14 : 18,
           marginBottom: isMobile ? 14 : 18,
         }}>
-          {row3.map((card, i) => renderCard(card, i, isMobile ? 300 : 380))}
+          {row2.map((card, i) => renderCard(card, i, isMobile ? 340 : 440))}
         </div>
 
-        {/* Row 4: full-width contact card */}
-        {renderCard(row4, 0, 380)}
+        {/* Row 3: Gallery/Portfolio — full-width */}
+        <div style={{ marginBottom: isMobile ? 14 : 18 }}>
+          {renderCard(galleryCard, 0, isMobile ? 280 : 380)}
+        </div>
+
+        {/* Row 4: Contact Us — full-width */}
+        {renderCard(contactCard, 0, isMobile ? 280 : 380)}
       </div>
     </section>
   );
