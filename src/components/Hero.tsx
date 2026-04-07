@@ -10,6 +10,7 @@ export default function Hero() {
   const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
 
   const [isMobile, setIsMobile] = useState(false);
   const [scrollY, setScrollY] = useState(0);
@@ -24,7 +25,7 @@ export default function Hero() {
   // Ensure video plays on mobile (touch/click to unlock autoplay)
   useEffect(() => {
     const tryPlay = () => {
-      const vid = videoRef.current;
+      const vid = isMobile ? mobileVideoRef.current : videoRef.current;
       if (vid && vid.paused) vid.play().catch(() => {});
     };
     tryPlay();
@@ -34,7 +35,7 @@ export default function Hero() {
       document.removeEventListener("touchstart", tryPlay);
       document.removeEventListener("click", tryPlay);
     };
-  }, []);
+  }, [isMobile]);
 
   // Parallax — desktop only
   useEffect(() => {
@@ -128,6 +129,7 @@ export default function Hero() {
       {/* Video background */}
       <div style={{ position: "absolute", inset: 0 }}>
         <div style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
+          {/* Desktop video */}
           <video
             ref={videoRef}
             src="/images/hero-video.mp4"
@@ -143,8 +145,30 @@ export default function Hero() {
               left: 0,
               width: "100%",
               height: "100%",
-              objectFit: isMobile ? "contain" : "cover",
-              objectPosition: isMobile ? "center center" : "center 40%",
+              objectFit: "cover",
+              objectPosition: "center 40%",
+              display: isMobile ? "none" : "block",
+            }}
+          />
+          {/* Mobile video */}
+          <video
+            ref={mobileVideoRef}
+            src="/images/hero-video-mobile.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            webkit-playsinline="true"
+            preload="auto"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              objectPosition: "center center",
+              display: isMobile ? "block" : "none",
             }}
           />
         </div>
