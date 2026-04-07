@@ -1,9 +1,11 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-const secret = new TextEncoder().encode(
-  process.env.ADMIN_JWT_SECRET ?? (() => { throw new Error("ADMIN_JWT_SECRET is not set"); })()
-);
+function getSecret() {
+  const key = process.env.ADMIN_JWT_SECRET;
+  if (!key) throw new Error("ADMIN_JWT_SECRET is not set");
+  return new TextEncoder().encode(key);
+}
 const COOKIE_NAME = "nick-admin-token";
 
 export async function signToken(username: string) {
@@ -11,12 +13,12 @@ export async function signToken(username: string) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
-    .sign(secret);
+    .sign(getSecret());
 }
 
 export async function verifyToken(token: string) {
   try {
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, getSecret());
     return payload as { username: string };
   } catch {
     return null;
