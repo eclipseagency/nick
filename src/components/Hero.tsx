@@ -114,9 +114,9 @@ export default function Hero() {
       style={{
         position: "relative",
         width: "100%",
-        height: isMobile ? "60dvh" : "100dvh",
-        minHeight: isMobile ? 380 : 650,
-        maxHeight: isMobile ? 520 : undefined,
+        height: isMobile ? "75dvh" : "100dvh",
+        minHeight: isMobile ? 480 : 650,
+        maxHeight: isMobile ? 700 : undefined,
         overflow: "hidden",
         background: "#050505",
       }}
@@ -166,8 +166,8 @@ export default function Hero() {
               left: 0,
               width: "100%",
               height: "100%",
-              objectFit: "contain",
-              objectPosition: "center center",
+              objectFit: "cover",
+              objectPosition: "center 30%",
               display: isMobile ? "block" : "none",
             }}
           />
@@ -274,7 +274,7 @@ export default function Hero() {
 
       {/* Scroll indicator */}
       <div style={{
-        position: "absolute", bottom: isMobile ? 44 : 70,
+        position: "absolute", bottom: isMobile ? 16 : 70,
         left: "50%",
         zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center",
         animation: "float 3s ease-in-out infinite",
