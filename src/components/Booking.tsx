@@ -688,16 +688,10 @@ export default function Booking() {
                     <div style={{ padding: "14px 16px", background: isSelected ? "rgba(17,17,17,1)" : "#111", transition: "background 0.3s" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
                         <span style={{ color: isSelected ? "#F6BE00" : "#fff", fontWeight: 700, fontSize: 14 }}>{s.name}</span>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10, color: "rgba(255,255,255,0.45)", padding: "2px 8px", borderRadius: 100, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                            {s.duration}
-                          </span>
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, color: "#F6BE00", fontWeight: 600, padding: "3px 10px", borderRadius: 100, background: "rgba(246,190,0,0.08)", border: "1px solid rgba(246,190,0,0.25)" }}>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F6BE00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                            {s.w}
-                          </span>
-                        </div>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, color: "#F6BE00", fontWeight: 600, padding: "3px 10px", borderRadius: 100, background: "rgba(246,190,0,0.08)", border: "1px solid rgba(246,190,0,0.25)", flexShrink: 0 }}>
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F6BE00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                          {s.w}
+                        </span>
                       </div>
                       <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", lineHeight: 1.4, marginBottom: 8, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{s.shortDesc || catDesc[s.cat]}</p>
                       {/* More Details button */}
