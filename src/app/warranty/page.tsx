@@ -57,9 +57,9 @@ export default function WarrantyPage() {
         "We commit to providing periodic maintenance with every self-healing protection service for 3 years, repeatable as needed, including annual servicing.\nThe film undergoes self-healing within 15 days after installation."
       ),
       conditions: [
-        d("يسري هذا الضمان على التلف الناتج عن حطام الطريق والحركات الأخرى أو في حالة دخول الحصى البسيط أو المتوسط أو الأنبوب أو صدمات الطيور أو المواد الكيميائية.", "This warranty covers damage from road debris and other impacts, including minor to moderate gravel, pipe impacts, bird strikes, or chemical substances."),
+        d("لا يسري هذا الضمان على التلف الناتج عن حطام الطريق والحركات الأخرى أو في حالة دخول الحصى البسيط أو المتوسط أو الأنبوب أو صدمات الطيور أو المواد الكيميائية.", "This warranty does not cover damage from road debris and other impacts, including minor to moderate gravel, pipe impacts, bird strikes, or chemical substances."),
         d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام والمواد الكيميائية والمذيبات والأحماض والقواعد والمنظفات الناتجة عن الغسيل.", "This warranty does not cover damage from accidents, misuse, chemicals, solvents, acids, alkalis, or cleaning agents from washing."),
-        d("تضمن شركة NICK منتج أفلام حماية الطلاء ضد عيوب المواد والتصنيع بدون تكلفة إضافية وفقط عند تقديم فاتورة الشراء.", "NICK guarantees paint protection films against material and manufacturing defects at no extra cost, only upon presenting the purchase invoice."),
+        d("تضمن شركة NICK عدم حدوث أي ضرر للطلاء عند تركيب أو إزالة أفلام حماية NICK ويُستثنى من ذلك الأجزاء المعاد طلائها.", "NICK guarantees no damage to the paint upon installation or removal of NICK protection films, excluding repainted parts."),
         d("ضمان أفلام الحماية لمدة ١٠ سنوات شاملة الفلم والتركيب المتقنة بتقنية المعالجة الذاتية كالتالي ٣ سنوات صيانة دورية ويمكن تكرارها حسب الحاجة والاقتضاء.", "Protection film warranty for 10 years covering film and professional installation with self-healing technology, including 3 years of periodic maintenance repeatable as needed."),
         d("فلم NICK يتعامل مع الاستخدام اليومي وحتى 400,000 كم أيهما أسبق.", "NICK film handles daily use up to 400,000 km, whichever comes first."),
       ],
