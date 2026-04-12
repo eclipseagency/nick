@@ -32,13 +32,14 @@ export default function WarrantyPage() {
         "Warranty duration determined based on the consumer invoice"
       ),
       conditions: [
-        d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام", "This warranty does not cover damage caused by accidents or misuse"),
-        d("لا يتحمل الضمان الناتج بسبب عدم استخدام مواد الميكروفايبر أو عدم اتباع الإرشادات الأساسية في العناية", "Warranty does not cover damage from not using microfiber materials or not following basic care instructions"),
-        d("يُعتبر الضمان لاغياً بشكل أساسي إذا تم الإخلال بالشروط المذكورة في استخدام مواد كيميائية سببت تلف وتشوه وإبطال بالصيانة الدورية", "Warranty is void if conditions are violated by using chemicals that cause damage or by failing to perform regular maintenance"),
+        d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام.", "This warranty does not cover damage caused by accidents or misuse."),
+        d("تلف الغسيل الذي يسبب الخدوش بسبب عدم استخدام فوط الماكيروفايبر أو عدم نظافتها.", "Wash damage causing scratches due to not using microfiber towels or using dirty ones."),
+        d("أضرار الغبار أثناء السفر (السافي) أو آثار الأحجار المتطايرة في الطريق.", "Dust damage during travel (sandstorms) or flying stone impacts on the road."),
+        d("استخدام مواد كيميائية تسبب تلف المنتج وعدم الإلتزام بالصيانة الدورية.", "Using chemicals that damage the product and not adhering to periodic maintenance."),
       ],
       qualityTips: [
-        d("عدم غسيل السيارة لمدة لا تقل عن 7 أيام من التركيب", "Do not wash the car for at least 7 days after installation"),
-        d("إزالة فضلات الطيور في فترة لا تتجاوز 4 ساعات", "Remove bird droppings within 4 hours"),
+        d("عدم غسيل السيارة لمدة لا تقل عن 7 أيام من التركيب.", "Do not wash the car for at least 7 days after installation."),
+        d("إزالة فضلات الطيور في فترة لا تتجاوز 4 ساعات.", "Remove bird droppings within 4 hours."),
       ],
     },
     {
@@ -47,42 +48,49 @@ export default function WarrantyPage() {
         { name: d("أفلام حماية N-75 SPRINT", "N-75 SPRINT Protection Film"), warranty: d("١٠ سنوات", "10 years") },
         { name: d("أفلام حماية N-86 TURBO", "N-86 TURBO Protection Film"), warranty: d("١٠ سنوات", "10 years") },
         { name: d("أفلام حماية N-95 ULTRA DRIVE", "N-95 ULTRA DRIVE Protection Film"), warranty: d("١٠ سنوات", "10 years") },
-        { name: d("أفلام حماية طلاء ملون", "Colored Paint Protection Film"), warranty: d("٥ سنوات", "5 years") },
+        { name: d("أفلام حماية طلاء مطفي", "Matte Paint Protection Film"), warranty: d("١٠ سنوات", "10 years") },
+        { name: d("أفلام حماية الديكورات الداخلية", "Interior Decoration Protection Film"), warranty: d("١٠ سنوات", "10 years") },
         { name: d("أفلام حماية الزجاج الأمامي", "Windshield Protection Film"), warranty: d("٣ سنوات", "3 years") },
       ],
       maintenance: d(
         "نتعهد بتوفير مع كل خدمة حماية بتقنية المعالجة الذاتية كالتالي لمدة ٣ سنوات صيانة دورية ويمكن تكرارها حسب الحاجة والاقتضاء تشمل تشغيل سنوي.\nالفلم يخضع للمعالجة الذاتية في فترة ١٥ يوم بعد التركيب.",
-        "We provide periodic maintenance with every self-healing protection service for 3 years, repeatable as needed, including annual servicing.\nThe film undergoes self-healing within 15 days after installation."
+        "We commit to providing periodic maintenance with every self-healing protection service for 3 years, repeatable as needed, including annual servicing.\nThe film undergoes self-healing within 15 days after installation."
       ),
       conditions: [
-        d("يسري هذا الضمان على التلف الناتج عن حصام الطريق والحركات الأخرى أو في حالة دفع الحصى البسيط أو المتوسط أو صدمات الطيور أو العوامل الكيميائية", "This warranty covers damage from road debris, minor to moderate gravel impact, bird strikes, or chemical factors"),
-        d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام والمواد الكيميائية الضارة", "This warranty does not cover damage from accidents, misuse, or harmful chemicals"),
-        d("تضمن شركة NICK منتج أفلام حماية الطلاء ضد عيوب المواد والصناعة بدون تكلفة إضافية عند تقديم الفاتورة", "NICK guarantees paint protection films against material and manufacturing defects at no extra cost upon presenting the invoice"),
-        d("ضمان أفلام الحماية لمدة ١٠ سنوات شاملة الفلم والتركيب المتقنة بتقنية المعالجة الذاتية", "Protection film warranty for 10 years covering film and professional installation with self-healing technology"),
-        d("فلم NICK يتعامل مع الاستخدام اليومي وحتى 400,000 كم أيهما أسبق", "NICK film handles daily use up to 400,000 km, whichever comes first"),
+        d("يسري هذا الضمان على التلف الناتج عن حطام الطريق والحركات الأخرى أو في حالة دخول الحصى البسيط أو المتوسط أو الأنبوب أو صدمات الطيور أو المواد الكيميائية.", "This warranty covers damage from road debris and other impacts, including minor to moderate gravel, pipe impacts, bird strikes, or chemical substances."),
+        d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام والمواد الكيميائية والمذيبات والأحماض والقواعد والمنظفات الناتجة عن الغسيل.", "This warranty does not cover damage from accidents, misuse, chemicals, solvents, acids, alkalis, or cleaning agents from washing."),
+        d("تضمن شركة NICK منتج أفلام حماية الطلاء ضد عيوب المواد والتصنيع بدون تكلفة إضافية وفقط عند تقديم فاتورة الشراء.", "NICK guarantees paint protection films against material and manufacturing defects at no extra cost, only upon presenting the purchase invoice."),
+        d("ضمان أفلام الحماية لمدة ١٠ سنوات شاملة الفلم والتركيب المتقنة بتقنية المعالجة الذاتية كالتالي ٣ سنوات صيانة دورية ويمكن تكرارها حسب الحاجة والاقتضاء.", "Protection film warranty for 10 years covering film and professional installation with self-healing technology, including 3 years of periodic maintenance repeatable as needed."),
+        d("فلم NICK يتعامل مع الاستخدام اليومي وحتى 400,000 كم أيهما أسبق.", "NICK film handles daily use up to 400,000 km, whichever comes first."),
       ],
       qualityTips: [
-        d("عدم غسيل السيارة بعد التركيب لمدة لا تقل عن 7 أيام من التركيب", "Do not wash the car for at least 7 days after installation"),
+        d("عدم غسيل السيارة بعد التركيب لمدة لا تقل عن 7 أيام من التركيب.", "Do not wash the car for at least 7 days after installation."),
       ],
     },
     {
       group: d("العازل الحراري", "Thermal Tint"),
       items: [
-        { name: d("عازل حراري بلس", "Thermal Tint Plus"), warranty: d("١٠ سنوات", "10 years") },
-        { name: d("عازل حراري فليكس", "Thermal Tint Flex"), warranty: d("٨ سنوات", "8 years") },
-        { name: d("عازل حراري لايت", "Thermal Tint Lite"), warranty: d("٥ سنوات", "5 years") },
+        { name: d("عازل حراري N", "Thermal Tint N"), warranty: d("١٠ سنوات", "10 years") },
+        { name: d("عازل حراري K", "Thermal Tint K"), warranty: d("٨ سنوات", "8 years") },
+        { name: d("عازل حراري MK", "Thermal Tint MK"), warranty: d("٥ سنوات", "5 years") },
       ],
       maintenance: d(
         "لا يتطلب صيانة دورية\nويمكن طلب الصيانة عند الحاجة",
         "No periodic maintenance required\nMaintenance available upon request"
       ),
       conditions: [
-        d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام", "This warranty does not cover damage caused by accidents or misuse"),
-        d("تضمن شركة NICK أفلام العازل الحراري لنوافذ السيارات من عيوب التصنيع والتركيب", "NICK guarantees thermal tint films for car windows against manufacturing and installation defects"),
+        d("تضمن شركة NICK أفلام العازل الحراري لنوافذ السيارات ما يلي:", "NICK guarantees the following for automotive thermal tint films:"),
+        d("الاحتفاظ بخواص انعكاس أشعة الشمس دون حدوث تشققات أو تصدعات بالفلم.", "Maintaining sun reflection properties without cracks or fractures in the film."),
+        d("الاحتفاظ على الالتصاق دون فقاعات أو انفصال عن الزجاج.", "Maintaining adhesion without bubbles or separation from the glass."),
+        d("ثبات لون العازل الحراري.", "Color stability of the thermal tint."),
+        d("يعتبر الضمان لاغي في حالة خضوع المنتج لسوء الاستخدام أو العناية الغير صحيحة.", "The warranty is void if the product is subjected to misuse or improper care."),
+        d("إذا ظهر ضباب بعد التركيب، فهو مؤقت بسبب الرطوبة ويختفي بعد جفافها.", "If fog appears after installation, it is temporary due to moisture and will disappear after drying."),
+        d("ضمان حماية أفلام زجاج أمامي لمدة 3 سنوات أو حتى 60,000 كم أيهما أسبق.", "Windshield film protection warranty for 3 years or up to 60,000 km, whichever comes first."),
+        d("إدارة أمور الضمان من تحديد نسب التظليل المسموحة وشركة NICK لا تتحمل أي مسؤولية قانونية ويجب على المستهلكين الاطلاع على القوانين المحلية.", "Warranty management regarding permitted tint percentages — NICK bears no legal responsibility and consumers must review local regulations."),
       ],
       qualityTips: [
-        d("يُراعى عدم تنظيف السيارة مباشرة بعد التركيب", "Avoid cleaning the car immediately after installation"),
-        d("عدم غسيل السيارة لمدة لا تقل عن 7 أيام من التركيب", "Do not wash the car for at least 7 days after installation"),
+        d("يرجى عدم فتح النوافذ خلال 48 ساعة من تركيب الفلم.", "Please do not open windows for 48 hours after film installation."),
+        d("عدم تنظيف الزجاج لمدة لا تقل عن 7 أيام من التركيب. وعدم لمس أطراف الفلم.", "Do not clean the glass for at least 7 days after installation. Do not touch the film edges."),
       ],
     },
   ];
@@ -121,17 +129,6 @@ export default function WarrantyPage() {
     textAlign: isAr ? "right" : "left",
   };
 
-  const groupHeaderStyle: React.CSSProperties = {
-    background: "rgba(246,190,0,0.08)",
-    color: gold,
-    padding: "10px 16px",
-    fontWeight: 700,
-    fontSize: 14,
-    fontFamily: fontDisplay,
-    border,
-    textAlign: "center",
-  };
-
   return (
     <main ref={ref}>
       <Navbar />
@@ -156,7 +153,6 @@ export default function WarrantyPage() {
             padding: "8px 24px",
             marginBottom: 24,
           }}>
-            {/* Shield icon */}
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={gold} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               <path d="M9 12l2 2 4-4" />
@@ -218,11 +214,6 @@ export default function WarrantyPage() {
                   const rowCount = group.items.length;
                   return group.items.map((item, ii) => (
                     <tr key={`${gi}-${ii}`}>
-                      {ii === 0 && (
-                        <>
-                          {/* Group header spanning full width - rendered as first cell */}
-                        </>
-                      )}
                       <td style={{
                         ...tdStyle,
                         fontWeight: 600,
@@ -268,7 +259,7 @@ export default function WarrantyPage() {
                             borderTop: `2px solid ${goldDark}`,
                           }}>
                             {group.conditions.map((c, i) => (
-                              <p key={i} style={{ margin: i > 0 ? "8px 0 0" : 0, display: "flex", gap: 6, alignItems: isAr ? "flex-start" : "flex-start" }}>
+                              <p key={i} style={{ margin: i > 0 ? "8px 0 0" : 0, display: "flex", gap: 6 }}>
                                 <span style={{ color: gold, flexShrink: 0, marginTop: 2 }}>&#x2022;</span>
                                 <span>{c}</span>
                               </p>
@@ -276,7 +267,7 @@ export default function WarrantyPage() {
                             {group.qualityTips.length > 0 && (
                               <div style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid rgba(246,190,0,0.15)" }}>
                                 <p style={{ color: gold, fontWeight: 700, fontSize: 13, marginBottom: 8, fontFamily: fontDisplay }}>
-                                  {d("لضمان جودة المنتج:", "To ensure product quality:")}
+                                  {d("لضمان جودة المنتج :", "To ensure product quality:")}
                                 </p>
                                 {group.qualityTips.map((tip, i) => (
                                   <p key={i} style={{ margin: i > 0 ? "6px 0 0" : 0, display: "flex", gap: 6 }}>
@@ -308,7 +299,7 @@ export default function WarrantyPage() {
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.8 }}>
               <span style={{ color: gold }}>**</span>{" "}
               {d(
-                "قد يتطلب دفع رسوم لإكمال الصيانة وفقاً لتقييمنا.",
+                "قد يتطلب دفع رسوم لإكمال الصيانة وفقاً لتقاسيمنا.",
                 "Maintenance completion fees may apply based on our assessment."
               )}
             </p>
@@ -339,7 +330,6 @@ export default function WarrantyPage() {
             overflow: "hidden",
             backdropFilter: "blur(10px)",
           }}>
-            {/* Certificate header */}
             <div style={{
               background: "linear-gradient(135deg, rgba(246,190,0,0.1), rgba(246,190,0,0.03))",
               borderBottom: "1px solid rgba(246,190,0,0.15)",
@@ -357,7 +347,6 @@ export default function WarrantyPage() {
               </span>
             </div>
 
-            {/* Certificate fields */}
             <div style={{ padding: "8px 0" }}>
               {certificateFields.map((field, i) => (
                 <div key={i} style={{
