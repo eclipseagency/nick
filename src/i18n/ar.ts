@@ -12,6 +12,7 @@ export const ar: Dictionary = {
     gallery: "معرض الأعمال",
     book: "احجز",
     contact: "تواصل معنا",
+    warranty: "سياسة الضمان",
     shop: "احجز الآن",
   },
   hero: {
@@ -275,6 +276,12 @@ export const ar: Dictionary = {
     waName: "الاسم",
     waPhone: "الهاتف",
     waNotes: "ملاحظات",
+  },
+  warranty: {
+    badge: "سياسة الضمان",
+    heading1: "سياسة ",
+    heading2: "الضمان",
+    subtitle: "شكراً لثقتكم في NICK المطورة وفق أفضل التقنيات العالمية",
   },
   faq: {
     badge: "الأسئلة الشائعة",
