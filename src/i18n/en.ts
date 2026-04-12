@@ -133,7 +133,7 @@ export const en: Dictionary = {
     emailValue: "info@nick.sa",
   },
   footer: {
-    desc: "High Performance Automotive Film. Protecting vehicles across Saudi Arabia since 1999.",
+    desc: "Over 27 years of expertise in automotive protection technology. We deliver comprehensive solutions combining protection, insulation, and elegance with the highest quality standards.",
     servicesTitle: "Services",
     s1: "Paint Protection Film",
     s2: "Thermal Insulation",
