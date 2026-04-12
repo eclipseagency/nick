@@ -169,8 +169,8 @@ export default function Booking() {
     return m;
   }, [apiServices]);
 
-  // Use API prices when available, fallback to hardcoded
-  const sp = (id: string, fallback: { small: number; large: number }) => priceMap[id] || fallback;
+  // Hardcoded prices match the official price sheet — use them directly
+  const sp = (_id: string, prices: { small: number; large: number }) => prices;
 
   // Bilingual product details
   const d = (ar: string, en: string) => isAr ? ar : en;
