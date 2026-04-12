@@ -12,6 +12,7 @@ export const en: Dictionary = {
     gallery: "Gallery",
     book: "Book",
     contact: "Contact",
+    warranty: "Warranty",
     shop: "Book Now",
   },
   hero: {
@@ -275,6 +276,12 @@ export const en: Dictionary = {
     waName: "Name",
     waPhone: "Phone",
     waNotes: "Notes",
+  },
+  warranty: {
+    badge: "Warranty Policy",
+    heading1: "Warranty ",
+    heading2: "Policy",
+    subtitle: "Thank you for trusting NICK, developed with the best global technologies",
   },
   faq: {
     badge: "FAQ",

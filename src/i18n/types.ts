@@ -10,6 +10,7 @@ export interface Dictionary {
     gallery: string;
     book: string;
     contact: string;
+    warranty: string;
     shop: string;
   };
   hero: {
@@ -283,6 +284,12 @@ export interface Dictionary {
     waName: string;
     waPhone: string;
     waNotes: string;
+  };
+  warranty: {
+    badge: string;
+    heading1: string;
+    heading2: string;
+    subtitle: string;
   };
   faq: {
     badge: string;

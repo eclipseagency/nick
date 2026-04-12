@@ -1,0 +1,407 @@
+"use client";
+
+import { useReveal } from "@/hooks/useReveal";
+import { useLanguage } from "@/i18n/LanguageContext";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import PageHero from "@/components/PageHero";
+
+export default function WarrantyPage() {
+  const { t, locale } = useLanguage();
+  const ref = useReveal([locale]);
+  const isAr = locale === "ar";
+  const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
+  const d = (ar: string, en: string) => (isAr ? ar : en);
+
+  const gold = "#F6BE00";
+  const goldDark = "#D4A300";
+  const cellBg = "rgba(10,15,30,0.85)";
+  const headerBg = "linear-gradient(135deg, #F6BE00, #D4A300)";
+  const border = "1px solid rgba(246,190,0,0.25)";
+
+  const services = [
+    {
+      group: d("النانو سيراميك", "Nano Ceramic"),
+      items: [
+        { name: d("نانو سيراميك داخلي", "Interior Nano Ceramic"), warranty: d("١ سنة، ٣ سنوات، ٥ سنوات", "1, 3, or 5 years") },
+        { name: d("نانو سيراميك خارجي", "Exterior Nano Ceramic"), warranty: d("١ سنة، ٣ سنوات، ٥ سنوات", "1, 3, or 5 years") },
+        { name: d("نانو سيراميك زجاج كامل", "Full Glass Nano Ceramic"), warranty: d("سنة واحدة", "1 year") },
+      ],
+      maintenance: d(
+        "على حسب فاتورة المستهلك يتم تحديد مدة الضمان",
+        "Warranty duration determined based on the consumer invoice"
+      ),
+      conditions: [
+        d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام", "This warranty does not cover damage caused by accidents or misuse"),
+        d("لا يتحمل الضمان الناتج بسبب عدم استخدام مواد الميكروفايبر أو عدم اتباع الإرشادات الأساسية في العناية", "Warranty does not cover damage from not using microfiber materials or not following basic care instructions"),
+        d("يُعتبر الضمان لاغياً بشكل أساسي إذا تم الإخلال بالشروط المذكورة في استخدام مواد كيميائية سببت تلف وتشوه وإبطال بالصيانة الدورية", "Warranty is void if conditions are violated by using chemicals that cause damage or by failing to perform regular maintenance"),
+      ],
+      qualityTips: [
+        d("عدم غسيل السيارة لمدة لا تقل عن 7 أيام من التركيب", "Do not wash the car for at least 7 days after installation"),
+        d("إزالة فضلات الطيور في فترة لا تتجاوز 4 ساعات", "Remove bird droppings within 4 hours"),
+      ],
+    },
+    {
+      group: d("أفلام الحماية", "Protection Films (PPF)"),
+      items: [
+        { name: d("أفلام حماية N-75 SPRINT", "N-75 SPRINT Protection Film"), warranty: d("١٠ سنوات", "10 years") },
+        { name: d("أفلام حماية N-86 TURBO", "N-86 TURBO Protection Film"), warranty: d("١٠ سنوات", "10 years") },
+        { name: d("أفلام حماية N-95 ULTRA DRIVE", "N-95 ULTRA DRIVE Protection Film"), warranty: d("١٠ سنوات", "10 years") },
+        { name: d("أفلام حماية طلاء ملون", "Colored Paint Protection Film"), warranty: d("٥ سنوات", "5 years") },
+        { name: d("أفلام حماية الزجاج الأمامي", "Windshield Protection Film"), warranty: d("٣ سنوات", "3 years") },
+      ],
+      maintenance: d(
+        "نتعهد بتوفير مع كل خدمة حماية بتقنية المعالجة الذاتية كالتالي لمدة ٣ سنوات صيانة دورية ويمكن تكرارها حسب الحاجة والاقتضاء تشمل تشغيل سنوي.\nالفلم يخضع للمعالجة الذاتية في فترة ١٥ يوم بعد التركيب.",
+        "We provide periodic maintenance with every self-healing protection service for 3 years, repeatable as needed, including annual servicing.\nThe film undergoes self-healing within 15 days after installation."
+      ),
+      conditions: [
+        d("يسري هذا الضمان على التلف الناتج عن حصام الطريق والحركات الأخرى أو في حالة دفع الحصى البسيط أو المتوسط أو صدمات الطيور أو العوامل الكيميائية", "This warranty covers damage from road debris, minor to moderate gravel impact, bird strikes, or chemical factors"),
+        d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام والمواد الكيميائية الضارة", "This warranty does not cover damage from accidents, misuse, or harmful chemicals"),
+        d("تضمن شركة NICK منتج أفلام حماية الطلاء ضد عيوب المواد والصناعة بدون تكلفة إضافية عند تقديم الفاتورة", "NICK guarantees paint protection films against material and manufacturing defects at no extra cost upon presenting the invoice"),
+        d("ضمان أفلام الحماية لمدة ١٠ سنوات شاملة الفلم والتركيب المتقنة بتقنية المعالجة الذاتية", "Protection film warranty for 10 years covering film and professional installation with self-healing technology"),
+        d("فلم NICK يتعامل مع الاستخدام اليومي وحتى 400,000 كم أيهما أسبق", "NICK film handles daily use up to 400,000 km, whichever comes first"),
+      ],
+      qualityTips: [
+        d("عدم غسيل السيارة بعد التركيب لمدة لا تقل عن 7 أيام من التركيب", "Do not wash the car for at least 7 days after installation"),
+      ],
+    },
+    {
+      group: d("العازل الحراري", "Thermal Tint"),
+      items: [
+        { name: d("عازل حراري بلس", "Thermal Tint Plus"), warranty: d("١٠ سنوات", "10 years") },
+        { name: d("عازل حراري فليكس", "Thermal Tint Flex"), warranty: d("٨ سنوات", "8 years") },
+        { name: d("عازل حراري لايت", "Thermal Tint Lite"), warranty: d("٥ سنوات", "5 years") },
+      ],
+      maintenance: d(
+        "لا يتطلب صيانة دورية\nويمكن طلب الصيانة عند الحاجة",
+        "No periodic maintenance required\nMaintenance available upon request"
+      ),
+      conditions: [
+        d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام", "This warranty does not cover damage caused by accidents or misuse"),
+        d("تضمن شركة NICK أفلام العازل الحراري لنوافذ السيارات من عيوب التصنيع والتركيب", "NICK guarantees thermal tint films for car windows against manufacturing and installation defects"),
+      ],
+      qualityTips: [
+        d("يُراعى عدم تنظيف السيارة مباشرة بعد التركيب", "Avoid cleaning the car immediately after installation"),
+        d("عدم غسيل السيارة لمدة لا تقل عن 7 أيام من التركيب", "Do not wash the car for at least 7 days after installation"),
+      ],
+    },
+  ];
+
+  const certificateFields = [
+    { label: d("رقم الفاتورة", "Invoice Number"), label2: d("التاريخ", "Date") },
+    { label: d("اسم العميل", "Customer Name") },
+    { label: d("رقم الضمان", "Warranty Number") },
+    { label: d("الموديل / اللوحة", "Model / Plate") },
+    { label: d("رقم العداد", "Odometer Reading") },
+    { label: d("المركز مقدم الخدمة", "Service Center") },
+    { label: d("الخدمة الأساسية", "Primary Service") },
+    { label: d("خدمات إضافية", "Additional Services") },
+  ];
+
+  const thStyle: React.CSSProperties = {
+    background: headerBg,
+    color: "#0a0a0a",
+    padding: "14px 16px",
+    fontWeight: 700,
+    fontSize: 14,
+    fontFamily: fontDisplay,
+    textAlign: isAr ? "right" : "left",
+    border,
+    whiteSpace: "nowrap",
+  };
+
+  const tdStyle: React.CSSProperties = {
+    background: cellBg,
+    color: "rgba(255,255,255,0.85)",
+    padding: "12px 16px",
+    fontSize: 13,
+    lineHeight: 1.7,
+    border,
+    verticalAlign: "top",
+    textAlign: isAr ? "right" : "left",
+  };
+
+  const groupHeaderStyle: React.CSSProperties = {
+    background: "rgba(246,190,0,0.08)",
+    color: gold,
+    padding: "10px 16px",
+    fontWeight: 700,
+    fontSize: 14,
+    fontFamily: fontDisplay,
+    border,
+    textAlign: "center",
+  };
+
+  return (
+    <main ref={ref}>
+      <Navbar />
+      <PageHero
+        image="/images/DSC03261.jpg"
+        badge={t.warranty.badge}
+        heading1={t.warranty.heading1}
+        heading2={t.warranty.heading2}
+        subtitle={t.warranty.subtitle}
+      />
+
+      {/* Intro Section */}
+      <section style={{ padding: "clamp(48px, 8vw, 80px) 0 32px", background: "#050505" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", textAlign: "center" }} className="reveal">
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 12,
+            background: "rgba(246,190,0,0.06)",
+            border: "1px solid rgba(246,190,0,0.15)",
+            borderRadius: 50,
+            padding: "8px 24px",
+            marginBottom: 24,
+          }}>
+            {/* Shield icon */}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={gold} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="M9 12l2 2 4-4" />
+            </svg>
+            <span style={{ color: gold, fontSize: 13, fontWeight: 600, fontFamily: fontDisplay }}>{t.warranty.badge}</span>
+          </div>
+
+          <p style={{
+            fontSize: "clamp(16px, 2.5vw, 20px)",
+            color: "rgba(255,255,255,0.7)",
+            lineHeight: 1.8,
+            maxWidth: 800,
+            margin: "0 auto 8px",
+            fontFamily: fontDisplay,
+          }}>
+            {d(
+              "شكراً لثقتكم في NICK المطورة وفق أفضل التقنيات العالمية.",
+              "Thank you for trusting NICK, developed with the best global technologies."
+            )}
+          </p>
+          <p style={{
+            fontSize: "clamp(14px, 2vw, 17px)",
+            color: "rgba(255,255,255,0.5)",
+            lineHeight: 1.8,
+            maxWidth: 800,
+            margin: "0 auto 8px",
+          }}>
+            {d(
+              "تضمن NICK تقديم منتج خالي من عيوب التصنيع والتركيب ليصل إلى العميل بجودة عالية.",
+              "NICK guarantees a product free from manufacturing and installation defects, delivering the highest quality to our customers."
+            )}
+          </p>
+          <p style={{
+            fontSize: "clamp(14px, 2vw, 16px)",
+            color: gold,
+            fontWeight: 600,
+            fontFamily: fontDisplay,
+          }}>
+            {d("يسري هذا الضمان وفق الآتي:", "This warranty applies as follows:")}
+          </p>
+        </div>
+      </section>
+
+      {/* Warranty Table Section */}
+      <section style={{ padding: "24px 0 clamp(48px, 8vw, 80px)", background: "#050505" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 16px" }} className="reveal">
+          <div style={{ overflowX: "auto", borderRadius: 12, border: "1px solid rgba(246,190,0,0.2)" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 800, direction: isAr ? "rtl" : "ltr" }}>
+              <thead>
+                <tr>
+                  <th style={{ ...thStyle, width: "20%" }}>{d("الخدمات", "Services")}</th>
+                  <th style={{ ...thStyle, width: "12%" }}>{d("مدة الضمان", "Warranty Duration")}</th>
+                  <th style={{ ...thStyle, width: "30%" }}>{d("الصيانة", "Maintenance")}</th>
+                  <th style={{ ...thStyle, width: "38%" }}>{d("الشروط", "Terms & Conditions")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {services.map((group, gi) => {
+                  const rowCount = group.items.length;
+                  return group.items.map((item, ii) => (
+                    <tr key={`${gi}-${ii}`}>
+                      {ii === 0 && (
+                        <>
+                          {/* Group header spanning full width - rendered as first cell */}
+                        </>
+                      )}
+                      <td style={{
+                        ...tdStyle,
+                        fontWeight: 600,
+                        color: "#fff",
+                        ...(ii === 0 ? { borderTop: `2px solid ${goldDark}` } : {}),
+                      }}>
+                        {ii === 0 && (
+                          <div style={{
+                            color: gold,
+                            fontSize: 12,
+                            fontWeight: 700,
+                            fontFamily: fontDisplay,
+                            marginBottom: 6,
+                            paddingBottom: 6,
+                            borderBottom: "1px solid rgba(246,190,0,0.15)",
+                          }}>
+                            {group.group}
+                          </div>
+                        )}
+                        {item.name}
+                      </td>
+                      <td style={{
+                        ...tdStyle,
+                        textAlign: "center",
+                        fontWeight: 600,
+                        color: gold,
+                        ...(ii === 0 ? { borderTop: `2px solid ${goldDark}` } : {}),
+                      }}>
+                        {item.warranty}
+                      </td>
+                      {ii === 0 && (
+                        <>
+                          <td rowSpan={rowCount} style={{
+                            ...tdStyle,
+                            borderTop: `2px solid ${goldDark}`,
+                          }}>
+                            {group.maintenance.split("\n").map((line, i) => (
+                              <p key={i} style={{ margin: i > 0 ? "8px 0 0" : 0 }}>{line}</p>
+                            ))}
+                          </td>
+                          <td rowSpan={rowCount} style={{
+                            ...tdStyle,
+                            borderTop: `2px solid ${goldDark}`,
+                          }}>
+                            {group.conditions.map((c, i) => (
+                              <p key={i} style={{ margin: i > 0 ? "8px 0 0" : 0, display: "flex", gap: 6, alignItems: isAr ? "flex-start" : "flex-start" }}>
+                                <span style={{ color: gold, flexShrink: 0, marginTop: 2 }}>&#x2022;</span>
+                                <span>{c}</span>
+                              </p>
+                            ))}
+                            {group.qualityTips.length > 0 && (
+                              <div style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid rgba(246,190,0,0.15)" }}>
+                                <p style={{ color: gold, fontWeight: 700, fontSize: 13, marginBottom: 8, fontFamily: fontDisplay }}>
+                                  {d("لضمان جودة المنتج:", "To ensure product quality:")}
+                                </p>
+                                {group.qualityTips.map((tip, i) => (
+                                  <p key={i} style={{ margin: i > 0 ? "6px 0 0" : 0, display: "flex", gap: 6 }}>
+                                    <span style={{ color: gold, flexShrink: 0, marginTop: 2 }}>&#x2022;</span>
+                                    <span>{tip}</span>
+                                  </p>
+                                ))}
+                              </div>
+                            )}
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  ));
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Footer notes */}
+          <div style={{ marginTop: 20, padding: "0 8px" }}>
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.8, marginBottom: 6 }}>
+              <span style={{ color: gold }}>*</span>{" "}
+              {d(
+                "يجب على العميل الالتزام بجدول الصيانة كما هو محدد في الضمان. سيؤدي عدم إكمال الصيانة اللازمة إلى تحمل العميل المسؤولية عن التكلفة الكاملة للإصلاح وإعادة الخدمات.",
+                "The customer must adhere to the maintenance schedule as specified in the warranty. Failure to complete the required maintenance will result in the customer being responsible for the full cost of repairs and service restoration."
+              )}
+            </p>
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.8 }}>
+              <span style={{ color: gold }}>**</span>{" "}
+              {d(
+                "قد يتطلب دفع رسوم لإكمال الصيانة وفقاً لتقييمنا.",
+                "Maintenance completion fees may apply based on our assessment."
+              )}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Warranty Certificate Section */}
+      <section style={{ padding: "clamp(48px, 8vw, 80px) 0", background: "linear-gradient(180deg, #050505 0%, #0a0a0f 100%)" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px" }} className="reveal">
+          <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <h2 style={{
+              fontSize: "clamp(24px, 4vw, 36px)",
+              fontWeight: 700,
+              fontFamily: fontDisplay,
+              color: "#fff",
+              marginBottom: 8,
+            }}>
+              {d("شهادة الضمان", "Warranty Certificate")}
+            </h2>
+            <div style={{ width: 60, height: 3, background: gold, margin: "0 auto", borderRadius: 2 }} />
+          </div>
+
+          <div style={{
+            background: "rgba(10,15,30,0.7)",
+            border: "1px solid rgba(246,190,0,0.2)",
+            borderRadius: 16,
+            overflow: "hidden",
+            backdropFilter: "blur(10px)",
+          }}>
+            {/* Certificate header */}
+            <div style={{
+              background: "linear-gradient(135deg, rgba(246,190,0,0.1), rgba(246,190,0,0.03))",
+              borderBottom: "1px solid rgba(246,190,0,0.15)",
+              padding: "20px 28px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 12,
+            }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={gold} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <span style={{ color: gold, fontWeight: 700, fontSize: 16, fontFamily: fontDisplay }}>
+                NICK {d("سياسة الضمان", "Warranty Policy")}
+              </span>
+            </div>
+
+            {/* Certificate fields */}
+            <div style={{ padding: "8px 0" }}>
+              {certificateFields.map((field, i) => (
+                <div key={i} style={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "14px 28px",
+                  borderBottom: i < certificateFields.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                  direction: isAr ? "rtl" : "ltr",
+                }}>
+                  <div style={{
+                    minWidth: 180,
+                    color: gold,
+                    fontWeight: 600,
+                    fontSize: 14,
+                    fontFamily: fontDisplay,
+                  }}>
+                    {field.label}
+                  </div>
+                  <div style={{
+                    flex: 1,
+                    height: 1,
+                    borderBottom: "1px dashed rgba(255,255,255,0.15)",
+                    margin: "0 12px",
+                  }} />
+                  {field.label2 && (
+                    <div style={{
+                      color: gold,
+                      fontWeight: 600,
+                      fontSize: 14,
+                      fontFamily: fontDisplay,
+                      minWidth: 80,
+                      textAlign: isAr ? "left" : "right",
+                    }}>
+                      {field.label2}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </main>
+  );
+}

@@ -175,7 +175,7 @@ export default function Booking() {
   // Bilingual product details
   const d = (ar: string, en: string) => isAr ? ar : en;
   const ppfBase = [d("قص الكتروني", "Electronic precision cutting"), d("معالجة ذاتية", "Self-healing technology"), d("مصمم ليكون مقاومًا للغبار", "Designed to be dust-resistant"), d("مصمم خصيصًا لأجواء المملكة العربية السعودية", "Designed for Saudi Arabia's climate")];
-  const tintSideDesc = [d("أفلام نانو سيراميك للنوافذ تحجب ٩٩٪ من الأشعة فوق البنفسجية وتقلل حرارة المقصورة", "Nano ceramic window films that block 99% of UV rays and reduce cabin heat"), d("عازل بتقنية النانو سيراميك المتطورة", "Advanced nano ceramic insulation technology"), d("العازل يشمل الزجاج الجانبي والخلفي فقط", "Covers side and rear windows only")];
+  const tintSideDesc = [d("أفلام نانو سيراميك للنوافذ تحجب ٩٩٪ من الأشعة فوق البنفسجية وتقلل حرارة المقصورة", "Nano ceramic window films that block 99% of UV rays and reduce cabin heat")];
 
   const svcs: Svc[] = [
     // PPF — order per price sheet: SPRINT, TURBO, Matte, Wrapping, Color, Front, Partial, Interior
