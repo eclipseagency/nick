@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/_next/", "/admin", "/login"],
       },
     ],
-    sitemap: "https://nick-fawn.vercel.app/sitemap.xml",
+    sitemap: "https://nick.sa/sitemap.xml",
   };
 }

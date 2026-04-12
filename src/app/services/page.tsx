@@ -61,7 +61,7 @@ export default function ServicesPage() {
     },
   ];
 
-  const siteUrl = "https://nick-fawn.vercel.app";
+  const siteUrl = "https://nick.sa";
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [

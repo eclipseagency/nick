@@ -278,10 +278,10 @@ export const en: Dictionary = {
     waNotes: "Notes",
   },
   warranty: {
-    badge: "Warranty Policy",
-    heading1: "Warranty ",
+    badge: "Official Warranty Policy",
+    heading1: "Warranty",
     heading2: "Policy",
-    subtitle: "Thank you for trusting NICK, developed with the best global technologies",
+    subtitle: "Comprehensive protection backed by NICK's industry-leading warranty coverage.",
   },
   faq: {
     badge: "FAQ",

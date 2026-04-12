@@ -22,7 +22,7 @@ const tajawal = Tajawal({
   weight: ["400", "500", "700", "800"],
 });
 
-const siteUrl = "https://nick-fawn.vercel.app";
+const siteUrl = "https://nick.sa";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     description: "Premium automotive protection films, nano ceramic coating, thermal insulation, and color wrapping. 27 years of excellence in Saudi Arabia.",
     url: siteUrl,
     siteName: "NICK",
-    images: [{ url: "/images/DSC03279.jpg", width: 1200, height: 630, alt: "NICK Automotive Protection" }],
+    images: [{ url: "https://nick.sa/images/DSC03279.jpg", width: 1200, height: 630, alt: "NICK Automotive Protection" }],
     locale: "en_US",
     alternateLocale: "ar_SA",
     type: "website",
@@ -53,14 +53,18 @@ export const metadata: Metadata = {
     site: "@nick__saudi",
     title: "NICK | High Performance Automotive Film",
     description: "Premium automotive protection films. 27 years of excellence in Saudi Arabia.",
-    images: ["/images/DSC03279.jpg"],
+    images: ["https://nick.sa/images/DSC03279.jpg"],
   },
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
   },
-  verification: {},
+  verification: {
+    other: {
+      "facebook-domain-verification": "5q1b8gmt7dc27631jq9lsyvoc7mp9y",
+    },
+  },
 };
 
 export default function RootLayout({
@@ -76,6 +80,20 @@ export default function RootLayout({
             __html: `(function(){try{var p=new URLSearchParams(location.search).get("lang");var l=p==="ar"||p==="en"?p:localStorage.getItem("nick-lang");if(l==="ar"){document.documentElement.lang="ar";document.documentElement.dir="rtl"}}catch(e){}})();`,
           }}
         />
+        {/* Meta Pixel */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1507067291067879');fbq('track','PageView');`,
+          }}
+        />
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: "none" }}
+            src="https://www.facebook.com/tr?id=1507067291067879&ev=PageView&noscript=1"
+          />
+        </noscript>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

@@ -124,13 +124,13 @@ export default function AboutPage() {
     "@type": "AboutPage",
     name: "About NICK",
     description: "27 years of automotive protection excellence in Saudi Arabia. Manufacturer and installer since 1999.",
-    url: "https://nick-fawn.vercel.app/about",
-    mainEntity: { "@id": "https://nick-fawn.vercel.app/#business" },
+    url: "https://nick.sa/about",
+    mainEntity: { "@id": "https://nick.sa/#business" },
     breadcrumb: {
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: "https://nick-fawn.vercel.app" },
-        { "@type": "ListItem", position: 2, name: "About", item: "https://nick-fawn.vercel.app/about" },
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://nick.sa" },
+        { "@type": "ListItem", position: 2, name: "About", item: "https://nick.sa/about" },
       ],
     },
   };

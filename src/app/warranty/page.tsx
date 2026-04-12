@@ -14,10 +14,8 @@ export default function WarrantyPage() {
   const d = (ar: string, en: string) => (isAr ? ar : en);
 
   const gold = "#F6BE00";
-  const goldDark = "#D4A300";
   const cellBg = "rgba(10,15,30,0.85)";
   const headerBg = "linear-gradient(135deg, #F6BE00, #D4A300)";
-  const border = "1px solid rgba(246,190,0,0.25)";
 
   const services = [
     {
@@ -95,40 +93,6 @@ export default function WarrantyPage() {
     },
   ];
 
-  const certificateFields = [
-    { label: d("رقم الفاتورة", "Invoice Number"), label2: d("التاريخ", "Date") },
-    { label: d("اسم العميل", "Customer Name") },
-    { label: d("رقم الضمان", "Warranty Number") },
-    { label: d("الموديل / اللوحة", "Model / Plate") },
-    { label: d("رقم العداد", "Odometer Reading") },
-    { label: d("المركز مقدم الخدمة", "Service Center") },
-    { label: d("الخدمة الأساسية", "Primary Service") },
-    { label: d("خدمات إضافية", "Additional Services") },
-  ];
-
-  const thStyle: React.CSSProperties = {
-    background: headerBg,
-    color: "#0a0a0a",
-    padding: "14px 16px",
-    fontWeight: 700,
-    fontSize: 14,
-    fontFamily: fontDisplay,
-    textAlign: isAr ? "right" : "left",
-    border,
-    whiteSpace: "nowrap",
-  };
-
-  const tdStyle: React.CSSProperties = {
-    background: cellBg,
-    color: "rgba(255,255,255,0.85)",
-    padding: "12px 16px",
-    fontSize: 13,
-    lineHeight: 1.7,
-    border,
-    verticalAlign: "top",
-    textAlign: isAr ? "right" : "left",
-  };
-
   return (
     <main ref={ref}>
       <Navbar />
@@ -196,95 +160,115 @@ export default function WarrantyPage() {
         </div>
       </section>
 
-      {/* Warranty Table Section */}
+      {/* Warranty Cards Section */}
       <section style={{ padding: "24px 0 clamp(48px, 8vw, 80px)", background: "#050505" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 16px" }} className="reveal">
-          <div style={{ overflowX: "auto", borderRadius: 12, border: "1px solid rgba(246,190,0,0.2)" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 800, direction: isAr ? "rtl" : "ltr" }}>
-              <thead>
-                <tr>
-                  <th style={{ ...thStyle, width: "20%" }}>{d("الخدمات", "Services")}</th>
-                  <th style={{ ...thStyle, width: "12%" }}>{d("مدة الضمان", "Warranty Duration")}</th>
-                  <th style={{ ...thStyle, width: "30%" }}>{d("الصيانة", "Maintenance")}</th>
-                  <th style={{ ...thStyle, width: "38%" }}>{d("الشروط", "Terms & Conditions")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {services.map((group, gi) => {
-                  const rowCount = group.items.length;
-                  return group.items.map((item, ii) => (
-                    <tr key={`${gi}-${ii}`}>
-                      <td style={{
-                        ...tdStyle,
-                        fontWeight: 600,
-                        color: "#fff",
-                        ...(ii === 0 ? { borderTop: `2px solid ${goldDark}` } : {}),
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 16px", direction: isAr ? "rtl" : "ltr" }} className="reveal">
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            {services.map((group, gi) => (
+              <div key={gi} style={{
+                background: cellBg,
+                border: "1px solid rgba(246,190,0,0.2)",
+                borderRadius: 16,
+                overflow: "hidden",
+              }}>
+                {/* Group Header */}
+                <div style={{
+                  background: headerBg,
+                  padding: "14px 20px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                  <span style={{ color: "#0a0a0a", fontWeight: 700, fontSize: "clamp(15px, 3vw, 18px)", fontFamily: fontDisplay }}>
+                    {group.group}
+                  </span>
+                </div>
+
+                <div style={{ padding: "16px 20px" }}>
+                  {/* Services List */}
+                  <div style={{ marginBottom: 20 }}>
+                    {group.items.map((item, ii) => (
+                      <div key={ii} style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "10px 0",
+                        borderBottom: ii < group.items.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                        gap: 12,
                       }}>
-                        {ii === 0 && (
-                          <div style={{
-                            color: gold,
-                            fontSize: 12,
-                            fontWeight: 700,
-                            fontFamily: fontDisplay,
-                            marginBottom: 6,
-                            paddingBottom: 6,
-                            borderBottom: "1px solid rgba(246,190,0,0.15)",
-                          }}>
-                            {group.group}
-                          </div>
-                        )}
-                        {item.name}
-                      </td>
-                      <td style={{
-                        ...tdStyle,
-                        textAlign: "center",
-                        fontWeight: 600,
-                        color: gold,
-                        ...(ii === 0 ? { borderTop: `2px solid ${goldDark}` } : {}),
-                      }}>
-                        {item.warranty}
-                      </td>
-                      {ii === 0 && (
-                        <>
-                          <td rowSpan={rowCount} style={{
-                            ...tdStyle,
-                            borderTop: `2px solid ${goldDark}`,
-                          }}>
-                            {group.maintenance.split("\n").map((line, i) => (
-                              <p key={i} style={{ margin: i > 0 ? "8px 0 0" : 0 }}>{line}</p>
-                            ))}
-                          </td>
-                          <td rowSpan={rowCount} style={{
-                            ...tdStyle,
-                            borderTop: `2px solid ${goldDark}`,
-                          }}>
-                            {group.conditions.map((c, i) => (
-                              <p key={i} style={{ margin: i > 0 ? "8px 0 0" : 0, display: "flex", gap: 6 }}>
-                                <span style={{ color: gold, flexShrink: 0, marginTop: 2 }}>&#x2022;</span>
-                                <span>{c}</span>
-                              </p>
-                            ))}
-                            {group.qualityTips.length > 0 && (
-                              <div style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid rgba(246,190,0,0.15)" }}>
-                                <p style={{ color: gold, fontWeight: 700, fontSize: 13, marginBottom: 8, fontFamily: fontDisplay }}>
-                                  {d("لضمان جودة المنتج :", "To ensure product quality:")}
-                                </p>
-                                {group.qualityTips.map((tip, i) => (
-                                  <p key={i} style={{ margin: i > 0 ? "6px 0 0" : 0, display: "flex", gap: 6 }}>
-                                    <span style={{ color: gold, flexShrink: 0, marginTop: 2 }}>&#x2022;</span>
-                                    <span>{tip}</span>
-                                  </p>
-                                ))}
-                              </div>
-                            )}
-                          </td>
-                        </>
-                      )}
-                    </tr>
-                  ));
-                })}
-              </tbody>
-            </table>
+                        <span style={{ color: "#fff", fontWeight: 600, fontSize: "clamp(13px, 2.5vw, 14px)" }}>{item.name}</span>
+                        <span style={{
+                          color: gold,
+                          fontWeight: 700,
+                          fontSize: "clamp(12px, 2.5vw, 14px)",
+                          fontFamily: fontDisplay,
+                          whiteSpace: "nowrap",
+                          background: "rgba(246,190,0,0.08)",
+                          padding: "4px 10px",
+                          borderRadius: 20,
+                          border: "1px solid rgba(246,190,0,0.15)",
+                          flexShrink: 0,
+                        }}>
+                          {item.warranty}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Maintenance */}
+                  <div style={{
+                    background: "rgba(246,190,0,0.04)",
+                    border: "1px solid rgba(246,190,0,0.12)",
+                    borderRadius: 12,
+                    padding: "14px 16px",
+                    marginBottom: 16,
+                  }}>
+                    <p style={{ color: gold, fontWeight: 700, fontSize: 13, marginBottom: 8, fontFamily: fontDisplay }}>
+                      {d("الصيانة", "Maintenance")}
+                    </p>
+                    {group.maintenance.split("\n").map((line, i) => (
+                      <p key={i} style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, lineHeight: 1.7, margin: i > 0 ? "6px 0 0" : 0 }}>{line}</p>
+                    ))}
+                  </div>
+
+                  {/* Conditions */}
+                  <div style={{ marginBottom: group.qualityTips.length > 0 ? 16 : 0 }}>
+                    <p style={{ color: gold, fontWeight: 700, fontSize: 13, marginBottom: 10, fontFamily: fontDisplay }}>
+                      {d("الشروط والأحكام", "Terms & Conditions")}
+                    </p>
+                    {group.conditions.map((c, i) => (
+                      <p key={i} style={{ color: "rgba(255,255,255,0.65)", fontSize: 13, lineHeight: 1.7, margin: i > 0 ? "8px 0 0" : 0, display: "flex", gap: 8 }}>
+                        <span style={{ color: gold, flexShrink: 0 }}>&#x2022;</span>
+                        <span>{c}</span>
+                      </p>
+                    ))}
+                  </div>
+
+                  {/* Quality Tips */}
+                  {group.qualityTips.length > 0 && (
+                    <div style={{
+                      background: "rgba(246,190,0,0.04)",
+                      border: "1px solid rgba(246,190,0,0.12)",
+                      borderRadius: 12,
+                      padding: "14px 16px",
+                    }}>
+                      <p style={{ color: gold, fontWeight: 700, fontSize: 13, marginBottom: 8, fontFamily: fontDisplay }}>
+                        {d("لضمان جودة المنتج :", "To ensure product quality:")}
+                      </p>
+                      {group.qualityTips.map((tip, i) => (
+                        <p key={i} style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, lineHeight: 1.7, margin: i > 0 ? "6px 0 0" : 0, display: "flex", gap: 8 }}>
+                          <span style={{ color: gold, flexShrink: 0 }}>&#x2022;</span>
+                          <span>{tip}</span>
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Footer notes */}
@@ -303,89 +287,6 @@ export default function WarrantyPage() {
                 "Maintenance completion fees may apply based on our assessment."
               )}
             </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Warranty Certificate Section */}
-      <section style={{ padding: "clamp(48px, 8vw, 80px) 0", background: "linear-gradient(180deg, #050505 0%, #0a0a0f 100%)" }}>
-        <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px" }} className="reveal">
-          <div style={{ textAlign: "center", marginBottom: 40 }}>
-            <h2 style={{
-              fontSize: "clamp(24px, 4vw, 36px)",
-              fontWeight: 700,
-              fontFamily: fontDisplay,
-              color: "#fff",
-              marginBottom: 8,
-            }}>
-              {d("شهادة الضمان", "Warranty Certificate")}
-            </h2>
-            <div style={{ width: 60, height: 3, background: gold, margin: "0 auto", borderRadius: 2 }} />
-          </div>
-
-          <div style={{
-            background: "rgba(10,15,30,0.7)",
-            border: "1px solid rgba(246,190,0,0.2)",
-            borderRadius: 16,
-            overflow: "hidden",
-            backdropFilter: "blur(10px)",
-          }}>
-            <div style={{
-              background: "linear-gradient(135deg, rgba(246,190,0,0.1), rgba(246,190,0,0.03))",
-              borderBottom: "1px solid rgba(246,190,0,0.15)",
-              padding: "20px 28px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 12,
-            }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={gold} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-              <span style={{ color: gold, fontWeight: 700, fontSize: 16, fontFamily: fontDisplay }}>
-                NICK {d("سياسة الضمان", "Warranty Policy")}
-              </span>
-            </div>
-
-            <div style={{ padding: "8px 0" }}>
-              {certificateFields.map((field, i) => (
-                <div key={i} style={{
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "14px 28px",
-                  borderBottom: i < certificateFields.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
-                  direction: isAr ? "rtl" : "ltr",
-                }}>
-                  <div style={{
-                    minWidth: 180,
-                    color: gold,
-                    fontWeight: 600,
-                    fontSize: 14,
-                    fontFamily: fontDisplay,
-                  }}>
-                    {field.label}
-                  </div>
-                  <div style={{
-                    flex: 1,
-                    height: 1,
-                    borderBottom: "1px dashed rgba(255,255,255,0.15)",
-                    margin: "0 12px",
-                  }} />
-                  {field.label2 && (
-                    <div style={{
-                      color: gold,
-                      fontWeight: 600,
-                      fontSize: 14,
-                      fontFamily: fontDisplay,
-                      minWidth: 80,
-                      textAlign: isAr ? "left" : "right",
-                    }}>
-                      {field.label2}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>

@@ -226,7 +226,54 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // ─── 4. Webhook notification (fire-and-forget) ─────────────────────
+    // ─── 4. Email notification (fire-and-forget) ────────────────────────
+    const notifyEmails = ["s.mohammed@nick.sa", "m.halawa@nick.sa"];
+    const serviceList = svcIds.join(", ") || "—";
+    const addonList = Object.values(addonMap).flat().join(", ") || "—";
+    const emailSubject = `New Booking ${confirmation_number} — ${customer_name}`;
+    const emailBody = [
+      `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#0a0a0a;color:#f5f5f5;border-radius:12px;">`,
+      `<div style="text-align:center;margin-bottom:20px;"><img src="https://nick.sa/images/nick-logo.png" alt="NICK" width="80" /></div>`,
+      `<h2 style="color:#F6BE00;margin:0 0 16px;">New Booking Received</h2>`,
+      `<table style="width:100%;border-collapse:collapse;font-size:14px;">`,
+      `<tr><td style="padding:8px 0;color:#999;">Confirmation</td><td style="padding:8px 0;font-weight:bold;color:#F6BE00;">${confirmation_number}</td></tr>`,
+      `<tr><td style="padding:8px 0;color:#999;">Customer</td><td style="padding:8px 0;">${customer_name}</td></tr>`,
+      `<tr><td style="padding:8px 0;color:#999;">Phone</td><td style="padding:8px 0;"><a href="tel:${customer_phone}" style="color:#F6BE00;">${customer_phone}</a></td></tr>`,
+      `<tr><td style="padding:8px 0;color:#999;">Car</td><td style="padding:8px 0;">${car_make || "—"} ${car_year || ""} ${car_color || ""} (${car_size})</td></tr>`,
+      `<tr><td style="padding:8px 0;color:#999;">Preferred Date</td><td style="padding:8px 0;">${preferred_date || "—"}</td></tr>`,
+      `<tr><td style="padding:8px 0;color:#999;">Services</td><td style="padding:8px 0;">${serviceList}</td></tr>`,
+      `<tr><td style="padding:8px 0;color:#999;">Addons</td><td style="padding:8px 0;">${addonList}</td></tr>`,
+      `<tr><td style="padding:8px 0;color:#999;">Total</td><td style="padding:8px 0;font-weight:bold;font-size:18px;color:#F6BE00;">${total?.toLocaleString()} SAR</td></tr>`,
+      `<tr><td style="padding:8px 0;color:#999;">Payment</td><td style="padding:8px 0;">${payment_method}</td></tr>`,
+      customer_notes ? `<tr><td style="padding:8px 0;color:#999;">Notes</td><td style="padding:8px 0;">${customer_notes}</td></tr>` : "",
+      `</table>`,
+      `<p style="margin-top:20px;font-size:12px;color:#666;">Sent from nick.sa booking system</p>`,
+      `</div>`,
+    ].join("");
+
+    // Send via Resend API (Vercel-friendly, no SMTP needed)
+    const resendKey = process.env.RESEND_API_KEY;
+    if (resendKey) {
+      fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${resendKey}`,
+        },
+        body: JSON.stringify({
+          from: "NICK Bookings <bookings@nick.sa>",
+          to: notifyEmails,
+          subject: emailSubject,
+          html: emailBody,
+        }),
+      }).catch((err) => {
+        console.error("Email notification failed:", err.message);
+      });
+    } else {
+      console.log(`[BOOKING] No RESEND_API_KEY set — skipping email notification for ${confirmation_number}`);
+    }
+
+    // ─── 5. Webhook notification (fire-and-forget) ─────────────────────
     const webhookUrl = process.env.BOOKING_WEBHOOK_URL;
     if (webhookUrl) {
       fetch(webhookUrl, {

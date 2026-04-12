@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const siteUrl = "https://nick-fawn.vercel.app";
+const siteUrl = "https://nick.sa";
 
 export const metadata: Metadata = {
   title: "Contact Us — Visit Our Showroom in Riyadh",
@@ -14,7 +14,14 @@ export const metadata: Metadata = {
     title: "Contact NICK — Riyadh Showroom",
     description: "Visit our showroom in Al-Nargis District, Riyadh. Call +966 54 300 0055 or WhatsApp us.",
     url: `${siteUrl}/contact`,
-    images: [{ url: "/images/DSC03261.jpg", width: 1200, height: 630, alt: "NICK showroom" }],
+    siteName: "NICK",
+    images: [{ url: `${siteUrl}/images/DSC03261.jpg`, width: 1200, height: 630, alt: "NICK showroom" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact NICK — Riyadh Showroom",
+    description: "Visit our showroom in Al-Nargis, Riyadh. Call +966 54 300 0055 or WhatsApp us.",
+    images: [`${siteUrl}/images/DSC03261.jpg`],
   },
 };
 

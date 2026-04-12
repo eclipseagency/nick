@@ -6,14 +6,20 @@ import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useEffect } from "react";
 
 export default function BookingPage() {
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window as any).fbq) {
+      (window as any).fbq("track", "ViewContent", { content_name: "Booking Page", content_category: "Automotive Protection" });
+    }
+  }, []);
   const { t, locale, dir } = useLanguage();
   const ref = useReveal([locale]);
   const isAr = locale === "ar";
   const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
 
-  const siteUrl = "https://nick-fawn.vercel.app";
+  const siteUrl = "https://nick.sa";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",

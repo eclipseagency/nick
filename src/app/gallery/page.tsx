@@ -103,13 +103,13 @@ export default function GalleryPage() {
     "@type": "ImageGallery",
     name: "NICK Work Gallery",
     description: "Portfolio of automotive protection work including PPF, ceramic coating, window tinting, and color wrapping.",
-    url: "https://nick-fawn.vercel.app/gallery",
-    publisher: { "@id": "https://nick-fawn.vercel.app/#business" },
+    url: "https://nick.sa/gallery",
+    publisher: { "@id": "https://nick.sa/#business" },
     breadcrumb: {
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: "https://nick-fawn.vercel.app" },
-        { "@type": "ListItem", position: 2, name: "Gallery", item: "https://nick-fawn.vercel.app/gallery" },
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://nick.sa" },
+        { "@type": "ListItem", position: 2, name: "Gallery", item: "https://nick.sa/gallery" },
       ],
     },
   };

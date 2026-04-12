@@ -304,6 +304,10 @@ export default function Booking() {
       if (data.confirmation_number) {
         setConfirmationNumber(data.confirmation_number);
       }
+      if (typeof window !== "undefined" && (window as any).fbq) {
+        (window as any).fbq("track", "Lead", { content_name: "Booking", currency: "SAR", value: total });
+        (window as any).fbq("track", "Schedule");
+      }
       setOrderSent(true);
     } catch (e) {
       console.error("Failed to save booking:", e);

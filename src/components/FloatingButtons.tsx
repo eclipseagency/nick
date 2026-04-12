@@ -19,6 +19,7 @@ export default function FloatingButtons() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="WhatsApp"
+        onClick={() => { if (typeof window !== "undefined" && (window as any).fbq) (window as any).fbq("track", "Contact"); }}
         style={{
           position: "fixed", bottom: 24, right: 24, zIndex: 40,
           width: 56, height: 56, borderRadius: "50%",

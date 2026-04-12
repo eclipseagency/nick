@@ -47,13 +47,13 @@ export default function ContactPage() {
     "@type": "ContactPage",
     name: "Contact NICK",
     description: "Get in touch with NICK for automotive protection services in Riyadh, Saudi Arabia.",
-    url: "https://nick-fawn.vercel.app/contact",
-    mainEntity: { "@id": "https://nick-fawn.vercel.app/#business" },
+    url: "https://nick.sa/contact",
+    mainEntity: { "@id": "https://nick.sa/#business" },
     breadcrumb: {
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: "https://nick-fawn.vercel.app" },
-        { "@type": "ListItem", position: 2, name: "Contact", item: "https://nick-fawn.vercel.app/contact" },
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://nick.sa" },
+        { "@type": "ListItem", position: 2, name: "Contact", item: "https://nick.sa/contact" },
       ],
     },
   };

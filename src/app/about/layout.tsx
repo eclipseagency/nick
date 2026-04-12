@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const siteUrl = "https://nick-fawn.vercel.app";
+const siteUrl = "https://nick.sa";
 
 export const metadata: Metadata = {
   title: "About Us — 27 Years of Automotive Protection Excellence",
@@ -14,7 +14,14 @@ export const metadata: Metadata = {
     title: "About NICK — 27 Years of Automotive Protection",
     description: "Own manufacturing, 50,000+ cars protected, up to 10-year warranty. Discover the NICK story.",
     url: `${siteUrl}/about`,
-    images: [{ url: "/images/DSC03261.jpg", width: 1200, height: 630, alt: "NICK workshop and team" }],
+    siteName: "NICK",
+    images: [{ url: `${siteUrl}/images/DSC03261.jpg`, width: 1200, height: 630, alt: "NICK workshop and team" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About NICK — 27 Years of Automotive Protection",
+    description: "Own manufacturing, 50,000+ cars protected, up to 10-year warranty.",
+    images: [`${siteUrl}/images/DSC03261.jpg`],
   },
 };
 

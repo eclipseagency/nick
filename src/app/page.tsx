@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import CursorGlow from "@/components/CursorGlow";
 import Marquee from "@/components/Marquee";
 
-const siteUrl = "https://nick-fawn.vercel.app";
+const siteUrl = "https://nick.sa";
 
 export default function Home() {
   return (
