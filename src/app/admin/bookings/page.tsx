@@ -79,6 +79,17 @@ function formatDate(d: string) {
   });
 }
 
+function statusBadgeClasses(status: string): string {
+  const colors: Record<string, string> = {
+    pending: "bg-amber-500/10 text-amber-500",
+    confirmed: "bg-blue-500/10 text-blue-500",
+    in_progress: "bg-orange-500/10 text-orange-500",
+    completed: "bg-green-500/10 text-green-500",
+    cancelled: "bg-red-500/10 text-red-500",
+  };
+  return `inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold capitalize whitespace-nowrap ${colors[status] || "bg-white/10 text-white/50"}`;
+}
+
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [services, setServices] = useState<Service[]>([]);
@@ -226,42 +237,170 @@ export default function BookingsPage() {
 
   if (loading) {
     return (
-      <div style={{ color: "rgba(255,255,255,0.4)", padding: 40, textAlign: "center" }}>
-        Loading bookings...
+      <div className="space-y-5">
+        <div className="admin-skeleton h-8 w-40 rounded-lg" />
+        <div className="flex flex-wrap gap-2">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="admin-skeleton h-9 w-24 rounded-full" />
+          ))}
+        </div>
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="admin-skeleton h-20 rounded-xl" />
+        ))}
+      </div>
+    );
+  }
+
+  /* ── Expanded detail panel (shared between desktop and mobile) ── */
+  function ExpandedDetails({ b }: { b: Booking }) {
+    return (
+      <div className="px-4 pb-4 border-t border-white/[0.06]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 min-[900px]:grid-cols-3 gap-4 pt-4">
+          {/* Services */}
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-white/35 mb-1.5">Services</div>
+            {b.service_ids?.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {b.service_ids.map((sid) => (
+                  <span key={sid} className="bg-white/5 rounded-md px-2.5 py-1 text-xs text-white/70">
+                    {getServiceName(sid)}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span className="text-sm text-white/30">None</span>
+            )}
+          </div>
+
+          {/* Package */}
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-white/35 mb-1.5">Package</div>
+            <span className={`text-sm ${b.package_id ? "text-white" : "text-white/30"}`}>
+              {b.package_id ? getPackageName(b.package_id) : "None"}
+            </span>
+          </div>
+
+          {/* Car Details */}
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-white/35 mb-1.5">Car Details</div>
+            <div className="text-sm text-white/60">
+              {b.car_make || "—"}
+              {b.car_year && <span> &middot; {b.car_year}</span>}
+              {b.car_color && <span> &middot; {b.car_color}</span>}
+            </div>
+            {b.preferred_date && (
+              <div className="text-xs text-gold mt-1">
+                Preferred: {new Date(b.preferred_date + "T00:00:00").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+              </div>
+            )}
+          </div>
+
+          {/* Addons */}
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-white/35 mb-1.5">Add-ons</div>
+            <div className="text-sm text-white/60">
+              {(() => {
+                const raw = b.addon_ids;
+                const parsed: Record<string, unknown> | null = typeof raw === "string" ? (() => { try { return JSON.parse(raw); } catch { return null; } })() : raw;
+                if (!parsed || typeof parsed !== "object" || Object.keys(parsed).length === 0) return "None";
+                return Object.entries(parsed).map(([svcId, addonIds]) => (
+                  <div key={svcId} className="mb-1">
+                    <span className="text-gold text-[11px]">{SERVICE_NAMES[svcId] || svcId}:</span>{" "}
+                    {Array.isArray(addonIds) ? addonIds.map(a => ADDON_NAMES[a as string] || a).join(", ") : String(addonIds)}
+                  </div>
+                ));
+              })()}
+            </div>
+          </div>
+
+          {/* Pricing */}
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-white/35 mb-1.5">Pricing</div>
+            <div className="text-sm text-white/60">Subtotal: {(b.subtotal || 0).toLocaleString()} SAR</div>
+            {b.discount > 0 && (
+              <div className="text-sm text-green-500">Discount: -{(b.discount || 0).toLocaleString()} SAR</div>
+            )}
+            <div className="text-sm font-bold text-white mt-1">Total: {(b.total || 0).toLocaleString()} SAR</div>
+          </div>
+
+          {/* Notes */}
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-white/35 mb-1.5">Notes</div>
+            <span className={`text-sm ${b.customer_notes ? "text-white/60" : "text-white/30"}`}>
+              {b.customer_notes || "None"}
+            </span>
+          </div>
+
+          {/* Payment */}
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-white/35 mb-1.5">Payment</div>
+            <span className="text-sm text-white/60 capitalize">{b.payment_method}</span>
+            <div className="text-[11px] text-white/30 mt-1">Locale: {b.locale?.toUpperCase()}</div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-3 flex-wrap mt-4 pt-4 border-t border-white/[0.06]">
+          <a
+            href={`tel:${b.customer_phone}`}
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-lg text-blue-500 text-sm font-medium no-underline"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
+            Call
+          </a>
+          <a
+            href={`https://wa.me/${b.customer_phone.replace(/[^0-9]/g, "")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-green-500/10 border border-green-500/30 rounded-lg text-green-500 text-sm font-medium no-underline"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+            </svg>
+            WhatsApp
+          </a>
+          <div className="flex-1" />
+          <label className="text-xs text-white/40">Status:</label>
+          <select
+            value={b.status}
+            disabled={updatingId === b.id}
+            onChange={(e) => updateStatus(b.id, e.target.value)}
+            className="px-3 py-2 bg-[#050505] border border-white/10 rounded-lg text-white text-sm outline-none cursor-pointer"
+          >
+            {STATUSES.filter((s) => s !== "all").map((s) => (
+              <option key={s} value={s}>
+                {s.replace("_", " ")}
+              </option>
+            ))}
+          </select>
+          {updatingId === b.id && (
+            <span className="text-xs text-white/30">Saving...</span>
+          )}
+          <button
+            onClick={() => deleteBooking(b.id)}
+            disabled={deletingId === b.id}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-red-500/[0.08] border border-red-500/20 rounded-lg text-red-500 text-xs font-medium cursor-pointer hover:bg-red-500/[0.15] transition disabled:opacity-50"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+            </svg>
+            {deletingId === b.id ? "..." : "Delete"}
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: 0 }}>
-          Bookings
-        </h1>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6 flex-wrap gap-3">
+        <h1 className="text-2xl font-bold text-white m-0">Bookings</h1>
         <button
           onClick={exportCSV}
-          style={{
-            padding: "8px 18px",
-            background: "transparent",
-            border: "1px solid rgba(255,255,255,0.15)",
-            borderRadius: 8,
-            color: "rgba(255,255,255,0.7)",
-            fontSize: 13,
-            fontWeight: 500,
-            cursor: "pointer",
-            transition: "all 0.15s",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "#F6BE00";
-            e.currentTarget.style.color = "#F6BE00";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-            e.currentTarget.style.color = "rgba(255,255,255,0.7)";
-          }}
+          className="flex items-center gap-1.5 px-4 py-2 border border-white/[0.15] rounded-lg text-white/70 text-sm font-medium cursor-pointer transition bg-transparent hover:border-gold hover:text-gold"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -272,8 +411,8 @@ export default function BookingsPage() {
         </button>
       </div>
 
-      {/* Filters */}
-      <div style={{ marginBottom: 20, display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+      {/* Status filter pills */}
+      <div className="flex flex-wrap gap-2 mb-5">
         {STATUSES.map((s) => {
           const active = filter === s;
           const count = s === "all" ? bookings.length : bookings.filter((b) => b.status === s).length;
@@ -281,19 +420,11 @@ export default function BookingsPage() {
             <button
               key={s}
               onClick={() => setFilter(s)}
-              style={{
-                padding: "6px 16px",
-                borderRadius: 20,
-                border: "1px solid",
-                borderColor: active ? "#F6BE00" : "rgba(255,255,255,0.1)",
-                background: active ? "rgba(246,190,0,0.1)" : "transparent",
-                color: active ? "#F6BE00" : "rgba(255,255,255,0.5)",
-                fontSize: 13,
-                fontWeight: active ? 600 : 400,
-                cursor: "pointer",
-                textTransform: "capitalize",
-                transition: "all 0.15s",
-              }}
+              className={`px-4 py-1.5 rounded-full border text-sm cursor-pointer transition capitalize
+                ${active
+                  ? "border-gold bg-gold/10 text-gold font-semibold"
+                  : "border-white/10 text-white/50 hover:border-white/20 bg-transparent"
+                }`}
             >
               {s.replace("_", " ")} ({count})
             </button>
@@ -301,73 +432,37 @@ export default function BookingsPage() {
         })}
       </div>
 
-      {/* Search & Date Filters */}
-      <div style={{ marginBottom: 20, display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+      {/* Search + date filters */}
+      <div className="flex flex-wrap gap-2.5 mb-5 items-center">
         <input
           type="text"
           placeholder="Search by name or phone..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: 280,
-            padding: "10px 14px",
-            background: "#111",
-            border: "1px solid rgba(255,255,255,0.1)",
-            borderRadius: 8,
-            color: "#fff",
-            fontSize: 14,
-            outline: "none",
-          }}
+          className="w-full max-w-[280px] px-3.5 py-2.5 bg-[#111] border border-white/10 rounded-lg text-white text-sm placeholder:text-white/25 outline-none focus:border-gold/50 transition"
         />
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <label style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", whiteSpace: "nowrap" }}>From</label>
+        <div className="flex items-center gap-1.5">
+          <label className="text-xs text-white/40 whitespace-nowrap">From</label>
           <input
             type="date"
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
-            style={{
-              padding: "9px 12px",
-              background: "#050505",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: 8,
-              color: "#fff",
-              fontSize: 13,
-              outline: "none",
-              colorScheme: "dark",
-            }}
+            className="px-3 py-2 bg-[#050505] border border-white/10 rounded-lg text-white text-sm outline-none [color-scheme:dark]"
           />
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <label style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", whiteSpace: "nowrap" }}>To</label>
+        <div className="flex items-center gap-1.5">
+          <label className="text-xs text-white/40 whitespace-nowrap">To</label>
           <input
             type="date"
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value)}
-            style={{
-              padding: "9px 12px",
-              background: "#050505",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: 8,
-              color: "#fff",
-              fontSize: 13,
-              outline: "none",
-              colorScheme: "dark",
-            }}
+            className="px-3 py-2 bg-[#050505] border border-white/10 rounded-lg text-white text-sm outline-none [color-scheme:dark]"
           />
         </div>
         {(dateFrom || dateTo) && (
           <button
             onClick={() => { setDateFrom(""); setDateTo(""); }}
-            style={{
-              padding: "8px 12px",
-              background: "transparent",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: 8,
-              color: "rgba(255,255,255,0.4)",
-              fontSize: 12,
-              cursor: "pointer",
-            }}
+            className="px-3 py-2 border border-white/10 rounded-lg text-white/40 text-xs cursor-pointer hover:text-white/60 transition bg-transparent"
           >
             Clear dates
           </button>
@@ -376,349 +471,80 @@ export default function BookingsPage() {
 
       {/* Bookings list */}
       {filtered.length === 0 ? (
-        <div
-          style={{
-            background: "#111",
-            borderRadius: 14,
-            padding: 40,
-            textAlign: "center",
-            color: "rgba(255,255,255,0.3)",
-            fontSize: 14,
-          }}
-        >
-          No bookings found
+        <div className="bg-[#111] rounded-xl py-16 text-center">
+          <svg className="w-10 h-10 mx-auto text-white/15 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          <p className="text-white/30 text-sm">No bookings found</p>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {filtered.map((b) => {
-            const expanded = expandedId === b.id;
-            return (
-              <div
-                key={b.id}
-                style={{
-                  background: "#111",
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  borderRadius: 14,
-                  overflow: "hidden",
-                }}
-              >
-                {/* Row */}
+        <>
+          {/* Desktop layout (lg+) */}
+          <div className="hidden lg:block space-y-2">
+            {filtered.map((b) => {
+              const expanded = expandedId === b.id;
+              return (
                 <div
-                  onClick={() => setExpandedId(expanded ? null : b.id)}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr auto auto auto auto auto",
-                    alignItems: "center",
-                    gap: 12,
-                    padding: "14px 18px",
-                    cursor: "pointer",
-                    transition: "background 0.1s",
-                  }}
-                  className="booking-row"
+                  key={b.id}
+                  className="bg-[#111] border border-white/[0.06] rounded-xl overflow-hidden"
                 >
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>
-                      {b.customer_name}
-                    </div>
-                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
-                      {b.customer_phone}
-                    </div>
-                  </div>
-                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", textTransform: "capitalize", whiteSpace: "nowrap" }}>
-                    {b.car_size}
-                  </div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", whiteSpace: "nowrap" }}>
-                    {b.service_ids?.length || 0} service{(b.service_ids?.length || 0) !== 1 ? "s" : ""}
-                  </div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#fff", whiteSpace: "nowrap" }}>
-                    {(b.total || 0).toLocaleString()} SAR
-                  </div>
-                  <span
-                    style={{
-                      display: "inline-block",
-                      padding: "3px 10px",
-                      borderRadius: 20,
-                      fontSize: 11,
-                      fontWeight: 600,
-                      textTransform: "capitalize",
-                      background: `${STATUS_COLORS[b.status] || "#666"}20`,
-                      color: STATUS_COLORS[b.status] || "#666",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {b.status.replace("_", " ")}
-                  </span>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", whiteSpace: "nowrap" }}>
-                    {formatDate(b.created_at)}
-                  </div>
-                </div>
-
-                {/* Expanded details */}
-                {expanded && (
                   <div
-                    style={{
-                      padding: "0 18px 18px",
-                      borderTop: "1px solid rgba(255,255,255,0.06)",
-                    }}
+                    onClick={() => setExpandedId(expanded ? null : b.id)}
+                    className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-3 items-center px-4 py-3.5 cursor-pointer hover:bg-white/[0.02] transition"
                   >
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                        gap: 16,
-                        paddingTop: 16,
-                      }}
-                    >
-                      {/* Services */}
-                      <div>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
-                          Services
-                        </div>
-                        {b.service_ids?.length > 0 ? (
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                            {b.service_ids.map((sid) => (
-                              <span
-                                key={sid}
-                                style={{
-                                  padding: "3px 10px",
-                                  background: "rgba(255,255,255,0.05)",
-                                  borderRadius: 6,
-                                  fontSize: 12,
-                                  color: "rgba(255,255,255,0.7)",
-                                }}
-                              >
-                                {getServiceName(sid)}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.3)" }}>None</span>
-                        )}
-                      </div>
-
-                      {/* Package */}
-                      <div>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
-                          Package
-                        </div>
-                        <span style={{ fontSize: 13, color: b.package_id ? "#fff" : "rgba(255,255,255,0.3)" }}>
-                          {b.package_id ? getPackageName(b.package_id) : "None"}
-                        </span>
-                      </div>
-
-                      {/* Car Details */}
-                      <div>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
-                          Car Details
-                        </div>
-                        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
-                          {b.car_make || "—"}
-                          {b.car_year && <span> &middot; {b.car_year}</span>}
-                          {b.car_color && <span> &middot; {b.car_color}</span>}
-                        </div>
-                        {b.preferred_date && (
-                          <div style={{ fontSize: 12, color: "#F6BE00", marginTop: 4 }}>
-                            Preferred: {new Date(b.preferred_date + "T00:00:00").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Addons */}
-                      <div>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
-                          Add-ons
-                        </div>
-                        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
-                          {(() => {
-                            const raw = b.addon_ids;
-                            const parsed: Record<string, unknown> | null = typeof raw === "string" ? (() => { try { return JSON.parse(raw); } catch { return null; } })() : raw;
-                            if (!parsed || typeof parsed !== "object" || Object.keys(parsed).length === 0) return "None";
-                            return Object.entries(parsed).map(([svcId, addonIds]) => (
-                              <div key={svcId} style={{ marginBottom: 4 }}>
-                                <span style={{ color: "#F6BE00", fontSize: 11 }}>{SERVICE_NAMES[svcId] || svcId}:</span>{" "}
-                                {Array.isArray(addonIds) ? addonIds.map(a => ADDON_NAMES[a as string] || a).join(", ") : String(addonIds)}
-                              </div>
-                            ));
-                          })()}
-                        </div>
-                      </div>
-
-                      {/* Pricing */}
-                      <div>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
-                          Pricing
-                        </div>
-                        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
-                          Subtotal: {(b.subtotal || 0).toLocaleString()} SAR
-                        </div>
-                        {b.discount > 0 && (
-                          <div style={{ fontSize: 13, color: "#4CAF50" }}>
-                            Discount: -{(b.discount || 0).toLocaleString()} SAR
-                          </div>
-                        )}
-                        <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginTop: 4 }}>
-                          Total: {(b.total || 0).toLocaleString()} SAR
-                        </div>
-                      </div>
-
-                      {/* Notes */}
-                      <div>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
-                          Notes
-                        </div>
-                        <span style={{ fontSize: 13, color: b.customer_notes ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.3)" }}>
-                          {b.customer_notes || "None"}
-                        </span>
-                      </div>
-
-                      {/* Payment & Locale */}
-                      <div>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
-                          Payment
-                        </div>
-                        <span style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", textTransform: "capitalize" }}>
-                          {b.payment_method}
-                        </span>
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>
-                          Locale: {b.locale?.toUpperCase()}
-                        </div>
-                      </div>
+                    <div>
+                      <div className="text-sm font-semibold text-white">{b.customer_name}</div>
+                      <div className="text-xs text-white/40 mt-0.5">{b.customer_phone}</div>
                     </div>
-
-                    {/* Actions */}
-                    <div
-                      style={{
-                        marginTop: 16,
-                        paddingTop: 16,
-                        borderTop: "1px solid rgba(255,255,255,0.06)",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 12,
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <a
-                        href={`tel:${b.customer_phone}`}
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 6,
-                          padding: "8px 16px",
-                          background: "rgba(33,150,243,0.1)",
-                          border: "1px solid rgba(33,150,243,0.3)",
-                          borderRadius: 8,
-                          color: "#2196F3",
-                          fontSize: 13,
-                          fontWeight: 500,
-                          textDecoration: "none",
-                          cursor: "pointer",
-                          transition: "all 0.15s",
-                        }}
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-                        </svg>
-                        Call
-                      </a>
-                      <a
-                        href={`https://wa.me/${b.customer_phone.replace(/[^0-9]/g, "")}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 6,
-                          padding: "8px 16px",
-                          background: "rgba(37,211,102,0.1)",
-                          border: "1px solid rgba(37,211,102,0.3)",
-                          borderRadius: 8,
-                          color: "#25D366",
-                          fontSize: 13,
-                          fontWeight: 500,
-                          textDecoration: "none",
-                          cursor: "pointer",
-                          transition: "all 0.15s",
-                        }}
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                        </svg>
-                        WhatsApp
-                      </a>
-                      <div style={{ flex: 1 }} />
-                      <label style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>
-                        Update Status:
-                      </label>
-                      <select
-                        value={b.status}
-                        disabled={updatingId === b.id}
-                        onChange={(e) => updateStatus(b.id, e.target.value)}
-                        style={{
-                          padding: "8px 12px",
-                          background: "#050505",
-                          border: "1px solid rgba(255,255,255,0.1)",
-                          borderRadius: 8,
-                          color: "#fff",
-                          fontSize: 13,
-                          outline: "none",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {STATUSES.filter((s) => s !== "all").map((s) => (
-                          <option key={s} value={s}>
-                            {s.replace("_", " ")}
-                          </option>
-                        ))}
-                      </select>
-                      {updatingId === b.id && (
-                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
-                          Saving...
-                        </span>
-                      )}
-                      <button
-                        onClick={() => deleteBooking(b.id)}
-                        disabled={deletingId === b.id}
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 5,
-                          padding: "8px 14px",
-                          background: "rgba(244,67,54,0.08)",
-                          border: "1px solid rgba(244,67,54,0.2)",
-                          borderRadius: 8,
-                          color: "#f44336",
-                          fontSize: 12,
-                          fontWeight: 500,
-                          cursor: "pointer",
-                          transition: "all 0.15s",
-                          opacity: deletingId === b.id ? 0.5 : 1,
-                        }}
-                      >
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                        </svg>
-                        {deletingId === b.id ? "..." : "Delete"}
-                      </button>
+                    <div className="text-sm text-white/50 capitalize whitespace-nowrap">{b.car_size}</div>
+                    <div className="text-xs text-white/40 whitespace-nowrap">
+                      {b.service_ids?.length || 0} service{(b.service_ids?.length || 0) !== 1 ? "s" : ""}
                     </div>
+                    <div className="text-sm font-semibold text-white whitespace-nowrap">
+                      {(b.total || 0).toLocaleString()} SAR
+                    </div>
+                    <span className={statusBadgeClasses(b.status)}>{b.status.replace("_", " ")}</span>
+                    <div className="text-xs text-white/35 whitespace-nowrap">{formatDate(b.created_at)}</div>
                   </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+                  {expanded && <ExpandedDetails b={b} />}
+                </div>
+              );
+            })}
+          </div>
 
-      <style>{`
-        .booking-row:hover {
-          background: rgba(255,255,255,0.02);
-        }
-        @media (max-width: 768px) {
-          .booking-row {
-            grid-template-columns: 1fr auto !important;
-            grid-template-rows: auto auto auto;
-          }
-        }
-      `}</style>
+          {/* Mobile layout (below lg) */}
+          <div className="lg:hidden space-y-2">
+            {filtered.map((b) => {
+              const expanded = expandedId === b.id;
+              return (
+                <div
+                  key={b.id}
+                  className="bg-[#111] border border-white/[0.06] rounded-xl overflow-hidden"
+                >
+                  <div
+                    onClick={() => setExpandedId(expanded ? null : b.id)}
+                    className="flex items-center justify-between px-4 py-3 cursor-pointer active:bg-white/[0.02]"
+                  >
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-white truncate">{b.customer_name}</div>
+                      <div className="text-xs text-white/40 mt-0.5">
+                        {b.customer_phone} · {(b.total || 0).toLocaleString()} SAR
+                      </div>
+                    </div>
+                    <span className={`${statusBadgeClasses(b.status)} shrink-0 ml-2`}>
+                      {b.status.replace("_", " ")}
+                    </span>
+                  </div>
+                  {expanded && <ExpandedDetails b={b} />}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
