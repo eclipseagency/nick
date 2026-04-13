@@ -343,6 +343,17 @@ body::before {
   text-transform: none;
 }
 
+/* Admin layout */
+@media (min-width: 1024px) {
+  .admin-content { margin-left: 260px; }
+  .admin-sidebar-visible { transform: translateX(0); }
+  .admin-topbar { display: none !important; }
+}
+@media (max-width: 1023px) {
+  .admin-sidebar-hidden { transform: translateX(-100%); }
+  .admin-sidebar-show { transform: translateX(0) !important; }
+}
+
 /* Admin skeleton loader */
 @keyframes shimmer {
   0% { background-position: -200% 0; }

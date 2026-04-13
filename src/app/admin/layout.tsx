@@ -106,13 +106,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 z-40"
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 bottom-0 z-50 flex flex-col bg-[#111] border-r border-white/[0.06] w-[260px] transition-transform duration-200 ease-out -translate-x-full lg:translate-x-0${sidebarOpen ? " !translate-x-0" : ""}`}
+        className={`fixed top-0 left-0 bottom-0 z-50 flex flex-col bg-[#111] border-r border-white/[0.06] w-[260px] transition-transform duration-200 ease-out admin-sidebar-hidden admin-sidebar-visible${sidebarOpen ? " admin-sidebar-show" : ""}`}
       >
         {/* Logo */}
         <div className="px-5 py-6 border-b border-white/[0.06]">
@@ -163,9 +163,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main area */}
-      <div className="flex-1 lg:ml-[260px] min-w-0">
+      <div className="flex-1 min-w-0 admin-content">
         {/* Mobile top bar - visible only below lg */}
-        <div className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#111] border-b border-white/[0.06] lg:hidden">
+        <div className="admin-topbar sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#111] border-b border-white/[0.06]">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="bg-transparent border-none text-white cursor-pointer p-1"
