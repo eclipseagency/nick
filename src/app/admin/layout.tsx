@@ -86,18 +86,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (checking || !authed) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#050505",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "rgba(255,255,255,0.4)",
-          fontSize: 14,
-        }}
-      >
-        Loading...
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
+          <span className="text-white/40 text-sm">Loading...</span>
+        </div>
       </div>
     );
   }
@@ -108,67 +101,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#050505" }}>
-      {/* Mobile overlay */}
+    <div className="flex min-h-screen bg-[#050505]">
+      {/* Mobile overlay backdrop */}
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.6)",
-            zIndex: 40,
-          }}
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
         />
       )}
 
       {/* Sidebar */}
       <aside
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          bottom: 0,
-          width: 240,
-          background: "#111",
-          borderRight: "1px solid rgba(255,255,255,0.06)",
-          zIndex: 50,
-          transition: "transform 0.2s ease",
-          display: "flex",
-          flexDirection: "column",
-        }}
-        className={`admin-sidebar${sidebarOpen ? " admin-sidebar-open" : ""}`}
+        className={`fixed top-0 left-0 bottom-0 z-50 flex flex-col bg-[#111] border-r border-white/[0.06] w-[260px] transition-transform duration-200 ease-out -translate-x-full lg:translate-x-0${sidebarOpen ? " !translate-x-0" : ""}`}
       >
-        <div
-          style={{
-            padding: "24px 20px",
-            borderBottom: "1px solid rgba(255,255,255,0.06)",
-          }}
-        >
-          <span
-            style={{
-              fontSize: 22,
-              fontWeight: 800,
-              color: "#F6BE00",
-              letterSpacing: "0.08em",
-            }}
-          >
-            NICK
-          </span>
-          <span
-            style={{
-              fontSize: 11,
-              color: "rgba(255,255,255,0.4)",
-              marginLeft: 8,
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-            }}
-          >
-            Admin
-          </span>
+        {/* Logo */}
+        <div className="px-5 py-6 border-b border-white/[0.06]">
+          <span className="text-[22px] font-extrabold text-gold tracking-widest">NICK</span>
+          <span className="text-[11px] text-white/40 ml-2 uppercase tracking-wider">Admin</span>
         </div>
 
-        <nav style={{ flex: 1, padding: "12px 10px" }}>
+        {/* Nav */}
+        <nav className="flex-1 p-3 space-y-1">
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.href);
             return (
@@ -180,21 +133,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   router.push(item.href);
                   setSidebarOpen(false);
                 }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                  padding: "10px 14px",
-                  borderRadius: 10,
-                  marginBottom: 4,
-                  fontSize: 14,
-                  fontWeight: active ? 600 : 400,
-                  color: active ? "#F6BE00" : "rgba(255,255,255,0.6)",
-                  background: active ? "rgba(246,190,0,0.08)" : "transparent",
-                  textDecoration: "none",
-                  transition: "all 0.15s",
-                  cursor: "pointer",
-                }}
+                className={
+                  active
+                    ? "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gold bg-gold/[0.08]"
+                    : "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm text-white/60 hover:text-white/80 hover:bg-white/[0.03] transition"
+                }
               >
                 <NavIcon icon={item.icon} />
                 {item.label}
@@ -203,23 +146,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        <div style={{ padding: "16px 10px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        {/* Logout */}
+        <div className="p-3 border-t border-white/[0.06]">
           <button
             onClick={handleLogout}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              width: "100%",
-              padding: "10px 14px",
-              background: "transparent",
-              border: "none",
-              borderRadius: 10,
-              color: "rgba(255,255,255,0.5)",
-              fontSize: 14,
-              cursor: "pointer",
-              transition: "color 0.15s",
-            }}
+            className="flex items-center gap-2.5 w-full px-3.5 py-2.5 rounded-xl text-sm text-white/50 hover:text-white/80 hover:bg-white/[0.03] transition bg-transparent border-none cursor-pointer"
           >
             <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
               <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
@@ -231,32 +162,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      {/* Main content */}
-      <div style={{ flex: 1, marginLeft: 240, minWidth: 0 }} className="admin-main">
-        {/* Top bar (mobile) */}
-        <div
-          className="admin-topbar"
-          style={{
-            display: "none",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "12px 16px",
-            background: "#111",
-            borderBottom: "1px solid rgba(255,255,255,0.06)",
-            position: "sticky",
-            top: 0,
-            zIndex: 30,
-          }}
-        >
+      {/* Main area */}
+      <div className="flex-1 lg:ml-[260px] min-w-0">
+        {/* Mobile top bar - visible only below lg */}
+        <div className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#111] border-b border-white/[0.06] lg:hidden">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "#fff",
-              cursor: "pointer",
-              padding: 4,
-            }}
+            className="bg-transparent border-none text-white cursor-pointer p-1"
           >
             <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <line x1="3" y1="6" x2="21" y2="6" />
@@ -264,43 +176,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <line x1="3" y1="18" x2="21" y2="18" />
             </svg>
           </button>
-          <span style={{ fontWeight: 700, color: "#F6BE00", letterSpacing: "0.05em" }}>
-            NICK Admin
-          </span>
+          <span className="font-bold text-gold tracking-wider">NICK Admin</span>
           <button
             onClick={handleLogout}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "rgba(255,255,255,0.5)",
-              cursor: "pointer",
-              fontSize: 12,
-              textTransform: "uppercase",
-            }}
+            className="bg-transparent border-none text-white/50 cursor-pointer text-xs uppercase"
           >
             Logout
           </button>
         </div>
 
-        <main style={{ padding: 24 }}>{children}</main>
+        <main className="p-4 sm:p-6">{children}</main>
       </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .admin-sidebar {
-            transform: translateX(-100%);
-          }
-          .admin-sidebar-open {
-            transform: translateX(0) !important;
-          }
-          .admin-main {
-            margin-left: 0 !important;
-          }
-          .admin-topbar {
-            display: flex !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }
