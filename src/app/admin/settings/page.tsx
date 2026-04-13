@@ -8,6 +8,79 @@ interface User {
   created_at: string;
 }
 
+const cardStyle: React.CSSProperties = {
+  background: "#111111",
+  border: "1px solid rgba(255,255,255,0.06)",
+  borderRadius: 16,
+  padding: 24,
+};
+
+const labelStyle: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  color: "rgba(255,255,255,0.3)",
+  marginBottom: 6,
+  display: "block",
+};
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid rgba(255,255,255,0.06)",
+  borderRadius: 8,
+  padding: "10px 14px",
+  color: "#f5f5f5",
+  fontSize: 14,
+  fontFamily: "inherit",
+  outline: "none",
+  boxSizing: "border-box",
+};
+
+const primaryButtonStyle: React.CSSProperties = {
+  background: "#F6BE00",
+  color: "#000",
+  fontWeight: 700,
+  borderRadius: 10,
+  padding: "10px 24px",
+  fontSize: 13,
+  border: "none",
+  cursor: "pointer",
+  fontFamily: "inherit",
+};
+
+function InputField({
+  label,
+  type,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  type: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder: string;
+}) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div>
+      <label style={labelStyle}>{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={{
+          ...inputStyle,
+          borderColor: focused ? "rgba(246,190,0,0.2)" : "rgba(255,255,255,0.06)",
+        }}
+      />
+    </div>
+  );
+}
+
 export default function SettingsPage() {
   const [currentUser, setCurrentUser] = useState("");
   const [users, setUsers] = useState<User[]>([]);
@@ -150,148 +223,175 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="space-y-5 max-w-[640px]">
-        <div className="admin-skeleton h-8 w-32 rounded-lg" />
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="admin-skeleton h-48 rounded-xl" />
-        ))}
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <div className="admin-skeleton" style={{ height: 28, width: 120, borderRadius: 8, marginBottom: 28 }} />
+        <div style={{ display: "grid", gap: 20, maxWidth: 640 }}>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="admin-skeleton" style={{ height: 200, borderRadius: 16 }} />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Settings</h1>
+    <div style={{ position: "relative", zIndex: 1 }}>
+      <h1 style={{ fontSize: 22, fontWeight: 800, color: "#f5f5f5", marginBottom: 28 }}>
+        Settings
+      </h1>
 
-      <div className="grid gap-5 max-w-[640px]">
+      <div style={{ display: "grid", gap: 20, maxWidth: 640 }}>
         {/* Change Password */}
-        <div className="bg-[#111] border border-white/[0.06] rounded-xl p-6">
-          <h2 className="text-base font-semibold text-white mb-1">Change Password</h2>
-          <p className="text-sm text-white/40 mb-5">
-            Logged in as <span className="text-gold">{currentUser}</span>
+        <div style={cardStyle}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: "#f5f5f5", margin: "0 0 4px 0" }}>
+            Change Password
+          </h2>
+          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 20 }}>
+            Logged in as{" "}
+            <span style={{ color: "#F6BE00" }}>{currentUser}</span>
           </p>
 
-          <div className="grid gap-3.5">
-            <div>
-              <label className="block text-xs text-white/40 mb-1.5 uppercase tracking-wider">
-                New Password
-              </label>
-              <input
-                type="password"
-                value={newPw}
-                onChange={(e) => setNewPw(e.target.value)}
-                placeholder="Enter new password"
-                className="w-full px-3 py-2.5 bg-[#050505] border border-white/10 rounded-lg text-white text-sm outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition placeholder:text-white/25"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-white/40 mb-1.5 uppercase tracking-wider">
-                Confirm New Password
-              </label>
-              <input
-                type="password"
-                value={confirmPw}
-                onChange={(e) => setConfirmPw(e.target.value)}
-                placeholder="Confirm new password"
-                className="w-full px-3 py-2.5 bg-[#050505] border border-white/10 rounded-lg text-white text-sm outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition placeholder:text-white/25"
-              />
-            </div>
+          <div style={{ display: "grid", gap: 14 }}>
+            <InputField
+              label="New Password"
+              type="password"
+              value={newPw}
+              onChange={(e) => setNewPw(e.target.value)}
+              placeholder="Enter new password"
+            />
+            <InputField
+              label="Confirm New Password"
+              type="password"
+              value={confirmPw}
+              onChange={(e) => setConfirmPw(e.target.value)}
+              placeholder="Confirm new password"
+            />
 
             {pwMsg && (
               <div
-                className={`text-sm px-3 py-2 rounded-lg ${
-                  pwError
-                    ? "text-red-500 bg-red-500/[0.08]"
-                    : "text-green-500 bg-green-500/[0.08]"
-                }`}
+                style={{
+                  fontSize: 13,
+                  padding: "10px 14px",
+                  borderRadius: 8,
+                  color: pwError ? "#FCA5A5" : "#34D399",
+                  background: pwError ? "rgba(239,68,68,0.08)" : "rgba(16,185,129,0.08)",
+                }}
               >
                 {pwMsg}
               </div>
             )}
 
-            <button
-              onClick={handleChangePassword}
-              disabled={pwSaving}
-              className="px-5 py-2.5 bg-gold hover:bg-gold-light text-black text-sm font-bold rounded-lg transition cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {pwSaving ? "Saving..." : "Change Password"}
-            </button>
+            <div>
+              <button
+                onClick={handleChangePassword}
+                disabled={pwSaving}
+                style={{
+                  ...primaryButtonStyle,
+                  opacity: pwSaving ? 0.5 : 1,
+                  cursor: pwSaving ? "not-allowed" : "pointer",
+                }}
+              >
+                {pwSaving ? "Saving..." : "Change Password"}
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Add New User */}
-        <div className="bg-[#111] border border-white/[0.06] rounded-xl p-6">
-          <h2 className="text-base font-semibold text-white mb-4">Add New User</h2>
+        <div style={cardStyle}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: "#f5f5f5", margin: "0 0 20px 0" }}>
+            Add New User
+          </h2>
 
-          <div className="grid gap-3.5">
-            <div>
-              <label className="block text-xs text-white/40 mb-1.5 uppercase tracking-wider">
-                Username
-              </label>
-              <input
-                type="text"
-                value={newUsername}
-                onChange={(e) => setNewUsername(e.target.value)}
-                placeholder="Enter username"
-                className="w-full px-3 py-2.5 bg-[#050505] border border-white/10 rounded-lg text-white text-sm outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition placeholder:text-white/25"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-white/40 mb-1.5 uppercase tracking-wider">
-                Password
-              </label>
-              <input
-                type="password"
-                value={newUserPw}
-                onChange={(e) => setNewUserPw(e.target.value)}
-                placeholder="Enter password"
-                className="w-full px-3 py-2.5 bg-[#050505] border border-white/10 rounded-lg text-white text-sm outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition placeholder:text-white/25"
-              />
-            </div>
+          <div style={{ display: "grid", gap: 14 }}>
+            <InputField
+              label="Username"
+              type="text"
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+              placeholder="Enter username"
+            />
+            <InputField
+              label="Password"
+              type="password"
+              value={newUserPw}
+              onChange={(e) => setNewUserPw(e.target.value)}
+              placeholder="Enter password"
+            />
 
             {userMsg && (
               <div
-                className={`text-sm px-3 py-2 rounded-lg ${
-                  userError
-                    ? "text-red-500 bg-red-500/[0.08]"
-                    : "text-green-500 bg-green-500/[0.08]"
-                }`}
+                style={{
+                  fontSize: 13,
+                  padding: "10px 14px",
+                  borderRadius: 8,
+                  color: userError ? "#FCA5A5" : "#34D399",
+                  background: userError ? "rgba(239,68,68,0.08)" : "rgba(16,185,129,0.08)",
+                }}
               >
                 {userMsg}
               </div>
             )}
 
-            <button
-              onClick={handleAddUser}
-              disabled={userSaving}
-              className="px-5 py-2.5 bg-gold hover:bg-gold-light text-black text-sm font-bold rounded-lg transition cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {userSaving ? "Creating..." : "Add User"}
-            </button>
+            <div>
+              <button
+                onClick={handleAddUser}
+                disabled={userSaving}
+                style={{
+                  ...primaryButtonStyle,
+                  opacity: userSaving ? 0.5 : 1,
+                  cursor: userSaving ? "not-allowed" : "pointer",
+                }}
+              >
+                {userSaving ? "Creating..." : "Add User"}
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Admin Users */}
-        <div className="bg-[#111] border border-white/[0.06] rounded-xl p-6">
-          <h2 className="text-base font-semibold text-white mb-4">Admin Users</h2>
+        <div style={cardStyle}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: "#f5f5f5", margin: "0 0 20px 0" }}>
+            Admin Users
+          </h2>
 
           {users.length === 0 ? (
-            <p className="text-sm text-white/40">No users found</p>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)" }}>No users found</p>
           ) : (
-            <div className="space-y-2">
+            <div style={{ display: "grid", gap: 8 }}>
               {users.map((u) => (
                 <div
                   key={u.id}
-                  className="flex items-center justify-between px-3.5 py-2.5 bg-white/[0.02] border border-white/[0.06] rounded-xl"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "10px 14px",
+                    background: "rgba(255,255,255,0.02)",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    borderRadius: 12,
+                  }}
                 >
                   <div>
-                    <span className="text-sm text-white font-medium">{u.username}</span>
-                    {u.username === currentUser && (
-                      <span className="ml-2 text-[10px] text-gold font-semibold uppercase">
-                        You
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 14, color: "#f5f5f5", fontWeight: 500 }}>
+                        {u.username}
                       </span>
-                    )}
-                    <div className="text-[11px] text-white/30 mt-0.5">
+                      {u.username === currentUser && (
+                        <span
+                          style={{
+                            fontSize: 10,
+                            color: "#F6BE00",
+                            fontWeight: 700,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.05em",
+                          }}
+                        >
+                          You
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
                       Created {new Date(u.created_at).toLocaleDateString()}
                     </div>
                   </div>
@@ -299,16 +399,35 @@ export default function SettingsPage() {
                   {u.username !== currentUser && (
                     <>
                       {deleteConfirm === u.username ? (
-                        <div className="flex gap-1.5">
+                        <div style={{ display: "flex", gap: 6 }}>
                           <button
                             onClick={() => handleDeleteUser(u.username)}
-                            className="px-3 py-1 bg-red-500/[0.15] border border-red-500/30 rounded-md text-red-500 text-[11px] font-semibold cursor-pointer"
+                            style={{
+                              padding: "4px 12px",
+                              background: "rgba(239,68,68,0.12)",
+                              border: "1px solid rgba(239,68,68,0.3)",
+                              borderRadius: 6,
+                              color: "#FCA5A5",
+                              fontSize: 11,
+                              fontWeight: 600,
+                              cursor: "pointer",
+                              fontFamily: "inherit",
+                            }}
                           >
                             Confirm
                           </button>
                           <button
                             onClick={() => setDeleteConfirm(null)}
-                            className="px-3 py-1 bg-transparent border border-white/10 rounded-md text-white/40 text-[11px] cursor-pointer"
+                            style={{
+                              padding: "4px 12px",
+                              background: "transparent",
+                              border: "1px solid rgba(255,255,255,0.1)",
+                              borderRadius: 6,
+                              color: "rgba(255,255,255,0.4)",
+                              fontSize: 11,
+                              cursor: "pointer",
+                              fontFamily: "inherit",
+                            }}
                           >
                             Cancel
                           </button>
@@ -316,7 +435,16 @@ export default function SettingsPage() {
                       ) : (
                         <button
                           onClick={() => setDeleteConfirm(u.username)}
-                          className="px-3 py-1 bg-transparent border border-white/[0.08] rounded-md text-white/30 text-[11px] cursor-pointer hover:text-white/50 transition"
+                          style={{
+                            padding: "4px 12px",
+                            background: "transparent",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            borderRadius: 6,
+                            color: "rgba(255,255,255,0.3)",
+                            fontSize: 11,
+                            cursor: "pointer",
+                            fontFamily: "inherit",
+                          }}
                         >
                           Delete
                         </button>
