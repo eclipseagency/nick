@@ -32,6 +32,18 @@ const CATEGORY_COLORS: Record<string, string> = {
   ceramic: "#4CAF50",
 };
 
+function categoryBadgeClasses(category: string): string {
+  const colors: Record<string, string> = {
+    ppf: "bg-amber-500/10 text-amber-500",
+    tint: "bg-blue-500/10 text-blue-500",
+    ceramic: "bg-green-500/10 text-green-500",
+  };
+  return `px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${colors[category] || "bg-white/10 text-white/50"}`;
+}
+
+const inputCls = "w-full px-2.5 py-2 bg-[#050505] border border-white/10 rounded-lg text-white text-sm outline-none focus:border-gold/50 transition";
+const labelCls = "block text-[11px] text-white/40 uppercase tracking-wider mb-1";
+
 function ImageUpload({
   label,
   value,
@@ -73,70 +85,37 @@ function ImageUpload({
 
   return (
     <div>
-      <label
-        style={{
-          fontSize: 11,
-          color: "rgba(255,255,255,0.4)",
-          textTransform: "uppercase",
-          letterSpacing: "0.05em",
-          marginBottom: 6,
-          display: "block",
-        }}
-      >
+      <label className="block text-[11px] text-white/40 uppercase tracking-wider mb-1.5">
         {label}
       </label>
 
-      {/* Preview */}
       {value && (
         <div
-          style={{
-            width: "100%",
-            height: 80,
-            borderRadius: 8,
-            marginBottom: 8,
-            background: `url(${value}) center/cover`,
-            border: "1px solid rgba(255,255,255,0.08)",
-          }}
+          className="w-full h-20 rounded-lg mb-2 bg-cover bg-center border border-white/[0.08]"
+          style={{ backgroundImage: `url(${value})` }}
         />
       )}
 
-      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+      <div className="flex gap-1.5 items-center">
         <input
           ref={fileRef}
           type="file"
           accept="image/jpeg,image/png,image/webp,image/svg+xml"
           onChange={handleFile}
-          style={{ display: "none" }}
+          className="hidden"
         />
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
-          style={{
-            padding: "6px 14px",
-            background: uploading ? "rgba(246,190,0,0.3)" : "rgba(246,190,0,0.1)",
-            border: "1px solid rgba(246,190,0,0.3)",
-            borderRadius: 6,
-            color: "#F6BE00",
-            fontSize: 11,
-            fontWeight: 600,
-            cursor: uploading ? "not-allowed" : "pointer",
-            whiteSpace: "nowrap",
-          }}
+          className="px-3.5 py-1.5 bg-gold/10 border border-gold/30 rounded-md text-gold text-[11px] font-semibold cursor-pointer hover:bg-gold/20 transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
         >
           {uploading ? "Uploading..." : value ? "Replace" : "Upload"}
         </button>
 
         {value && (
           <div
-            style={{
-              flex: 1,
-              fontSize: 10,
-              color: "rgba(255,255,255,0.3)",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
+            className="flex-1 text-[10px] text-white/30 overflow-hidden text-ellipsis whitespace-nowrap"
             title={value}
           >
             {value.split("/").pop()}
@@ -145,7 +124,7 @@ function ImageUpload({
       </div>
 
       {error && (
-        <div style={{ fontSize: 11, color: "#f44336", marginTop: 4 }}>{error}</div>
+        <div className="text-[11px] text-red-500 mt-1">{error}</div>
       )}
     </div>
   );
@@ -178,6 +157,9 @@ export default function ServicesPage() {
     active: true,
   });
   const [createSaving, setCreateSaving] = useState(false);
+
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetch("/api/services?all=true")
@@ -294,56 +276,39 @@ export default function ServicesPage() {
     }
   }
 
-  const inputStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "8px 10px",
-    background: "#050505",
-    border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: 8,
-    color: "#fff",
-    fontSize: 13,
-    outline: "none",
+  const categoryCounts: Record<string, number> = {
+    all: services.length,
+    ppf: services.filter((s) => s.category === "ppf").length,
+    tint: services.filter((s) => s.category === "tint").length,
+    ceramic: services.filter((s) => s.category === "ceramic").length,
   };
 
-  const labelStyle: React.CSSProperties = {
-    fontSize: 11,
-    color: "rgba(255,255,255,0.4)",
-    textTransform: "uppercase",
-    letterSpacing: "0.05em",
-    marginBottom: 4,
-    display: "block",
-  };
+  const filteredServices = services.filter((s) => {
+    if (categoryFilter !== "all" && s.category !== categoryFilter) return false;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      if (!s.name_en.toLowerCase().includes(q) && !s.name_ar.includes(q)) return false;
+    }
+    return true;
+  });
 
   if (loading) {
     return (
-      <div style={{ color: "rgba(255,255,255,0.4)", padding: 40, textAlign: "center" }}>
-        Loading services...
-      </div>
+      <div className="text-white/40 py-10 text-center">Loading services...</div>
     );
   }
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: "#fff" }}>Services</h1>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          {saveMsg && (
-            <span style={{ fontSize: 13, color: "#4CAF50" }}>{saveMsg}</span>
-          )}
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <h1 className="text-2xl font-bold text-white">Services</h1>
+        <div className="flex items-center gap-3">
+          {saveMsg && <span className="text-sm text-green-500">{saveMsg}</span>}
           {!creating && (
             <button
               onClick={startCreate}
-              style={{
-                padding: "8px 20px",
-                background: "#F6BE00",
-                border: "none",
-                borderRadius: 8,
-                color: "#000",
-                fontSize: 13,
-                fontWeight: 700,
-                cursor: "pointer",
-                transition: "all 0.15s",
-              }}
+              className="px-5 py-2 bg-gold hover:bg-gold-light text-black text-sm font-bold rounded-lg transition cursor-pointer border-none"
             >
               + New Service
             </button>
@@ -351,25 +316,41 @@ export default function ServicesPage() {
         </div>
       </div>
 
+      {/* Category tabs + search */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
+        <div className="flex gap-2 flex-wrap">
+          {["all", "ppf", "tint", "ceramic"].map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setCategoryFilter(cat)}
+              className={`px-4 py-1.5 rounded-full border text-sm cursor-pointer transition capitalize bg-transparent
+                ${categoryFilter === cat
+                  ? "border-gold bg-gold/10 text-gold font-semibold"
+                  : "border-white/10 text-white/50 hover:border-white/20"
+                }`}
+            >
+              {cat} ({categoryCounts[cat]})
+            </button>
+          ))}
+        </div>
+        <input
+          type="text"
+          placeholder="Search services..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full sm:w-auto sm:max-w-[240px] px-3.5 py-2 bg-[#111] border border-white/10 rounded-lg text-white text-sm placeholder:text-white/25 outline-none focus:border-gold/50 transition"
+        />
+      </div>
+
       {/* Create form */}
       {creating && (
-        <div
-          style={{
-            background: "#111",
-            border: "1px solid rgba(246,190,0,0.3)",
-            borderRadius: 14,
-            padding: 20,
-            marginBottom: 16,
-          }}
-        >
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#F6BE00", marginBottom: 16 }}>
-            New Service
-          </div>
-          <div style={{ display: "grid", gap: 12 }}>
+        <div className="bg-[#111] border border-gold/30 rounded-xl p-5 mb-4">
+          <div className="text-base font-bold text-gold mb-4">New Service</div>
+          <div className="grid gap-3">
             <div>
-              <label style={labelStyle}>Category</label>
+              <label className={labelCls}>Category</label>
               <select
-                style={inputStyle}
+                className={inputCls}
                 value={createData.category || "ppf"}
                 onChange={(e) => setCreateData({ ...createData, category: e.target.value })}
               >
@@ -378,112 +359,123 @@ export default function ServicesPage() {
                 <option value="ceramic">Ceramic</option>
               </select>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+
+            <div className="grid grid-cols-2 gap-2">
               <div>
-                <label style={labelStyle}>Name (EN)</label>
+                <label className={labelCls}>Name (EN)</label>
                 <input
-                  style={inputStyle}
+                  className={inputCls}
                   value={createData.name_en || ""}
                   onChange={(e) => setCreateData({ ...createData, name_en: e.target.value })}
                   placeholder="Service name"
                 />
               </div>
               <div>
-                <label style={labelStyle}>Name (AR)</label>
+                <label className={labelCls}>Name (AR)</label>
                 <input
-                  style={{ ...inputStyle, direction: "rtl" as const }}
+                  className={`${inputCls} text-right`}
+                  dir="rtl"
                   value={createData.name_ar || ""}
                   onChange={(e) => setCreateData({ ...createData, name_ar: e.target.value })}
                   placeholder="اسم الخدمة"
                 />
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+
+            <div className="grid grid-cols-2 gap-2">
               <div>
-                <label style={labelStyle}>Price Small (SAR)</label>
+                <label className={labelCls}>Price Small (SAR)</label>
                 <input
                   type="number"
-                  style={inputStyle}
+                  className={inputCls}
                   value={createData.price_small || 0}
                   onChange={(e) => setCreateData({ ...createData, price_small: Number(e.target.value) })}
                 />
               </div>
               <div>
-                <label style={labelStyle}>Price Large (SAR)</label>
+                <label className={labelCls}>Price Large (SAR)</label>
                 <input
                   type="number"
-                  style={inputStyle}
+                  className={inputCls}
                   value={createData.price_large || 0}
                   onChange={(e) => setCreateData({ ...createData, price_large: Number(e.target.value) })}
                 />
               </div>
             </div>
+
             <div>
-              <label style={labelStyle}>Warranty</label>
+              <label className={labelCls}>Warranty</label>
               <input
-                style={inputStyle}
+                className={inputCls}
                 value={createData.warranty || ""}
                 onChange={(e) => setCreateData({ ...createData, warranty: e.target.value })}
                 placeholder="e.g. 5 years"
               />
             </div>
+
             <div>
-              <label style={labelStyle}>Tier</label>
+              <label className={labelCls}>Tier</label>
               <input
-                style={inputStyle}
+                className={inputCls}
                 value={createData.tier || ""}
                 onChange={(e) => setCreateData({ ...createData, tier: e.target.value || null })}
                 placeholder="e.g. SPRINT, TURBO, Plus"
               />
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+
+            <div className="grid grid-cols-2 gap-2">
               <div>
-                <label style={labelStyle}>Price Before Small (SAR)</label>
+                <label className={labelCls}>Price Before Small (SAR)</label>
                 <input
                   type="number"
-                  style={inputStyle}
+                  className={inputCls}
                   value={createData.price_before_small ?? ""}
-                  onChange={(e) => setCreateData({ ...createData, price_before_small: e.target.value ? Number(e.target.value) : null })}
+                  onChange={(e) =>
+                    setCreateData({ ...createData, price_before_small: e.target.value ? Number(e.target.value) : null })
+                  }
                   placeholder="Before discount"
                 />
               </div>
               <div>
-                <label style={labelStyle}>Price Before Large (SAR)</label>
+                <label className={labelCls}>Price Before Large (SAR)</label>
                 <input
                   type="number"
-                  style={inputStyle}
+                  className={inputCls}
                   value={createData.price_before_large ?? ""}
-                  onChange={(e) => setCreateData({ ...createData, price_before_large: e.target.value ? Number(e.target.value) : null })}
+                  onChange={(e) =>
+                    setCreateData({ ...createData, price_before_large: e.target.value ? Number(e.target.value) : null })
+                  }
                   placeholder="Before discount"
                 />
               </div>
             </div>
+
             <div>
-              <label style={labelStyle}>Details (EN)</label>
+              <label className={labelCls}>Details (EN)</label>
               <textarea
-                style={{ ...inputStyle, minHeight: 80, resize: "vertical" as const }}
+                className={`${inputCls} min-h-[80px] resize-y`}
                 value={createData.details_en || ""}
                 onChange={(e) => setCreateData({ ...createData, details_en: e.target.value || null })}
                 placeholder="One detail per line"
               />
             </div>
             <div>
-              <label style={labelStyle}>Details (AR)</label>
+              <label className={labelCls}>Details (AR)</label>
               <textarea
-                style={{ ...inputStyle, minHeight: 80, resize: "vertical" as const, direction: "rtl" as const }}
+                className={`${inputCls} min-h-[80px] resize-y text-right`}
+                dir="rtl"
                 value={createData.details_ar || ""}
                 onChange={(e) => setCreateData({ ...createData, details_ar: e.target.value || null })}
                 placeholder="تفصيل واحد لكل سطر"
               />
             </div>
 
-            {/* Image uploads */}
             <ImageUpload
               label="Main Image"
               value={createData.image || null}
               onChange={(url) => setCreateData({ ...createData, image: url })}
             />
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <div className="grid grid-cols-2 gap-2">
               <ImageUpload
                 label="Image Small"
                 value={createData.image_small || null}
@@ -496,56 +488,38 @@ export default function ServicesPage() {
               />
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
+            <div className="grid grid-cols-2 gap-2">
+              <label className="flex items-center gap-1.5 text-xs text-white/50 cursor-pointer">
                 <input
                   type="checkbox"
+                  className="accent-gold"
                   checked={createData.popular || false}
                   onChange={(e) => setCreateData({ ...createData, popular: e.target.checked })}
-                  style={{ accentColor: "#F6BE00" }}
                 />
                 Popular
               </label>
-              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
+              <label className="flex items-center gap-1.5 text-xs text-white/50 cursor-pointer">
                 <input
                   type="checkbox"
+                  className="accent-green-500"
                   checked={createData.active !== false}
                   onChange={(e) => setCreateData({ ...createData, active: e.target.checked })}
-                  style={{ accentColor: "#4CAF50" }}
                 />
                 Active
               </label>
             </div>
 
-            <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+            <div className="flex gap-2 mt-1">
               <button
                 onClick={saveCreate}
                 disabled={createSaving}
-                style={{
-                  flex: 1,
-                  padding: "10px 16px",
-                  background: createSaving ? "rgba(246,190,0,0.5)" : "#F6BE00",
-                  border: "none",
-                  borderRadius: 8,
-                  color: "#000",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: createSaving ? "not-allowed" : "pointer",
-                }}
+                className="flex-1 px-4 py-2.5 bg-gold hover:bg-gold-light text-black text-sm font-bold rounded-lg transition cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {createSaving ? "Creating..." : "Create Service"}
               </button>
               <button
                 onClick={cancelCreate}
-                style={{
-                  padding: "10px 16px",
-                  background: "transparent",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: 8,
-                  color: "rgba(255,255,255,0.5)",
-                  fontSize: 13,
-                  cursor: "pointer",
-                }}
+                className="px-4 py-2.5 bg-transparent border border-white/10 rounded-lg text-white/50 text-sm cursor-pointer hover:text-white/70 transition"
               >
                 Cancel
               </button>
@@ -554,103 +528,73 @@ export default function ServicesPage() {
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 16 }}>
-        {services.map((s) => {
+      {/* Service grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        {filteredServices.map((s) => {
           const isEditing = editingId === s.id;
 
           return (
             <div
               key={s.id}
-              style={{
-                background: "#111",
-                border: `1px solid ${s.active ? "rgba(255,255,255,0.06)" : "rgba(244,67,54,0.2)"}`,
-                borderRadius: 14,
-                overflow: "hidden",
-                opacity: s.active ? 1 : 0.6,
-              }}
+              className={`bg-[#111] border rounded-xl overflow-hidden ${s.active ? "border-white/[0.06]" : "border-red-500/20 opacity-60"}`}
             >
               {/* Thumbnail */}
               {s.image && (
                 <div
-                  style={{
-                    height: 120,
-                    background: `url(${s.image}) center/cover`,
-                    borderBottom: "1px solid rgba(255,255,255,0.06)",
-                  }}
+                  className="h-[120px] bg-cover bg-center border-b border-white/[0.06]"
+                  style={{ backgroundImage: `url(${s.image})` }}
                 />
               )}
 
-              <div style={{ padding: 16 }}>
+              <div className="p-4">
                 {!isEditing ? (
                   <>
                     {/* View mode */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                      <span
-                        style={{
-                          padding: "2px 8px",
-                          borderRadius: 6,
-                          fontSize: 10,
-                          fontWeight: 700,
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                          background: `${CATEGORY_COLORS[s.category] || "#666"}20`,
-                          color: CATEGORY_COLORS[s.category] || "#666",
-                        }}
-                      >
-                        {s.category}
-                      </span>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={categoryBadgeClasses(s.category)}>{s.category}</span>
                       {!s.active && (
-                        <span style={{ fontSize: 10, color: "#f44336", fontWeight: 600 }}>
-                          INACTIVE
-                        </span>
+                        <span className="text-[10px] text-red-500 font-semibold">INACTIVE</span>
                       )}
                     </div>
 
-                    <div style={{ fontSize: 15, fontWeight: 600, color: "#fff", marginBottom: 2 }}>
-                      {s.name_en}
-                    </div>
-                    <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 10, direction: "rtl" }}>
-                      {s.name_ar}
-                    </div>
+                    <div className="text-[15px] font-semibold text-white mb-0.5">{s.name_en}</div>
+                    <div className="text-sm text-white/40 mb-2.5" dir="rtl">{s.name_ar}</div>
 
-                    <div style={{ display: "flex", gap: 16, marginBottom: 8 }}>
+                    <div className="flex gap-4 mb-2">
                       <div>
-                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", textTransform: "uppercase" }}>Small</div>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>
+                        <div className="text-[10px] text-white/30 uppercase">Small</div>
+                        <div className="text-sm font-semibold text-white">
                           {(s.price_small || 0).toLocaleString()} SAR
                         </div>
                       </div>
                       <div>
-                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", textTransform: "uppercase" }}>Large</div>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>
+                        <div className="text-[10px] text-white/30 uppercase">Large</div>
+                        <div className="text-sm font-semibold text-white">
                           {(s.price_large || 0).toLocaleString()} SAR
                         </div>
                       </div>
                     </div>
 
                     {s.warranty && (
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 10 }}>
-                        Warranty: {s.warranty}
-                      </div>
+                      <div className="text-xs text-white/40 mb-2.5">Warranty: {s.warranty}</div>
                     )}
 
-                    {/* Toggles */}
-                    <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
-                      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
+                    <div className="flex gap-3 mb-3">
+                      <label className="flex items-center gap-1.5 text-xs text-white/50 cursor-pointer">
                         <input
                           type="checkbox"
+                          className="accent-gold"
                           checked={s.popular}
                           onChange={(e) => toggleField(s.id, "popular", e.target.checked)}
-                          style={{ accentColor: "#F6BE00" }}
                         />
                         Popular
                       </label>
-                      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
+                      <label className="flex items-center gap-1.5 text-xs text-white/50 cursor-pointer">
                         <input
                           type="checkbox"
+                          className="accent-green-500"
                           checked={s.active}
                           onChange={(e) => toggleField(s.id, "active", e.target.checked)}
-                          style={{ accentColor: "#4CAF50" }}
                         />
                         Active
                       </label>
@@ -658,17 +602,7 @@ export default function ServicesPage() {
 
                     <button
                       onClick={() => startEdit(s)}
-                      style={{
-                        padding: "8px 16px",
-                        background: "rgba(246,190,0,0.1)",
-                        border: "1px solid rgba(246,190,0,0.3)",
-                        borderRadius: 8,
-                        color: "#F6BE00",
-                        fontSize: 12,
-                        fontWeight: 600,
-                        cursor: "pointer",
-                        transition: "all 0.15s",
-                      }}
+                      className="px-4 py-2 bg-gold/10 border border-gold/30 rounded-lg text-gold text-xs font-semibold cursor-pointer hover:bg-gold/20 transition"
                     >
                       Edit Details
                     </button>
@@ -676,108 +610,118 @@ export default function ServicesPage() {
                 ) : (
                   <>
                     {/* Edit mode */}
-                    <div style={{ display: "grid", gap: 12 }}>
+                    <div className="grid gap-3">
                       <div>
-                        <label style={labelStyle}>Name (EN)</label>
+                        <label className={labelCls}>Name (EN)</label>
                         <input
-                          style={inputStyle}
+                          className={inputCls}
                           value={editData.name_en || ""}
                           onChange={(e) => setEditData({ ...editData, name_en: e.target.value })}
                         />
                       </div>
                       <div>
-                        <label style={labelStyle}>Name (AR)</label>
+                        <label className={labelCls}>Name (AR)</label>
                         <input
-                          style={{ ...inputStyle, direction: "rtl" as const }}
+                          className={`${inputCls} text-right`}
+                          dir="rtl"
                           value={editData.name_ar || ""}
                           onChange={(e) => setEditData({ ...editData, name_ar: e.target.value })}
                         />
                       </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+
+                      <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label style={labelStyle}>Price Small (SAR)</label>
+                          <label className={labelCls}>Price Small (SAR)</label>
                           <input
                             type="number"
-                            style={inputStyle}
+                            className={inputCls}
                             value={editData.price_small || 0}
                             onChange={(e) => setEditData({ ...editData, price_small: Number(e.target.value) })}
                           />
                         </div>
                         <div>
-                          <label style={labelStyle}>Price Large (SAR)</label>
+                          <label className={labelCls}>Price Large (SAR)</label>
                           <input
                             type="number"
-                            style={inputStyle}
+                            className={inputCls}
                             value={editData.price_large || 0}
                             onChange={(e) => setEditData({ ...editData, price_large: Number(e.target.value) })}
                           />
                         </div>
                       </div>
+
                       <div>
-                        <label style={labelStyle}>Warranty</label>
+                        <label className={labelCls}>Warranty</label>
                         <input
-                          style={inputStyle}
+                          className={inputCls}
                           value={editData.warranty || ""}
                           onChange={(e) => setEditData({ ...editData, warranty: e.target.value })}
                         />
                       </div>
+
                       <div>
-                        <label style={labelStyle}>Tier</label>
+                        <label className={labelCls}>Tier</label>
                         <input
-                          style={inputStyle}
+                          className={inputCls}
                           value={editData.tier || ""}
                           onChange={(e) => setEditData({ ...editData, tier: e.target.value || null })}
                           placeholder="e.g. SPRINT, TURBO, Plus"
                         />
                       </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+
+                      <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label style={labelStyle}>Price Before Small (SAR)</label>
+                          <label className={labelCls}>Price Before Small (SAR)</label>
                           <input
                             type="number"
-                            style={inputStyle}
+                            className={inputCls}
                             value={editData.price_before_small ?? ""}
-                            onChange={(e) => setEditData({ ...editData, price_before_small: e.target.value ? Number(e.target.value) : null })}
+                            onChange={(e) =>
+                              setEditData({ ...editData, price_before_small: e.target.value ? Number(e.target.value) : null })
+                            }
                             placeholder="Before discount"
                           />
                         </div>
                         <div>
-                          <label style={labelStyle}>Price Before Large (SAR)</label>
+                          <label className={labelCls}>Price Before Large (SAR)</label>
                           <input
                             type="number"
-                            style={inputStyle}
+                            className={inputCls}
                             value={editData.price_before_large ?? ""}
-                            onChange={(e) => setEditData({ ...editData, price_before_large: e.target.value ? Number(e.target.value) : null })}
+                            onChange={(e) =>
+                              setEditData({ ...editData, price_before_large: e.target.value ? Number(e.target.value) : null })
+                            }
                             placeholder="Before discount"
                           />
                         </div>
                       </div>
+
                       <div>
-                        <label style={labelStyle}>Details (EN)</label>
+                        <label className={labelCls}>Details (EN)</label>
                         <textarea
-                          style={{ ...inputStyle, minHeight: 80, resize: "vertical" as const }}
+                          className={`${inputCls} min-h-[80px] resize-y`}
                           value={editData.details_en || ""}
                           onChange={(e) => setEditData({ ...editData, details_en: e.target.value || null })}
                           placeholder="One detail per line"
                         />
                       </div>
                       <div>
-                        <label style={labelStyle}>Details (AR)</label>
+                        <label className={labelCls}>Details (AR)</label>
                         <textarea
-                          style={{ ...inputStyle, minHeight: 80, resize: "vertical" as const, direction: "rtl" as const }}
+                          className={`${inputCls} min-h-[80px] resize-y text-right`}
+                          dir="rtl"
                           value={editData.details_ar || ""}
                           onChange={(e) => setEditData({ ...editData, details_ar: e.target.value || null })}
                           placeholder="تفصيل واحد لكل سطر"
                         />
                       </div>
 
-                      {/* Image uploads */}
                       <ImageUpload
                         label="Main Image"
                         value={editData.image || null}
                         onChange={(url) => setEditData({ ...editData, image: url })}
                       />
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      <div className="grid grid-cols-2 gap-2">
                         <ImageUpload
                           label="Image Small"
                           value={editData.image_small || null}
@@ -790,56 +734,38 @@ export default function ServicesPage() {
                         />
                       </div>
 
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
+                      <div className="grid grid-cols-2 gap-2">
+                        <label className="flex items-center gap-1.5 text-xs text-white/50 cursor-pointer">
                           <input
                             type="checkbox"
+                            className="accent-gold"
                             checked={editData.popular || false}
                             onChange={(e) => setEditData({ ...editData, popular: e.target.checked })}
-                            style={{ accentColor: "#F6BE00" }}
                           />
                           Popular
                         </label>
-                        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
+                        <label className="flex items-center gap-1.5 text-xs text-white/50 cursor-pointer">
                           <input
                             type="checkbox"
+                            className="accent-green-500"
                             checked={editData.active || false}
                             onChange={(e) => setEditData({ ...editData, active: e.target.checked })}
-                            style={{ accentColor: "#4CAF50" }}
                           />
                           Active
                         </label>
                       </div>
 
-                      <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                      <div className="flex gap-2 mt-1">
                         <button
                           onClick={saveEdit}
                           disabled={saving}
-                          style={{
-                            flex: 1,
-                            padding: "10px 16px",
-                            background: saving ? "rgba(246,190,0,0.5)" : "#F6BE00",
-                            border: "none",
-                            borderRadius: 8,
-                            color: "#000",
-                            fontSize: 13,
-                            fontWeight: 700,
-                            cursor: saving ? "not-allowed" : "pointer",
-                          }}
+                          className="flex-1 px-4 py-2.5 bg-gold hover:bg-gold-light text-black text-sm font-bold rounded-lg transition cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {saving ? "Saving..." : "Save"}
                         </button>
                         <button
                           onClick={cancelEdit}
-                          style={{
-                            padding: "10px 16px",
-                            background: "transparent",
-                            border: "1px solid rgba(255,255,255,0.1)",
-                            borderRadius: 8,
-                            color: "rgba(255,255,255,0.5)",
-                            fontSize: 13,
-                            cursor: "pointer",
-                          }}
+                          className="px-4 py-2.5 bg-transparent border border-white/10 rounded-lg text-white/50 text-sm cursor-pointer hover:text-white/70 transition"
                         >
                           Cancel
                         </button>
