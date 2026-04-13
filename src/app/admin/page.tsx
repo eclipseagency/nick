@@ -146,64 +146,61 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div style={{ color: "rgba(255,255,255,0.4)", padding: 40, textAlign: "center" }}>
-        Loading dashboard...
+      <div className="space-y-5">
+        <div className="admin-skeleton h-7 w-32 rounded-lg" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+          {[1, 2, 3, 4].map(i => <div key={i} className="admin-skeleton h-24 rounded-xl" />)}
+        </div>
+        <div className="admin-skeleton h-40 rounded-xl" />
+        <div className="admin-skeleton h-80 rounded-xl" />
       </div>
     );
   }
 
   return (
-    <div className="dash-root">
-      <h1 style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 20 }}>
-        Dashboard
-      </h1>
+    <div className="max-w-full overflow-x-hidden">
+      <h1 className="text-xl font-bold text-white mb-5">Dashboard</h1>
 
       {/* Stats */}
-      <div className="dash-stats">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-5">
         {[
-          { label: "Bookings", value: bookings.length, color: "#fff" },
-          { label: "Revenue", value: totalRevenue.toLocaleString(), color: "#fff", sub: "SAR" },
-          { label: "Pending", value: pendingCount, color: "#F6BE00" },
-          { label: "Confirmed", value: confirmedCount, color: "#2196F3" },
+          { label: "Bookings", value: bookings.length, colorClass: "text-white" },
+          { label: "Revenue", value: totalRevenue.toLocaleString(), colorClass: "text-white", sub: "SAR" },
+          { label: "Pending", value: pendingCount, colorClass: "text-amber-500" },
+          { label: "Confirmed", value: confirmedCount, colorClass: "text-blue-500" },
         ].map((s) => (
-          <div key={s.label} className="dash-card">
-            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
-              {s.label}
-            </div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: s.color, lineHeight: 1 }}>
-              {s.value}
-            </div>
-            {s.sub && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 3 }}>{s.sub}</div>}
+          <div key={s.label} className="bg-[#111] border border-white/[0.06] rounded-xl p-4">
+            <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1.5">{s.label}</div>
+            <div className={`text-[28px] font-extrabold leading-none ${s.colorClass}`}>{s.value}</div>
+            {s.sub && <div className="text-[10px] text-white/30 mt-1">{s.sub}</div>}
           </div>
         ))}
       </div>
 
       {/* Revenue Chart */}
-      <div className="dash-card" style={{ marginBottom: 20, padding: 16 }}>
-        <h2 style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 16 }}>Weekly Revenue</h2>
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 120 }}>
+      <div className="bg-[#111] border border-white/[0.06] rounded-xl p-4 mb-5">
+        <h2 className="text-sm font-semibold text-white mb-4">Weekly Revenue</h2>
+        <div className="flex items-end gap-1.5 h-[120px]">
           {(() => {
             const maxRev = Math.max(...weeklyRevenue.map((w) => w.revenue), 1);
             return weeklyRevenue.map((w) => (
-              <div key={w.label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+              <div key={w.label} className="flex-1 flex flex-col items-center gap-1">
                 {w.revenue > 0 && (
-                  <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", whiteSpace: "nowrap" }}>
+                  <span className="text-[9px] text-white/40 whitespace-nowrap">
                     {(w.revenue / 1000).toFixed(w.revenue >= 1000 ? 1 : 0)}k
                   </span>
                 )}
                 <div
                   title={`${w.label}: ${w.revenue.toLocaleString()} SAR (${w.bookings} bookings)`}
+                  className="w-full max-w-[40px] rounded-t transition-all duration-500 min-h-[4px]"
                   style={{
-                    width: "100%",
-                    maxWidth: 40,
                     height: `${Math.max((w.revenue / maxRev) * 90, 4)}%`,
-                    background: w.revenue > 0 ? "linear-gradient(to top, rgba(246,190,0,0.3), rgba(246,190,0,0.7))" : "rgba(255,255,255,0.05)",
-                    borderRadius: "4px 4px 0 0",
-                    transition: "height 0.5s ease",
-                    minHeight: 4,
+                    background: w.revenue > 0
+                      ? "linear-gradient(to top, rgba(246,190,0,0.3), rgba(246,190,0,0.7))"
+                      : "rgba(255,255,255,0.05)",
                   }}
                 />
-                <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>{w.label}</span>
+                <span className="text-[9px] text-white/30">{w.label}</span>
               </div>
             ));
           })()}
@@ -211,38 +208,51 @@ export default function AdminDashboard() {
       </div>
 
       {/* Calendar + Detail */}
-      <div className="dash-calendar-wrap">
+      <div className="grid grid-cols-1 min-[900px]:grid-cols-[1fr_360px] gap-3">
         {/* Calendar */}
-        <div className="dash-card" style={{ padding: 16 }}>
-          {/* Header */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button onClick={prevMonth} className="dash-nav-btn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <div className="bg-[#111] border border-white/[0.06] rounded-xl p-4">
+          {/* Month navigation */}
+          <div className="flex items-center justify-between mb-3.5">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={prevMonth}
+                className="p-1.5 border border-white/10 rounded-lg text-white/60 hover:text-white transition bg-transparent cursor-pointer inline-flex items-center justify-center"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="15 18 9 12 15 6"/>
+                </svg>
               </button>
-              <h2 className="dash-month-title">
+              <h2 className="text-[15px] font-bold text-white min-w-[150px] text-center m-0">
                 {MONTHS[currentMonth.getMonth()]} {currentMonth.getFullYear()}
               </h2>
-              <button onClick={nextMonth} className="dash-nav-btn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+              <button
+                onClick={nextMonth}
+                className="p-1.5 border border-white/10 rounded-lg text-white/60 hover:text-white transition bg-transparent cursor-pointer inline-flex items-center justify-center"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
               </button>
             </div>
-            <button onClick={goToday} className="dash-nav-btn" style={{ padding: "5px 12px", fontSize: 11, color: "#F6BE00", borderColor: "rgba(246,190,0,0.3)" }}>
+            <button
+              onClick={goToday}
+              className="px-3 py-1.5 border border-gold/30 rounded-lg text-[11px] text-gold hover:bg-gold/5 transition bg-transparent cursor-pointer"
+            >
               Today
             </button>
           </div>
 
           {/* Day headers */}
-          <div className="dash-cal-grid" style={{ marginBottom: 2 }}>
+          <div className="grid grid-cols-7 gap-0.5 mb-0.5">
             {DAYS.map((d) => (
-              <div key={d} style={{ textAlign: "center", fontSize: 10, color: "rgba(255,255,255,0.3)", padding: "4px 0", fontWeight: 600 }}>
+              <div key={d} className="text-center text-[10px] text-white/30 py-1 font-semibold">
                 {d}
               </div>
             ))}
           </div>
 
-          {/* Days */}
-          <div className="dash-cal-grid">
+          {/* Day cells */}
+          <div className="grid grid-cols-7 gap-0.5">
             {calendarDays.map((cell) => {
               const dayBookings = bookingsByDate[cell.date] || [];
               const hasBookings = dayBookings.length > 0;
@@ -252,42 +262,32 @@ export default function AdminDashboard() {
                 return acc;
               }, {} as Record<string, number>);
 
+              let cellClasses = "flex flex-col items-center justify-center gap-0.5 py-1.5 px-0.5 rounded-lg text-[13px] min-h-[42px] cursor-pointer transition border bg-transparent";
+
+              if (isSelected) {
+                cellClasses += " bg-gold/15 border-gold/50 text-gold font-bold";
+              } else if (cell.isToday) {
+                cellClasses += " bg-gold/[0.06] border-gold/20 text-gold font-bold";
+              } else if (cell.isCurrentMonth) {
+                cellClasses += " border-white/[0.04] text-white font-medium";
+              } else {
+                cellClasses += " border-transparent text-white/15";
+              }
+
               return (
                 <button
                   key={cell.date}
                   onClick={() => setSelectedDate(isSelected ? null : cell.date)}
-                  className="dash-cal-cell"
-                  style={{
-                    background: isSelected
-                      ? "rgba(246,190,0,0.15)"
-                      : cell.isToday
-                      ? "rgba(246,190,0,0.06)"
-                      : "transparent",
-                    border: isSelected
-                      ? "1px solid rgba(246,190,0,0.5)"
-                      : cell.isToday
-                      ? "1px solid rgba(246,190,0,0.2)"
-                      : "1px solid rgba(255,255,255,0.04)",
-                    color: !cell.isCurrentMonth
-                      ? "rgba(255,255,255,0.15)"
-                      : cell.isToday
-                      ? "#F6BE00"
-                      : "#fff",
-                    fontWeight: cell.isToday ? 700 : 500,
-                  }}
+                  className={cellClasses}
                 >
                   <span>{cell.day}</span>
                   {hasBookings && cell.isCurrentMonth && (
-                    <div style={{ display: "flex", gap: 2, justifyContent: "center" }}>
+                    <div className="flex gap-0.5 justify-center">
                       {Object.entries(statusCounts).slice(0, 3).map(([status]) => (
                         <div
                           key={status}
-                          style={{
-                            width: 5,
-                            height: 5,
-                            borderRadius: 3,
-                            background: STATUS_COLORS[status] || "#666",
-                          }}
+                          className="w-[5px] h-[5px] rounded-full"
+                          style={{ background: STATUS_COLORS[status] || "#666" }}
                         />
                       ))}
                     </div>
@@ -298,11 +298,11 @@ export default function AdminDashboard() {
           </div>
 
           {/* Legend */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 12, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="flex flex-wrap gap-2.5 mt-3 pt-2.5 border-t border-white/[0.06]">
             {Object.entries(STATUS_COLORS).map(([status, color]) => (
-              <div key={status} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <div style={{ width: 6, height: 6, borderRadius: 3, background: color }} />
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", textTransform: "capitalize" }}>
+              <div key={status} className="flex items-center gap-1">
+                <div className="w-1.5 h-1.5 rounded-full" style={{ background: color }} />
+                <span className="text-[10px] text-white/35 capitalize">
                   {status.replace("_", " ")}
                 </span>
               </div>
@@ -312,76 +312,72 @@ export default function AdminDashboard() {
 
         {/* Side panel */}
         {selectedBookings && (
-          <div className="dash-card dash-side-panel">
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-              <h3 style={{ fontSize: 13, fontWeight: 600, color: "#fff", margin: 0 }}>
-                {new Date(selectedDate + "T00:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}
+          <div className="bg-[#111] border border-white/[0.06] rounded-xl p-4 max-h-[60vh] min-[900px]:max-h-[calc(100vh-280px)] overflow-y-auto">
+            <div className="flex items-center justify-between mb-3.5">
+              <h3 className="text-sm font-semibold text-white m-0">
+                {new Date(selectedDate + "T00:00:00").toLocaleDateString("en-GB", {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                })}
               </h3>
               <button
                 onClick={() => setSelectedDate(null)}
-                style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 18, padding: 0, lineHeight: 1 }}
+                className="text-white/30 text-lg hover:text-white/60 cursor-pointer bg-transparent border-none leading-none"
               >
                 &times;
               </button>
             </div>
 
             {selectedBookings.length === 0 ? (
-              <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 13, padding: "20px 0", textAlign: "center" }}>
-                No bookings
-              </div>
+              <div className="text-white/25 text-sm py-5 text-center">No bookings</div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div className="flex flex-col gap-2">
                 {selectedBookings.map((b) => (
                   <div
                     key={b.id}
-                    style={{
-                      padding: 12,
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.06)",
-                      borderRadius: 10,
-                      borderLeft: `3px solid ${STATUS_COLORS[b.status] || "#666"}`,
-                    }}
+                    className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-xl border-l-[3px]"
+                    style={{ borderLeftColor: STATUS_COLORS[b.status] || "#666" }}
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 6 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>
-                        {b.customer_name}
-                      </div>
+                    <div className="flex justify-between items-start mb-1.5">
+                      <div className="text-[13px] font-semibold text-white">{b.customer_name}</div>
                       <span
+                        className="px-[7px] py-0.5 rounded-xl text-[9px] font-semibold capitalize whitespace-nowrap shrink-0 ml-1.5"
                         style={{
-                          padding: "2px 7px",
-                          borderRadius: 12,
-                          fontSize: 9,
-                          fontWeight: 600,
-                          textTransform: "capitalize",
                           background: `${STATUS_COLORS[b.status] || "#666"}20`,
                           color: STATUS_COLORS[b.status] || "#666",
-                          whiteSpace: "nowrap",
-                          flexShrink: 0,
-                          marginLeft: 6,
                         }}
                       >
                         {b.status.replace("_", " ")}
                       </span>
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 3 }}>
-                      {b.customer_phone}
-                    </div>
+                    <div className="text-[11px] text-white/50 mb-0.5">{b.customer_phone}</div>
                     {b.car_make && (
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+                      <div className="text-[11px] text-white/40">
                         {b.car_make} &middot; {b.car_size}
                       </div>
                     )}
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="text-[13px] font-bold text-white">
                         {(b.total || 0).toLocaleString()} SAR
                       </span>
-                      <div style={{ display: "flex", gap: 5 }}>
-                        <a href={`tel:${b.customer_phone}`} className="dash-action-btn dash-action-call" title="Call">
+                      <div className="flex gap-1.5">
+                        <a
+                          href={`tel:${b.customer_phone}`}
+                          title="Call"
+                          className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500"
+                        >
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
                           </svg>
                         </a>
-                        <a href={`https://wa.me/${b.customer_phone.replace(/[^0-9]/g, "")}`} target="_blank" rel="noopener noreferrer" className="dash-action-btn dash-action-wa" title="WhatsApp">
+                        <a
+                          href={`https://wa.me/${b.customer_phone.replace(/[^0-9]/g, "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="WhatsApp"
+                          className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-green-500/10 border border-green-500/20 text-green-500"
+                        >
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                           </svg>
@@ -398,43 +394,30 @@ export default function AdminDashboard() {
 
       {/* Today's bookings */}
       {todayBookings.length > 0 && !selectedDate && (
-        <div className="dash-card" style={{ marginTop: 16 }}>
-          <h2 style={{ fontSize: 14, fontWeight: 600, color: "#F6BE00", marginBottom: 12 }}>
+        <div className="bg-[#111] border border-white/[0.06] rounded-xl p-4 mt-3">
+          <h2 className="text-sm font-semibold text-gold mb-3">
             {"Today's Bookings"} ({todayBookings.length})
           </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div className="flex flex-col gap-2">
             {todayBookings.map((b) => (
               <div
                 key={b.id}
-                style={{
-                  padding: 12,
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  borderRadius: 10,
-                  borderLeft: `3px solid ${STATUS_COLORS[b.status] || "#666"}`,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  gap: 8,
-                }}
+                className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-xl border-l-[3px] flex justify-between items-center gap-2"
+                style={{ borderLeftColor: STATUS_COLORS[b.status] || "#666" }}
               >
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.customer_name}</div>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+                <div className="min-w-0">
+                  <div className="text-[13px] font-semibold text-white overflow-hidden text-ellipsis whitespace-nowrap">
+                    {b.customer_name}
+                  </div>
+                  <div className="text-[11px] text-white/40 mt-0.5">
                     {b.car_make || b.car_size} &middot; {(b.total || 0).toLocaleString()} SAR
                   </div>
                 </div>
                 <span
+                  className="px-2 py-0.5 rounded-xl text-[9px] font-semibold capitalize whitespace-nowrap shrink-0"
                   style={{
-                    padding: "3px 8px",
-                    borderRadius: 12,
-                    fontSize: 9,
-                    fontWeight: 600,
-                    textTransform: "capitalize",
                     background: `${STATUS_COLORS[b.status] || "#666"}20`,
                     color: STATUS_COLORS[b.status] || "#666",
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
                   }}
                 >
                   {b.status.replace("_", " ")}
@@ -444,120 +427,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
-
-      <style>{`
-        .dash-root { max-width: 100%; overflow-x: hidden; }
-        .dash-card {
-          background: #111;
-          border: 1px solid rgba(246,190,0,0.15);
-          border-radius: 12px;
-          padding: 16px;
-        }
-        .dash-stats {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 10px;
-          margin-bottom: 20px;
-        }
-        .dash-calendar-wrap {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 12px;
-        }
-        .dash-cal-grid {
-          display: grid;
-          grid-template-columns: repeat(7, 1fr);
-          gap: 2px;
-        }
-        .dash-cal-cell {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 2px;
-          padding: 6px 2px;
-          border-radius: 8px;
-          font-size: 13px;
-          cursor: pointer;
-          transition: all 0.15s;
-          min-height: 42px;
-        }
-        .dash-cal-cell:active {
-          transform: scale(0.95);
-        }
-        .dash-nav-btn {
-          background: transparent;
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 8px;
-          color: rgba(255,255,255,0.6);
-          cursor: pointer;
-          padding: 5px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .dash-month-title {
-          font-size: 15px;
-          font-weight: 700;
-          color: #fff;
-          margin: 0;
-          min-width: 150px;
-          text-align: center;
-        }
-        .dash-side-panel {
-          max-height: 60vh;
-          overflow-y: auto;
-          -webkit-overflow-scrolling: touch;
-        }
-        .dash-action-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 28px;
-          height: 28px;
-          border-radius: 7px;
-          text-decoration: none;
-        }
-        .dash-action-call {
-          background: rgba(33,150,243,0.1);
-          border: 1px solid rgba(33,150,243,0.2);
-          color: #2196F3;
-        }
-        .dash-action-wa {
-          background: rgba(37,211,102,0.1);
-          border: 1px solid rgba(37,211,102,0.2);
-          color: #25D366;
-        }
-
-        /* Mobile: 2x2 stats, stacked layout */
-        @media (max-width: 640px) {
-          .dash-stats {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-          }
-          .dash-card { padding: 12px; border-radius: 10px; }
-          .dash-cal-cell {
-            font-size: 12px;
-            min-height: 38px;
-            padding: 4px 1px;
-            border-radius: 6px;
-          }
-          .dash-month-title {
-            font-size: 14px;
-            min-width: 130px;
-          }
-        }
-
-        /* Tablet+: side panel next to calendar */
-        @media (min-width: 900px) {
-          .dash-calendar-wrap {
-            grid-template-columns: 1fr 360px;
-          }
-          .dash-side-panel {
-            max-height: calc(100vh - 280px);
-          }
-        }
-      `}</style>
     </div>
   );
 }
