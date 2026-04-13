@@ -4,12 +4,20 @@ import { useState, useEffect } from "react";
 
 export default function FloatingButtons() {
   const [showTop, setShowTop] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    const path = window.location.pathname;
+    if (path.startsWith("/admin") || path.startsWith("/login")) {
+      setIsAdmin(true);
+      return;
+    }
     const fn = () => setShowTop(window.scrollY > 600);
     window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
+
+  if (isAdmin) return null;
 
   return (
     <>

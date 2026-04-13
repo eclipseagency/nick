@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { label: "Settings", href: "/admin/settings", icon: "settings" },
 ];
 
-function NavIcon({ icon, size = 18 }: { icon: string; size?: number }) {
+function NavIcon({ icon, size = 20 }: { icon: string; size?: number }) {
   const s = { width: size, height: size, strokeWidth: 1.5, fill: "none", stroke: "currentColor" };
   switch (icon) {
     case "grid":
@@ -101,7 +101,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="flex min-h-screen bg-[#050505]">
+    <div dir="ltr" className="flex min-h-screen bg-[#050505]">
       {/* Mobile overlay backdrop */}
       {sidebarOpen && (
         <div
@@ -121,7 +121,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 p-3 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-1.5">
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.href);
             return (
@@ -135,8 +135,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 }}
                 className={
                   active
-                    ? "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gold bg-gold/[0.08]"
-                    : "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm text-white/60 hover:text-white/80 hover:bg-white/[0.03] transition"
+                    ? "flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-semibold text-gold bg-gold/[0.08]"
+                    : "flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] text-white/60 hover:text-white/80 hover:bg-white/[0.04] transition"
                 }
               >
                 <NavIcon icon={item.icon} />
