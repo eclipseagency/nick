@@ -3,10 +3,50 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+function EyeIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function EyeOffIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+      <line x1="1" y1="1" x2="23" y2="23" />
+    </svg>
+  );
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -37,76 +77,26 @@ export default function LoginPage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#050505",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 20,
-      }}
-    >
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-5">
       <form
         onSubmit={handleSubmit}
-        style={{
-          background: "#111",
-          border: "1px solid rgba(255,255,255,0.06)",
-          borderRadius: 16,
-          padding: 40,
-          width: "100%",
-          maxWidth: 400,
-        }}
+        className="bg-[#111] border border-white/[0.06] rounded-2xl p-10 w-full max-w-[400px]"
       >
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: 32,
-          }}
-        >
-          <h1
-            style={{
-              fontSize: 28,
-              fontWeight: 800,
-              color: "#F6BE00",
-              letterSpacing: "0.08em",
-              marginBottom: 8,
-            }}
-          >
+        <div className="text-center mb-8">
+          <h1 className="text-[28px] font-extrabold text-gold tracking-widest mb-2">
             NICK
           </h1>
-          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 14 }}>
-            Admin Dashboard
-          </p>
+          <p className="text-white/50 text-sm">Admin Dashboard</p>
         </div>
 
         {error && (
-          <div
-            style={{
-              background: "rgba(244,67,54,0.1)",
-              border: "1px solid rgba(244,67,54,0.3)",
-              borderRadius: 8,
-              padding: "10px 14px",
-              marginBottom: 20,
-              color: "#f44336",
-              fontSize: 13,
-            }}
-          >
+          <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-3.5 py-2.5 mb-5 text-red-500 text-sm">
             {error}
           </div>
         )}
 
-        <div style={{ marginBottom: 16 }}>
-          <label
-            style={{
-              display: "block",
-              fontSize: 12,
-              color: "rgba(255,255,255,0.5)",
-              marginBottom: 6,
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-            }}
-          >
+        <div className="mb-4">
+          <label className="block text-xs text-white/50 mb-1.5 uppercase tracking-wider">
             Username
           </label>
           <input
@@ -115,81 +105,38 @@ export default function LoginPage() {
             onChange={(e) => setUsername(e.target.value)}
             required
             autoFocus
-            style={{
-              width: "100%",
-              padding: "12px 14px",
-              background: "#050505",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: 10,
-              color: "#fff",
-              fontSize: 14,
-              outline: "none",
-              transition: "border-color 0.2s",
-            }}
-            onFocus={(e) =>
-              (e.target.style.borderColor = "rgba(246,190,0,0.5)")
-            }
-            onBlur={(e) =>
-              (e.target.style.borderColor = "rgba(255,255,255,0.1)")
-            }
+            className="w-full px-3.5 py-3 bg-[#050505] border border-white/10 rounded-xl text-white text-sm outline-none transition focus:border-gold/50 focus:ring-1 focus:ring-gold/20"
           />
         </div>
 
-        <div style={{ marginBottom: 24 }}>
-          <label
-            style={{
-              display: "block",
-              fontSize: 12,
-              color: "rgba(255,255,255,0.5)",
-              marginBottom: 6,
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-            }}
-          >
+        <div className="mb-6">
+          <label className="block text-xs text-white/50 mb-1.5 uppercase tracking-wider">
             Password
           </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{
-              width: "100%",
-              padding: "12px 14px",
-              background: "#050505",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: 10,
-              color: "#fff",
-              fontSize: 14,
-              outline: "none",
-              transition: "border-color 0.2s",
-            }}
-            onFocus={(e) =>
-              (e.target.style.borderColor = "rgba(246,190,0,0.5)")
-            }
-            onBlur={(e) =>
-              (e.target.style.borderColor = "rgba(255,255,255,0.1)")
-            }
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-3.5 py-3 pr-11 bg-[#050505] border border-white/10 rounded-xl text-white text-sm outline-none transition focus:border-gold/50 focus:ring-1 focus:ring-gold/20"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute inset-y-0 right-0 flex items-center px-3 text-white/40 hover:text-white/70 transition"
+              tabIndex={-1}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+            </button>
+          </div>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          style={{
-            width: "100%",
-            padding: "14px 28px",
-            background: loading ? "rgba(246,190,0,0.5)" : "#F6BE00",
-            color: "#000",
-            fontWeight: 700,
-            fontSize: 13,
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            borderRadius: 10,
-            border: "none",
-            cursor: loading ? "not-allowed" : "pointer",
-            transition: "all 0.3s",
-          }}
+          className="w-full py-3.5 px-7 bg-gold hover:bg-gold-light text-black font-bold text-sm uppercase tracking-wider rounded-xl border-none cursor-pointer transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Signing in..." : "Sign In"}
         </button>
