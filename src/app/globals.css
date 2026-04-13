@@ -345,13 +345,31 @@ body::before {
 
 /* Admin layout */
 @media (min-width: 1024px) {
-  .admin-content { margin-left: 260px; }
+  .admin-content { margin-left: 220px; }
   .admin-sidebar-visible { transform: translateX(0); }
   .admin-topbar { display: none !important; }
+  .admin-desktop-topbar { display: flex !important; }
 }
 @media (max-width: 1023px) {
   .admin-sidebar-hidden { transform: translateX(-100%); }
   .admin-sidebar-show { transform: translateX(0) !important; }
+  .admin-desktop-topbar { display: none !important; }
+}
+
+/* Admin content grid background */
+.admin-content {
+  position: relative;
+}
+.admin-content::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(rgba(246,190,0,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(246,190,0,0.015) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Admin skeleton loader */
