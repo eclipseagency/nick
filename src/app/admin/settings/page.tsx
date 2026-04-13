@@ -148,86 +148,62 @@ export default function SettingsPage() {
     setDeleteConfirm(null);
   }
 
-  const inputStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "10px 12px",
-    background: "#050505",
-    border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: 8,
-    color: "#fff",
-    fontSize: 14,
-    outline: "none",
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: 12,
-    color: "rgba(255,255,255,0.4)",
-    textTransform: "uppercase",
-    letterSpacing: "0.05em",
-    marginBottom: 6,
-    display: "block",
-  };
-
-  const cardStyle: React.CSSProperties = {
-    background: "#111",
-    border: "1px solid rgba(255,255,255,0.06)",
-    borderRadius: 14,
-    padding: 24,
-  };
-
   if (loading) {
     return (
-      <div style={{ color: "rgba(255,255,255,0.4)", padding: 40, textAlign: "center" }}>
-        Loading...
+      <div className="space-y-5 max-w-[640px]">
+        <div className="admin-skeleton h-8 w-32 rounded-lg" />
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="admin-skeleton h-48 rounded-xl" />
+        ))}
       </div>
     );
   }
 
   return (
     <div>
-      <h1 style={{ fontSize: 24, fontWeight: 700, color: "#fff", marginBottom: 24 }}>Settings</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">Settings</h1>
 
-      <div style={{ display: "grid", gap: 20, maxWidth: 600 }}>
+      <div className="grid gap-5 max-w-[640px]">
         {/* Change Password */}
-        <div style={cardStyle}>
-          <h2 style={{ fontSize: 16, fontWeight: 600, color: "#fff", marginBottom: 4 }}>
-            Change Password
-          </h2>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 20 }}>
-            Logged in as <span style={{ color: "#F6BE00" }}>{currentUser}</span>
+        <div className="bg-[#111] border border-white/[0.06] rounded-xl p-6">
+          <h2 className="text-base font-semibold text-white mb-1">Change Password</h2>
+          <p className="text-sm text-white/40 mb-5">
+            Logged in as <span className="text-gold">{currentUser}</span>
           </p>
 
-          <div style={{ display: "grid", gap: 14 }}>
+          <div className="grid gap-3.5">
             <div>
-              <label style={labelStyle}>New Password</label>
+              <label className="block text-xs text-white/40 mb-1.5 uppercase tracking-wider">
+                New Password
+              </label>
               <input
                 type="password"
-                style={inputStyle}
                 value={newPw}
                 onChange={(e) => setNewPw(e.target.value)}
                 placeholder="Enter new password"
+                className="w-full px-3 py-2.5 bg-[#050505] border border-white/10 rounded-lg text-white text-sm outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition placeholder:text-white/25"
               />
             </div>
             <div>
-              <label style={labelStyle}>Confirm New Password</label>
+              <label className="block text-xs text-white/40 mb-1.5 uppercase tracking-wider">
+                Confirm New Password
+              </label>
               <input
                 type="password"
-                style={inputStyle}
                 value={confirmPw}
                 onChange={(e) => setConfirmPw(e.target.value)}
                 placeholder="Confirm new password"
+                className="w-full px-3 py-2.5 bg-[#050505] border border-white/10 rounded-lg text-white text-sm outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition placeholder:text-white/25"
               />
             </div>
 
             {pwMsg && (
               <div
-                style={{
-                  fontSize: 13,
-                  color: pwError ? "#f44336" : "#4CAF50",
-                  padding: "8px 12px",
-                  background: pwError ? "rgba(244,67,54,0.08)" : "rgba(76,175,80,0.08)",
-                  borderRadius: 8,
-                }}
+                className={`text-sm px-3 py-2 rounded-lg ${
+                  pwError
+                    ? "text-red-500 bg-red-500/[0.08]"
+                    : "text-green-500 bg-green-500/[0.08]"
+                }`}
               >
                 {pwMsg}
               </div>
@@ -236,16 +212,7 @@ export default function SettingsPage() {
             <button
               onClick={handleChangePassword}
               disabled={pwSaving}
-              style={{
-                padding: "10px 20px",
-                background: pwSaving ? "rgba(246,190,0,0.5)" : "#F6BE00",
-                border: "none",
-                borderRadius: 8,
-                color: "#000",
-                fontSize: 13,
-                fontWeight: 700,
-                cursor: pwSaving ? "not-allowed" : "pointer",
-              }}
+              className="px-5 py-2.5 bg-gold hover:bg-gold-light text-black text-sm font-bold rounded-lg transition cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {pwSaving ? "Saving..." : "Change Password"}
             </button>
@@ -253,41 +220,42 @@ export default function SettingsPage() {
         </div>
 
         {/* Add New User */}
-        <div style={cardStyle}>
-          <h2 style={{ fontSize: 16, fontWeight: 600, color: "#fff", marginBottom: 16 }}>
-            Add New User
-          </h2>
+        <div className="bg-[#111] border border-white/[0.06] rounded-xl p-6">
+          <h2 className="text-base font-semibold text-white mb-4">Add New User</h2>
 
-          <div style={{ display: "grid", gap: 14 }}>
+          <div className="grid gap-3.5">
             <div>
-              <label style={labelStyle}>Username</label>
+              <label className="block text-xs text-white/40 mb-1.5 uppercase tracking-wider">
+                Username
+              </label>
               <input
-                style={inputStyle}
+                type="text"
                 value={newUsername}
                 onChange={(e) => setNewUsername(e.target.value)}
                 placeholder="Enter username"
+                className="w-full px-3 py-2.5 bg-[#050505] border border-white/10 rounded-lg text-white text-sm outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition placeholder:text-white/25"
               />
             </div>
             <div>
-              <label style={labelStyle}>Password</label>
+              <label className="block text-xs text-white/40 mb-1.5 uppercase tracking-wider">
+                Password
+              </label>
               <input
                 type="password"
-                style={inputStyle}
                 value={newUserPw}
                 onChange={(e) => setNewUserPw(e.target.value)}
                 placeholder="Enter password"
+                className="w-full px-3 py-2.5 bg-[#050505] border border-white/10 rounded-lg text-white text-sm outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition placeholder:text-white/25"
               />
             </div>
 
             {userMsg && (
               <div
-                style={{
-                  fontSize: 13,
-                  color: userError ? "#f44336" : "#4CAF50",
-                  padding: "8px 12px",
-                  background: userError ? "rgba(244,67,54,0.08)" : "rgba(76,175,80,0.08)",
-                  borderRadius: 8,
-                }}
+                className={`text-sm px-3 py-2 rounded-lg ${
+                  userError
+                    ? "text-red-500 bg-red-500/[0.08]"
+                    : "text-green-500 bg-green-500/[0.08]"
+                }`}
               >
                 {userMsg}
               </div>
@@ -296,63 +264,34 @@ export default function SettingsPage() {
             <button
               onClick={handleAddUser}
               disabled={userSaving}
-              style={{
-                padding: "10px 20px",
-                background: userSaving ? "rgba(246,190,0,0.5)" : "#F6BE00",
-                border: "none",
-                borderRadius: 8,
-                color: "#000",
-                fontSize: 13,
-                fontWeight: 700,
-                cursor: userSaving ? "not-allowed" : "pointer",
-              }}
+              className="px-5 py-2.5 bg-gold hover:bg-gold-light text-black text-sm font-bold rounded-lg transition cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {userSaving ? "Creating..." : "Add User"}
             </button>
           </div>
         </div>
 
-        {/* Users List */}
-        <div style={cardStyle}>
-          <h2 style={{ fontSize: 16, fontWeight: 600, color: "#fff", marginBottom: 16 }}>
-            Admin Users
-          </h2>
+        {/* Admin Users */}
+        <div className="bg-[#111] border border-white/[0.06] rounded-xl p-6">
+          <h2 className="text-base font-semibold text-white mb-4">Admin Users</h2>
 
           {users.length === 0 ? (
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>No users found</p>
+            <p className="text-sm text-white/40">No users found</p>
           ) : (
-            <div style={{ display: "grid", gap: 8 }}>
+            <div className="space-y-2">
               {users.map((u) => (
                 <div
                   key={u.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "10px 14px",
-                    background: "rgba(255,255,255,0.02)",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                    borderRadius: 10,
-                  }}
+                  className="flex items-center justify-between px-3.5 py-2.5 bg-white/[0.02] border border-white/[0.06] rounded-xl"
                 >
                   <div>
-                    <span style={{ fontSize: 14, color: "#fff", fontWeight: 500 }}>
-                      {u.username}
-                    </span>
+                    <span className="text-sm text-white font-medium">{u.username}</span>
                     {u.username === currentUser && (
-                      <span
-                        style={{
-                          marginLeft: 8,
-                          fontSize: 10,
-                          color: "#F6BE00",
-                          fontWeight: 600,
-                          textTransform: "uppercase",
-                        }}
-                      >
+                      <span className="ml-2 text-[10px] text-gold font-semibold uppercase">
                         You
                       </span>
                     )}
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
+                    <div className="text-[11px] text-white/30 mt-0.5">
                       Created {new Date(u.created_at).toLocaleDateString()}
                     </div>
                   </div>
@@ -360,33 +299,16 @@ export default function SettingsPage() {
                   {u.username !== currentUser && (
                     <>
                       {deleteConfirm === u.username ? (
-                        <div style={{ display: "flex", gap: 6 }}>
+                        <div className="flex gap-1.5">
                           <button
                             onClick={() => handleDeleteUser(u.username)}
-                            style={{
-                              padding: "4px 12px",
-                              background: "rgba(244,67,54,0.15)",
-                              border: "1px solid rgba(244,67,54,0.3)",
-                              borderRadius: 6,
-                              color: "#f44336",
-                              fontSize: 11,
-                              fontWeight: 600,
-                              cursor: "pointer",
-                            }}
+                            className="px-3 py-1 bg-red-500/[0.15] border border-red-500/30 rounded-md text-red-500 text-[11px] font-semibold cursor-pointer"
                           >
                             Confirm
                           </button>
                           <button
                             onClick={() => setDeleteConfirm(null)}
-                            style={{
-                              padding: "4px 12px",
-                              background: "transparent",
-                              border: "1px solid rgba(255,255,255,0.1)",
-                              borderRadius: 6,
-                              color: "rgba(255,255,255,0.4)",
-                              fontSize: 11,
-                              cursor: "pointer",
-                            }}
+                            className="px-3 py-1 bg-transparent border border-white/10 rounded-md text-white/40 text-[11px] cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -394,15 +316,7 @@ export default function SettingsPage() {
                       ) : (
                         <button
                           onClick={() => setDeleteConfirm(u.username)}
-                          style={{
-                            padding: "4px 12px",
-                            background: "transparent",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            borderRadius: 6,
-                            color: "rgba(255,255,255,0.3)",
-                            fontSize: 11,
-                            cursor: "pointer",
-                          }}
+                          className="px-3 py-1 bg-transparent border border-white/[0.08] rounded-md text-white/30 text-[11px] cursor-pointer hover:text-white/50 transition"
                         >
                           Delete
                         </button>
