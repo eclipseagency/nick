@@ -81,8 +81,8 @@ export const en: Dictionary = {
   },
   gallery: {
     badge: "Our Work",
-    heading1: "From Factory ",
-    heading2: "To Finish",
+    heading1: "Invisible Protection, ",
+    heading2: "Unforgettable Quality",
     alt1: "Team with Audi",
     alt2: "Window tint",
     alt3: "PPF application",
