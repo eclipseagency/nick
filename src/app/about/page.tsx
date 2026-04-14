@@ -145,7 +145,7 @@ export default function AboutPage() {
         heading1={isAr ? "عن " : "About "}
         heading2="NICK"
         subtitle={isAr
-          ? "أكثر من 27 عامًا من التميز في حماية السيارات. من الرياض إلى العالم، نحمي سيارتك بأعلى المعايير."
+          ? "أكثر من 27 عامًا من التميز في حماية السيارات. من العالمية إلى المملكة العربية السعودية، نحمي سيارتك بأعلى المعايير."
           : "Over 27 years of excellence in automotive protection. From Riyadh to the world, we protect your car to the highest standards."}
       />
 
@@ -159,14 +159,7 @@ export default function AboutPage() {
                 <Image src="/images/DSC02995.jpg" alt="NICK team" fill className="object-cover" style={{ transition: "transform 0.8s ease" }} />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,5,5,0.5), transparent)" }} />
               </div>
-              <div style={{
-                position: "absolute", bottom: -16,
-                ...(dir === "rtl" ? { left: 12 } : { right: 12 }),
-                background: "#111", border: "1px solid rgba(246,190,0,0.2)", borderRadius: 14, padding: "20px 24px", boxShadow: "0 0 20px rgba(246,190,0,0.08)",
-              }}>
-                <div className="gold-text" style={{ fontFamily: fontDisplay, fontSize: 32, fontWeight: 700 }}>{t.about.year}</div>
-                <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, marginTop: 2 }}>{t.about.established}</div>
-              </div>
+{/* 1999 badge removed per client request */}
             </div>
 
             {/* Text */}
@@ -216,13 +209,14 @@ export default function AboutPage() {
           </div>
 
           <div style={{ position: "relative" }}>
-            {/* Vertical line */}
+            {/* Vertical line — behind cards */}
             <div style={{
               position: "absolute",
               top: 0,
               bottom: 0,
               width: 2,
               background: "linear-gradient(to bottom, transparent, rgba(246,190,0,0.3), transparent)",
+              zIndex: 0,
               ...(dir === "rtl" ? { right: 20 } : { left: 20 }),
             }} />
 
@@ -257,6 +251,8 @@ export default function AboutPage() {
                   borderRadius: 16,
                   overflow: "hidden",
                   flex: 1,
+                  position: "relative",
+                  zIndex: 1,
                   transition: "border-color 0.3s, background 0.3s",
                 }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(246,190,0,0.2)"; e.currentTarget.style.background = "rgba(246,190,0,0.03)"; }}
