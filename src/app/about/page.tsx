@@ -93,8 +93,8 @@ export default function AboutPage() {
       icon: "M9 12.75L11.25 15 15 9.75M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z",
       title: isAr ? "الجودة" : "Quality",
       desc: isAr
-        ? "نستخدم فقط أجود المواد الخام ونطبق أعلى معايير التصنيع لضمان حماية تدوم لسنوات"
-        : "We use only the finest raw materials and apply the highest manufacturing standards for protection that lasts years",
+        ? "نعتمد على مواد أمريكية أصلية من نوع TPU، مدعومة بتقنيات معالجة يابانية متطورة، لنقدّم حماية فائقة تدوم لسنوات"
+        : "We rely on original American TPU materials, backed by advanced Japanese processing technologies, to deliver superior protection that lasts for years",
     },
     {
       icon: "M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z",
@@ -107,8 +107,8 @@ export default function AboutPage() {
       icon: "M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z",
       title: isAr ? "الثقة" : "Trust",
       desc: isAr
-        ? "أكثر من 50,000 عميل وثقوا بنا لحماية سياراتهم. سمعتنا مبنية على النتائج"
-        : "Over 50,000 customers have trusted us to protect their vehicles. Our reputation is built on results",
+        ? "أكثر من 20 مليون عميل مالك سيارة على مستوى العالم وثقوا بنا"
+        : "Over 20 million car owners worldwide have trusted us",
     },
     {
       icon: "M11.42 15.17l-5.66-5.66L7.17 8.1l4.24 4.24 8.49-8.49 1.41 1.41-9.89 9.91zM20 12c0 4.42-3.58 8-8 8s-8-3.58-8-8h2c0 3.31 2.69 6 6 6s6-2.69 6-6h2z",
@@ -314,7 +314,7 @@ export default function AboutPage() {
               <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 16 }}>
                 {[
                   { n: isAr ? "رقابة جودة شاملة" : "Full Quality Control", v: "100%" },
-                  { n: isAr ? "مواد خام مستوردة" : "Imported Raw Materials", v: isAr ? "عالمية" : "Global" },
+                  { n: isAr ? "أمريكية 🇺🇸 يابانية 🇯🇵" : "American 🇺🇸 Japanese 🇯🇵", v: isAr ? "مواد خام" : "Raw Materials" },
                   { n: isAr ? "اختبارات ما قبل التسليم" : "Pre-Delivery Tests", v: isAr ? "متعددة" : "Multiple" },
                 ].map((stat) => (
                   <div key={stat.n} style={{ background: "rgba(246,190,0,0.05)", border: "1px solid rgba(246,190,0,0.12)", borderRadius: 10, padding: "14px 20px", flex: "1 1 140px" }}>
