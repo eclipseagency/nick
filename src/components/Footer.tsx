@@ -51,7 +51,7 @@ export default function Footer() {
           </div>
           <div>
             <h4 style={{ color: "#fff", fontWeight: 700, fontSize: 12, letterSpacing: isAr ? "0" : "0.1em", textTransform: isAr ? "none" : "uppercase" as const, marginBottom: 16 }}>{t.contact.heading1}{t.contact.heading2}</h4>
-            <a href="tel:+966543000055" dir="ltr" style={{ display: "block", color: "rgba(255,255,255,0.3)", fontSize: 13, marginBottom: 8, textDecoration: "none" }}>{t.footer.phone}</a>
+            <a href="tel:+966543000055" style={{ display: "block", color: "rgba(255,255,255,0.3)", fontSize: 13, marginBottom: 8, textDecoration: "none", direction: "ltr", textAlign: isAr ? "right" : "left" } as React.CSSProperties}>{t.footer.phone}</a>
             <a href="mailto:info@nick.sa" style={{ display: "block", color: "rgba(255,255,255,0.3)", fontSize: 13, marginBottom: 8, textDecoration: "none" }}>{t.footer.email}</a>
             <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, marginBottom: 8 }}>{t.footer.address}</p>
           </div>
