@@ -23,13 +23,13 @@ export default function WarrantyPage() {
     {
       group: d("النانو سيراميك", "Nano Ceramic"),
       items: [
-        { name: d("نانو سيراميك داخلي", "Interior Nano Ceramic"), warranty: d("١ سنة، ٣ سنوات، ٥ سنوات", "1, 3, or 5 years") },
+        { name: d("نانو سيراميك داخلي", "Interior Nano Ceramic"), warranty: d("سنة واحدة", "1 year") },
         { name: d("نانو سيراميك خارجي", "Exterior Nano Ceramic"), warranty: d("١ سنة، ٣ سنوات، ٥ سنوات", "1, 3, or 5 years") },
         { name: d("نانو سيراميك زجاج كامل", "Full Glass Nano Ceramic"), warranty: d("سنة واحدة", "1 year") },
       ],
       maintenance: d(
-        "على حسب فاتورة المستهلك يتم تحديد مدة الضمان",
-        "Warranty duration determined based on the consumer invoice"
+        "كل ٦ شهور طوال فترة الضمان يتم إعادة تطبيق النانو على الطلاء.",
+        "Every 6 months throughout the warranty period, nano coating is reapplied to the paint."
       ),
       conditions: [
         d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام.", "This warranty does not cover damage caused by accidents or misuse."),
@@ -50,7 +50,7 @@ export default function WarrantyPage() {
         { name: d("أفلام حماية N-95 ULTRA DRIVE", "N-95 ULTRA DRIVE Protection Film"), warranty: d("١٠ سنوات", "10 years") },
         { name: d("أفلام حماية طلاء مطفي", "Matte Paint Protection Film"), warranty: d("١٠ سنوات", "10 years") },
         { name: d("أفلام حماية الديكورات الداخلية", "Interior Decoration Protection Film"), warranty: d("١٠ سنوات", "10 years") },
-        { name: d("أفلام حماية الزجاج الأمامي", "Windshield Protection Film"), warranty: d("٣ سنوات", "3 years") },
+        { name: d("أفلام حماية الزجاج الأمامي", "Windshield Protection Film"), warranty: d("سنتين", "2 years") },
       ],
       maintenance: d(
         "نتعهد بتوفير مع كل خدمة حماية بتقنية المعالجة الذاتية كالتالي لمدة ٣ سنوات صيانة دورية ويمكن تكرارها حسب الحاجة والاقتضاء تشمل تشغيل سنوي.\nالفلم يخضع للمعالجة الذاتية في فترة ١٥ يوم بعد التركيب.",
