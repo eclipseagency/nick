@@ -86,7 +86,7 @@ export default function WarrantyPage() {
         d("ثبات لون العازل الحراري.", "Color stability of the thermal tint."),
         d("يعتبر الضمان لاغي في حالة خضوع المنتج لسوء الاستخدام أو العناية الغير صحيحة.", "The warranty is void if the product is subjected to misuse or improper care."),
         d("إذا ظهر ضبابي بعد التركيب، فهو مؤقت بسبب الرطوبة، ويختفي بعد جفافها.", "If haze appears after installation, it is temporary due to moisture and disappears after drying."),
-        d("ضمان حماية أفلام زجاج أمامي لمدة 3 سنوات أو حتى 60,000 كم أيهما أسبق.", "Windshield film protection warranty for 3 years or up to 60,000 km, whichever comes first."),
+        d("ضمان حماية أفلام زجاج أمامي لمدة سنتين أو حتى 60,000 كم أيهما أسبق.", "Windshield film protection warranty for 2 years or up to 60,000 km, whichever comes first."),
         d("إدارة المرور هي المسؤولة عن تحديد نسب التظليل المسموحة، وشركة NICK لا تتحمل أي مسؤولية قانونية، ويجب على المستهلكين الاطلاع على القوانين المحلية.", "The traffic department is responsible for determining permitted tint percentages. NICK bears no legal responsibility, and consumers must review local laws."),
       ],
       qualityTips: [
