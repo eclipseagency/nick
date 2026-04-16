@@ -26,13 +26,13 @@ export default function WarrantyPage() {
         { name: d("نانو سيراميك زجاج كامل", "Full Glass Nano Ceramic"), warranty: d("سنة واحدة", "1 year") },
       ],
       maintenance: d(
-        "كل ٦ شهور طوال فترة الضمان يتم إعادة تطبيق النانو على الطلاء.",
-        "Every 6 months throughout the warranty period, nano coating is reapplied to the paint."
+        "على حسب فاتورة المستهلك يتم تحديد مدة الضمان",
+        "Warranty duration determined based on the consumer invoice"
       ),
       conditions: [
         d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام.", "This warranty does not cover damage caused by accidents or misuse."),
-        d("تلف الغسيل الذي يسبب الخدوش بسبب عدم استخدام فوط الماكيروفايبر أو عدم نظافتها.", "Wash damage causing scratches due to not using microfiber towels or using dirty ones."),
-        d("أضرار الغبار أثناء السفر (السافي) أو آثار الأحجار المتطايرة في الطريق.", "Dust damage during travel (sandstorms) or flying stone impacts on the road."),
+        d("تلف الغسيل الذي يسبب الخدوش بسبب عدم استخدام فوط المايكروفايبر أو عدم نظافتها.", "Wash damage causing scratches due to not using microfiber towels or using dirty ones."),
+        d("أضرار الغبار أثناء السفر (السافي) أو أثار الأحجار المتطايرة في الطريق.", "Dust damage during travel (sandstorms) or flying stone impacts on the road."),
         d("استخدام مواد كيميائية تسبب تلف المنتج وعدم الإلتزام بالصيانة الدورية.", "Using chemicals that damage the product and not adhering to periodic maintenance."),
       ],
       qualityTips: [
@@ -51,18 +51,21 @@ export default function WarrantyPage() {
         { name: d("أفلام حماية الزجاج الأمامي", "Windshield Protection Film"), warranty: d("سنتين", "2 years") },
       ],
       maintenance: d(
-        "نتعهد بتوفير مع كل خدمة حماية بتقنية المعالجة الذاتية كالتالي لمدة ٣ سنوات صيانة دورية ويمكن تكرارها حسب الحاجة والاقتضاء تشمل تشغيل سنوي.\nالفلم يخضع للمعالجة الذاتية في فترة ١٥ يوم بعد التركيب.",
-        "We commit to providing periodic maintenance with every self-healing protection service for 3 years, repeatable as needed, including annual servicing.\nThe film undergoes self-healing within 15 days after installation."
+        "تم تصنيع فلم الحماية بتقنية المعالجة الذاتية لذلك لا يتطلب صيانة دورية ويمكن الصيانة عند الحاجة والأفضل الصيانة نصف سنوي.",
+        "The protection film is manufactured with self-healing technology, so it does not require periodic maintenance. Maintenance is available upon request, with semi-annual servicing being preferred."
       ),
       conditions: [
-        d("لا يسري هذا الضمان على التلف الناتج عن حطام الطريق والحركات الأخرى أو في حالة دخول الحصى البسيط أو المتوسط أو الأنبوب أو صدمات الطيور أو المواد الكيميائية.", "This warranty does not cover damage from road debris and other impacts, including minor to moderate gravel, pipe impacts, bird strikes, or chemical substances."),
-        d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام والمواد الكيميائية والمذيبات والأحماض والقواعد والمنظفات الناتجة عن الغسيل.", "This warranty does not cover damage from accidents, misuse, chemicals, solvents, acids, alkalis, or cleaning agents from washing."),
-        d("تضمن شركة NICK عدم حدوث أي ضرر للطلاء عند تركيب أو إزالة أفلام حماية NICK ويُستثنى من ذلك الأجزاء المعاد طلائها.", "NICK guarantees no damage to the paint upon installation or removal of NICK protection films, excluding repainted parts."),
-        d("ضمان أفلام الحماية لمدة ١٠ سنوات شاملة الفلم والتركيب المتقنة بتقنية المعالجة الذاتية كالتالي ٣ سنوات صيانة دورية ويمكن تكرارها حسب الحاجة والاقتضاء.", "Protection film warranty for 10 years covering film and professional installation with self-healing technology, including 3 years of periodic maintenance repeatable as needed."),
-        d("فلم NICK يتعامل مع الاستخدام اليومي وحتى 400,000 كم أيهما أسبق.", "NICK film handles daily use up to 400,000 km, whichever comes first."),
+        d("لا يسري هذا الضمان على التلف الناتج عن حطام الطريق والمركبات الأخرى و في حالة حدوث الضرر البيئي أو العضوي أو التلوث أو فضلات الطيور أو المواد الكيميائية.", "This warranty does not cover damage from road debris, other vehicles, environmental or organic damage, pollution, bird droppings, or chemical substances."),
+        d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام و انفصال الطبقات أو الفقاعات الناتجة عن الغسيل.", "This warranty does not cover damage from accidents, misuse, layer separation, or bubbles resulting from washing."),
+        d("تضمن NICK عدم حدوث أي ضرر للطلاء عند تركيب أو إزالة أفلام حماية NICK، ويستثنى من ذلك الأجزاء المعاد طلائها.", "NICK guarantees no damage to the paint upon installation or removal of NICK protection films, excluding repainted parts."),
+        d("يسري الضمان حصراً في حال التركيب في مراكز NICK المعتمدة للعناية بالسيارات وفقاً لإجراءات التركيب الموصي بها . ويمكن التنازل عن هذا الضمان. شريطة أن يمتلك المالك مستندات الضمان الأصلية.", "The warranty applies exclusively when installation is performed at NICK authorized care centers following recommended installation procedures. The warranty is transferable, provided the owner possesses the original warranty documents."),
+        d("ضمان أفلام الحماية لمدة 10 سنوات أو حتى 400,000 كم أيهما أسبق.", "Protection film warranty for 10 years or up to 400,000 km, whichever comes first."),
+        d("عدم غسيل السيارة بعد التركيب لمدة لا تقل عن 7 أيام من التركيب.", "Do not wash the car for at least 7 days after installation."),
+        d("الفلم يخضع للمعالجة الذاتية في فترة 15 يوم على الأقل.", "The film undergoes self-healing within a period of at least 15 days."),
       ],
       qualityTips: [
-        d("عدم غسيل السيارة بعد التركيب لمدة لا تقل عن 7 أيام من التركيب.", "Do not wash the car for at least 7 days after installation."),
+        d("يرجى عدم السفر بالسيارة مباشرة بعد التركيب.", "Please do not travel with the car immediately after installation."),
+        d("عدم غسيل السيارة لمدة لا تقل عن 7 أيام من التركيب.", "Do not wash the car for at least 7 days after installation."),
       ],
     },
     {
@@ -79,16 +82,16 @@ export default function WarrantyPage() {
       conditions: [
         d("تضمن شركة NICK أفلام العازل الحراري لنوافذ السيارات ما يلي:", "NICK guarantees the following for automotive thermal tint films:"),
         d("الاحتفاظ بخواص انعكاس أشعة الشمس دون حدوث تشققات أو تصدعات بالفلم.", "Maintaining sun reflection properties without cracks or fractures in the film."),
-        d("الاحتفاظ على الالتصاق دون فقاعات أو انفصال عن الزجاج.", "Maintaining adhesion without bubbles or separation from the glass."),
+        d("الحفاظ على الالتصاق دون فقاعات أو الانفصال عن الزجاج.", "Maintaining adhesion without bubbles or separation from the glass."),
         d("ثبات لون العازل الحراري.", "Color stability of the thermal tint."),
         d("يعتبر الضمان لاغي في حالة خضوع المنتج لسوء الاستخدام أو العناية الغير صحيحة.", "The warranty is void if the product is subjected to misuse or improper care."),
-        d("إذا ظهر ضباب بعد التركيب، فهو مؤقت بسبب الرطوبة ويختفي بعد جفافها.", "If fog appears after installation, it is temporary due to moisture and will disappear after drying."),
+        d("إذا ظهر ضبابي بعد التركيب، فهو مؤقت بسبب الرطوبة، ويختفي بعد جفافها.", "If haze appears after installation, it is temporary due to moisture and disappears after drying."),
         d("ضمان حماية أفلام زجاج أمامي لمدة 3 سنوات أو حتى 60,000 كم أيهما أسبق.", "Windshield film protection warranty for 3 years or up to 60,000 km, whichever comes first."),
-        d("إدارة أمور الضمان من تحديد نسب التظليل المسموحة وشركة NICK لا تتحمل أي مسؤولية قانونية ويجب على المستهلكين الاطلاع على القوانين المحلية.", "Warranty management regarding permitted tint percentages — NICK bears no legal responsibility and consumers must review local regulations."),
+        d("إدارة المرور هي المسؤولة عن تحديد نسب التظليل المسموحة، وشركة NICK لا تتحمل أي مسؤولية قانونية، ويجب على المستهلكين الاطلاع على القوانين المحلية.", "The traffic department is responsible for determining permitted tint percentages. NICK bears no legal responsibility, and consumers must review local laws."),
       ],
       qualityTips: [
         d("يرجى عدم فتح النوافذ خلال 48 ساعة من تركيب الفلم.", "Please do not open windows for 48 hours after film installation."),
-        d("عدم تنظيف الزجاج لمدة لا تقل عن 7 أيام من التركيب. وعدم لمس أطراف الفلم.", "Do not clean the glass for at least 7 days after installation. Do not touch the film edges."),
+        d("عدم تنظيف الزجاج لمدة لا تقل عن 7 أيام من التركيب، وعدم لمس أطراف الفلم.", "Do not clean the glass for at least 7 days after installation, and do not touch the film edges."),
       ],
     },
   ];
