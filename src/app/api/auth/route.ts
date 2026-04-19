@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import { getAdminClient } from "@/lib/supabase";
 import { signToken, getSession, COOKIE_NAME } from "@/lib/auth";
 
@@ -9,12 +10,13 @@ export async function POST(req: NextRequest) {
   }
 
   const db = getAdminClient();
-  const { data: valid } = await db.rpc("nick_check_password", {
-    p_username: username,
-    p_password: password,
-  });
+  const { data: admin } = await db
+    .from("nick_admins")
+    .select("username, password_hash")
+    .eq("username", username)
+    .maybeSingle();
 
-  if (!valid) {
+  if (!admin || !(await bcrypt.compare(password, admin.password_hash))) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
