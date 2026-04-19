@@ -2,11 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Footer() {
   const { t, locale } = useLanguage();
   const isAr = locale === "ar";
+  // Avoid hydration mismatch when build-time year != client-time year (PPR/static SSR).
+  const [year, setYear] = useState<number | null>(null);
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
 
   const services = [t.footer.s1, t.footer.s2, t.footer.s3, t.footer.s4];
   const company = [
@@ -57,7 +63,7 @@ export default function Footer() {
           </div>
         </div>
         <div style={{ marginTop: 40, paddingTop: 20, borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" as const, gap: 8 }}>
-          <p style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>&copy; {new Date().getFullYear()} NICK. {t.footer.rights}</p>
+          <p style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }} suppressHydrationWarning>&copy; {year ?? ""} NICK. {t.footer.rights}</p>
           <a href="https://eclipseagency.net" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.18)", fontSize: 11, textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e => (e.currentTarget.style.color = "rgba(246,190,0,0.5)")} onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.18)")}>
             {isAr ? "تطوير Eclipse Agency" : "Built by Eclipse Agency"}
           </a>
