@@ -37,7 +37,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="admin-theme relative min-h-screen flex items-center justify-center p-6 overflow-hidden">
+    <div dir="ltr" className="admin-theme relative min-h-screen flex items-center justify-center p-6 overflow-hidden">
       {/* Ambient gold orb (single, subtle) */}
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 w-[700px] h-[700px] rounded-full blur-3xl opacity-[0.06]"
@@ -65,8 +65,8 @@ export default function LoginPage() {
         }}
       >
         {/* Brand + lock chip */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3 mb-5">
+        <div className="flex flex-col items-center text-center mb-9">
+          <Link href="/" className="flex items-center gap-3">
             <span
               className="text-[26px] font-bold text-[var(--ad-accent)] tracking-tight leading-none"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
@@ -78,12 +78,12 @@ export default function LoginPage() {
               Admin
             </span>
           </Link>
-          <div className="inline-flex items-center gap-1.5 px-3 h-6 rounded-full bg-[var(--ad-accent-bg)] border border-[var(--ad-border-accent)] text-[var(--ad-accent)] mb-4">
+          <div className="mt-6 flex items-center gap-1.5 px-3 h-6 rounded-full bg-[var(--ad-accent-bg)] border border-[var(--ad-border-accent)] text-[var(--ad-accent)]">
             <Lock className="w-3 h-3" />
             <span className="text-[10px] font-semibold tracking-[0.18em] uppercase">Secure Access</span>
           </div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-[var(--ad-fg)]">Sign in</h1>
-          <p className="mt-1.5 text-[13px] text-[var(--ad-fg-muted)]">
+          <h1 className="mt-5 text-[22px] font-semibold tracking-tight text-[var(--ad-fg)]">Sign in</h1>
+          <p className="mt-2 text-[13px] text-[var(--ad-fg-muted)]">
             Manage bookings, team, and content
           </p>
         </div>

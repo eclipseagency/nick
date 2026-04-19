@@ -237,7 +237,7 @@ function ProfilePanel({ me, onUpdated }: { me: Me; onUpdated: (u: Partial<Me>) =
           </div>
         </div>
         <div className="px-8 py-5 border-t border-[var(--ad-border)] bg-[var(--ad-surface-2)]/40 rounded-b-[14px] flex justify-end">
-          <Button variant="primary" onClick={saveName} loading={savingName}>
+          <Button variant="primary" size="lg" onClick={saveName} loading={savingName}>
             Save changes
           </Button>
         </div>
@@ -259,7 +259,8 @@ function ProfilePanel({ me, onUpdated }: { me: Me; onUpdated: (u: Partial<Me>) =
         <div className="px-8 py-5 border-t border-[var(--ad-border)] bg-[var(--ad-surface-2)]/40 rounded-b-[14px] flex justify-end">
           <Button
             variant="primary"
-            icon={<KeyRound className="w-3.5 h-3.5" />}
+            size="lg"
+            icon={<KeyRound className="w-4 h-4" />}
             onClick={changePw}
             loading={savingPw}
             disabled={!password || !password2}
