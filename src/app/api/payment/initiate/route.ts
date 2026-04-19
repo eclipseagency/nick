@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       subtotal, discount, total, locale,
     } = body;
 
-    if (!customer_name || !customer_phone || !car_size || !car_make || !preferred_date) {
+    if (!customer_name || !customer_phone || !car_size || !preferred_date) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
