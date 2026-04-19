@@ -384,30 +384,36 @@ function UsersPanel({ isSuper, meId }: { isSuper: boolean; meId?: string }) {
               const isMe = u.id === meId;
               const inactive = !u.is_active;
               return (
-                <div key={u.id} className={`flex flex-wrap items-center gap-3 p-4 ${inactive ? "opacity-60" : ""}`}>
-                  <div className="w-9 h-9 rounded-full bg-[var(--ad-surface-2)] border border-[var(--ad-border)] flex items-center justify-center text-[13px] font-semibold text-[var(--ad-accent)] flex-shrink-0">
-                    {(u.full_name || u.username).slice(0, 1).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[14px] font-medium text-[var(--ad-fg)] truncate">{u.full_name || u.username}</span>
-                      {isMe && (
-                        <Badge tone="gold">
-                          <Check className="w-3 h-3 mr-0.5" />
-                          You
-                        </Badge>
-                      )}
-                      {inactive && <Badge tone="danger">Inactive</Badge>}
+                <div
+                  key={u.id}
+                  className={`grid gap-3 p-4 items-center ${inactive ? "opacity-60" : ""}`}
+                  style={{
+                    gridTemplateColumns: "minmax(180px,1fr) minmax(130px,160px) minmax(140px,180px) auto",
+                  }}
+                >
+                  {/* Identity */}
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-[var(--ad-accent-bg)] border border-[var(--ad-border-accent)] flex items-center justify-center text-[13px] font-bold text-[var(--ad-accent)] flex-shrink-0">
+                      {(u.full_name || u.username).slice(0, 1).toUpperCase()}
                     </div>
-                    <div className="text-[12px] text-[var(--ad-fg-muted)] mt-0.5">
-                      @{u.username} · {branchName(u.branch_id)}
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[14px] font-medium text-[var(--ad-fg)] truncate">{u.full_name || u.username}</span>
+                        {isMe && <Badge tone="gold">You</Badge>}
+                        {inactive && <Badge tone="danger">Off</Badge>}
+                      </div>
+                      <div className="text-[12px] text-[var(--ad-fg-muted)] truncate mt-0.5">
+                        @{u.username}
+                        {u.branch_id && <span className="ml-1.5">· {branchName(u.branch_id)}</span>}
+                      </div>
                     </div>
                   </div>
+                  {/* Role */}
                   <Select
                     value={u.role}
                     disabled={isMe}
                     onChange={(e) => updateUser(u, { role: e.target.value as Role })}
-                    className="w-36"
+                    aria-label="Role"
                   >
                     {(["super_admin", "manager", "reception", "technician"] as Role[]).map((r) => (
                       <option key={r} value={r}>
@@ -415,10 +421,11 @@ function UsersPanel({ isSuper, meId }: { isSuper: boolean; meId?: string }) {
                       </option>
                     ))}
                   </Select>
+                  {/* Branch */}
                   <Select
                     value={u.branch_id || ""}
                     onChange={(e) => updateUser(u, { branch_id: e.target.value || null })}
-                    className="w-40"
+                    aria-label="Branch"
                   >
                     <option value="">No branch</option>
                     {branches.map((b) => (
@@ -427,24 +434,26 @@ function UsersPanel({ isSuper, meId }: { isSuper: boolean; meId?: string }) {
                       </option>
                     ))}
                   </Select>
-                  {!isMe && (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => updateUser(u, { is_active: !u.is_active })}
-                      icon={u.is_active ? <X className="w-3 h-3" /> : <Check className="w-3 h-3" />}
-                    >
-                      {u.is_active ? "Disable" : "Enable"}
-                    </Button>
-                  )}
-                  <IconButton size="sm" label="Reset password" onClick={() => resetPassword(u)}>
-                    <KeyRound className="w-3.5 h-3.5" />
-                  </IconButton>
-                  {!isMe && (
-                    <IconButton size="sm" label="Delete user" onClick={() => deleteUser(u)}>
-                      <Trash2 className="w-3.5 h-3.5" />
+                  {/* Actions */}
+                  <div className="flex items-center gap-1.5 justify-end">
+                    {!isMe && (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => updateUser(u, { is_active: !u.is_active })}
+                      >
+                        {u.is_active ? "Disable" : "Enable"}
+                      </Button>
+                    )}
+                    <IconButton size="sm" label="Reset password" onClick={() => resetPassword(u)}>
+                      <KeyRound className="w-3.5 h-3.5" />
                     </IconButton>
-                  )}
+                    {!isMe && (
+                      <IconButton size="sm" label="Delete user" onClick={() => deleteUser(u)}>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </IconButton>
+                    )}
+                  </div>
                 </div>
               );
             })}
