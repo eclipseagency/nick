@@ -396,6 +396,11 @@ body::before {
 
   background: var(--ad-bg);
   color: var(--ad-fg);
+
+  /* Admin panel is English-only — force LTR so labels/inputs/layouts
+     don't flip when the public site is in Arabic (html[dir="rtl"]). */
+  direction: ltr;
+  text-align: left;
 }
 
 /* Focus ring for all interactive admin elements */
