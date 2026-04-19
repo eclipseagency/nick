@@ -349,16 +349,16 @@ body::before {
    ================================================================= */
 .admin-theme {
   /* Surfaces — layered so cards read clearly against the page */
-  --ad-bg: #050505;
-  --ad-surface: #111111;      /* card / sidebar */
-  --ad-surface-2: #181818;    /* input / secondary button / table header */
-  --ad-surface-hover: #202020;
-  --ad-surface-active: #262626;
+  --ad-bg: #0a0a0a;           /* page (slightly raised so cards still contrast) */
+  --ad-surface: #17171a;      /* card / sidebar — clearly lighter than page */
+  --ad-surface-2: #1f1f23;    /* input / secondary button / table header */
+  --ad-surface-hover: #26262b;
+  --ad-surface-active: #2e2e33;
 
   /* Borders — loud enough to see, quiet enough not to shout */
-  --ad-border: rgba(255, 255, 255, 0.1);
-  --ad-border-strong: rgba(255, 255, 255, 0.18);
-  --ad-border-accent: rgba(246, 190, 0, 0.35);
+  --ad-border: rgba(255, 255, 255, 0.12);
+  --ad-border-strong: rgba(255, 255, 255, 0.2);
+  --ad-border-accent: rgba(246, 190, 0, 0.4);
 
   /* Text */
   --ad-fg: rgba(255, 255, 255, 0.92);
@@ -418,25 +418,10 @@ body::before {
   .admin-desktop-topbar { display: none !important; }
 }
 
-/* Softer grid background so cards have more contrast */
-.admin-theme .admin-content::before {
-  opacity: 0.6;
-}
 
-/* Admin content grid background */
+/* Admin content — no decorative grid (was competing with card contrast) */
 .admin-content {
   position: relative;
-}
-.admin-content::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    linear-gradient(rgba(246,190,0,0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(246,190,0,0.015) 1px, transparent 1px);
-  background-size: 80px 80px;
-  pointer-events: none;
-  z-index: 0;
 }
 
 /* Admin skeleton loader */
