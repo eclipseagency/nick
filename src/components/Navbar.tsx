@@ -66,7 +66,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile toggle */}
-        <button onClick={() => setOpen(!open)} className="lg:hidden" style={{ background: "none", border: "none", cursor: "pointer", padding: 8, display: "flex", flexDirection: "column" as const, gap: 5 }}>
+        <button onClick={() => setOpen(!open)} className="lg:hidden flex flex-col" style={{ background: "none", border: "none", cursor: "pointer", padding: 8, gap: 5 }}>
           <span style={{ width: 24, height: 2, background: "#F6BE00", transition: "all 0.3s", transform: open ? "rotate(45deg) translateY(7px)" : "none" }} />
           <span style={{ width: 24, height: 2, background: "#F6BE00", transition: "all 0.3s", opacity: open ? 0 : 1 }} />
           <span style={{ width: 24, height: 2, background: "#F6BE00", transition: "all 0.3s", transform: open ? "rotate(-45deg) translateY(-7px)" : "none" }} />
