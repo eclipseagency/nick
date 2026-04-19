@@ -102,7 +102,7 @@ export default function SettingsPage() {
         subtitle="Your profile, team members, and branches"
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-8 lg:gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-[220px_minmax(0,900px)] gap-8 lg:gap-10">
         {/* Left tabs */}
         <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible">
           {[
