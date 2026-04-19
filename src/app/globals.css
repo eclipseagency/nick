@@ -348,17 +348,17 @@ body::before {
    Scoped with .admin-theme on the admin layout root.
    ================================================================= */
 .admin-theme {
-  /* Surfaces */
+  /* Surfaces — layered so cards read clearly against the page */
   --ad-bg: #050505;
-  --ad-surface: #0d0d0d;
-  --ad-surface-2: #141414;
-  --ad-surface-hover: #1a1a1a;
-  --ad-surface-active: #202020;
+  --ad-surface: #111111;      /* card / sidebar */
+  --ad-surface-2: #181818;    /* input / secondary button / table header */
+  --ad-surface-hover: #202020;
+  --ad-surface-active: #262626;
 
-  /* Borders */
-  --ad-border: rgba(255, 255, 255, 0.08);
-  --ad-border-strong: rgba(255, 255, 255, 0.14);
-  --ad-border-accent: rgba(246, 190, 0, 0.3);
+  /* Borders — loud enough to see, quiet enough not to shout */
+  --ad-border: rgba(255, 255, 255, 0.1);
+  --ad-border-strong: rgba(255, 255, 255, 0.18);
+  --ad-border-accent: rgba(246, 190, 0, 0.35);
 
   /* Text */
   --ad-fg: rgba(255, 255, 255, 0.92);
@@ -407,7 +407,7 @@ body::before {
 
 /* Admin layout */
 @media (min-width: 1024px) {
-  .admin-content { margin-left: 220px; }
+  .admin-content { margin-left: 240px !important; }
   .admin-sidebar-visible { transform: translateX(0); }
   .admin-topbar { display: none !important; }
   .admin-desktop-topbar { display: flex !important; }
@@ -416,6 +416,11 @@ body::before {
   .admin-sidebar-hidden { transform: translateX(-100%); }
   .admin-sidebar-show { transform: translateX(0) !important; }
   .admin-desktop-topbar { display: none !important; }
+}
+
+/* Softer grid background so cards have more contrast */
+.admin-theme .admin-content::before {
+  opacity: 0.6;
 }
 
 /* Admin content grid background */

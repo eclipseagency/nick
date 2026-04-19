@@ -106,8 +106,8 @@ export function Card({ padded = true, interactive, className, children, ...rest 
   return (
     <div
       className={cx(
-        "bg-[var(--ad-surface)] border border-[var(--ad-border)] rounded-[12px]",
-        padded && "p-5",
+        "bg-[var(--ad-surface)] border border-[var(--ad-border)] rounded-[14px] shadow-[0_1px_0_rgba(255,255,255,0.03)_inset,0_2px_8px_rgba(0,0,0,0.25)]",
+        padded && "p-6",
         interactive && "transition-colors hover:border-[var(--ad-border-strong)] cursor-pointer",
         className
       )}
@@ -216,10 +216,10 @@ export function Badge({ tone = "neutral", children, className }: { tone?: BadgeT
 // ─────────────────────────────────────────────────────────────────
 export function PageHeader({ title, subtitle, actions, children }: { title: string; subtitle?: string; actions?: ReactNode; children?: ReactNode }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-4 py-6 border-b border-[var(--ad-border)] mb-6">
+    <div className="flex flex-wrap items-end justify-between gap-4 pt-8 pb-6 mb-8 border-b border-[var(--ad-border)]">
       <div>
-        <h1 className="text-[22px] font-semibold tracking-tight text-[var(--ad-fg)] leading-tight">{title}</h1>
-        {subtitle && <p className="mt-1 text-[13px] text-[var(--ad-fg-muted)]">{subtitle}</p>}
+        <h1 className="text-[26px] font-semibold tracking-tight text-[var(--ad-fg)] leading-tight">{title}</h1>
+        {subtitle && <p className="mt-1.5 text-[13.5px] text-[var(--ad-fg-muted)]">{subtitle}</p>}
         {children}
       </div>
       {actions && <div className="flex items-center gap-2 flex-shrink-0">{actions}</div>}
@@ -232,11 +232,11 @@ export function PageHeader({ title, subtitle, actions, children }: { title: stri
 // ─────────────────────────────────────────────────────────────────
 export function Section({ title, description, children, action }: { title: string; description?: string; children: ReactNode; action?: ReactNode }) {
   return (
-    <section className="mb-8">
-      <div className="flex items-end justify-between gap-4 mb-3">
+    <section className="mb-10">
+      <div className="flex items-end justify-between gap-4 mb-4">
         <div>
-          <h2 className="text-[15px] font-semibold text-[var(--ad-fg)]">{title}</h2>
-          {description && <p className="mt-0.5 text-[12px] text-[var(--ad-fg-muted)]">{description}</p>}
+          <h2 className="text-[16px] font-semibold text-[var(--ad-fg)] tracking-tight">{title}</h2>
+          {description && <p className="mt-1 text-[13px] text-[var(--ad-fg-muted)]">{description}</p>}
         </div>
         {action}
       </div>

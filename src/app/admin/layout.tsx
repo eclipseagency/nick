@@ -99,7 +99,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Sidebar */}
         <aside
-          className={`fixed top-0 left-0 bottom-0 z-50 w-[220px] flex flex-col bg-[var(--ad-surface)] border-r border-[var(--ad-border)] admin-sidebar-hidden admin-sidebar-visible${sidebarOpen ? " admin-sidebar-show" : ""}`}
+          className={`fixed top-0 left-0 bottom-0 z-50 w-[240px] flex flex-col bg-[var(--ad-surface)] border-r border-[var(--ad-border)] admin-sidebar-hidden admin-sidebar-visible${sidebarOpen ? " admin-sidebar-show" : ""}`}
           style={{ transition: "transform 0.2s ease-out" }}
         >
           {/* Logo */}
@@ -186,7 +186,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           {/* Page content */}
-          <main className="px-6 lg:px-8 pb-12">{children}</main>
+          <main className="px-5 lg:px-10 pt-2 lg:pt-4 pb-16 max-w-[1400px] mx-auto">{children}</main>
         </div>
       </div>
     </ToastProvider>
