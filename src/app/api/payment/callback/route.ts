@@ -9,6 +9,10 @@ async function handleCallback(params: URLSearchParams): Promise<NextResponse> {
     const result = parseCallbackResponse(params);
     const bookingId = result.trackId || result.udf1 || "";
     const isSuccess = result.result === "CAPTURED";
+    console.log("[PAYMENT] Neoleap callback:", JSON.stringify({
+      bookingId, result: result.result, authRespCode: result.authRespCode,
+      error: result.error, errorText: result.errorText, actionCode: result.actionCode,
+    }));
 
     if (bookingId) {
       // Update booking status
@@ -37,8 +41,10 @@ async function handleCallback(params: URLSearchParams): Promise<NextResponse> {
           `${siteUrl}/payment/result?status=success&cn=${cn}&lang=${locale}`
         );
       } else {
+        const errorTag = result.error || result.authRespCode || result.result;
+        const errorDetail = result.errorText || "";
         return NextResponse.redirect(
-          `${siteUrl}/payment/result?status=failed&cn=${cn}&lang=${locale}&error=${encodeURIComponent(result.error || result.result)}`
+          `${siteUrl}/payment/result?status=failed&cn=${cn}&lang=${locale}&error=${encodeURIComponent(errorTag)}&detail=${encodeURIComponent(errorDetail)}`
         );
       }
     }
