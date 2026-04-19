@@ -349,16 +349,16 @@ body::before {
    ================================================================= */
 .admin-theme {
   /* Surfaces — layered so cards read clearly against the page */
-  --ad-bg: #0a0a0a;           /* page (slightly raised so cards still contrast) */
-  --ad-surface: #17171a;      /* card / sidebar — clearly lighter than page */
-  --ad-surface-2: #1f1f23;    /* input / secondary button / table header */
-  --ad-surface-hover: #26262b;
-  --ad-surface-active: #2e2e33;
+  --ad-bg: #07070a;           /* page */
+  --ad-surface: #1a1a1f;      /* card / sidebar — ~13% brighter than page */
+  --ad-surface-2: #24242a;    /* input / secondary button / table header */
+  --ad-surface-hover: #2c2c32;
+  --ad-surface-active: #34343a;
 
-  /* Borders — loud enough to see, quiet enough not to shout */
-  --ad-border: rgba(255, 255, 255, 0.12);
-  --ad-border-strong: rgba(255, 255, 255, 0.2);
-  --ad-border-accent: rgba(246, 190, 0, 0.4);
+  /* Borders — visible enough to define card edges */
+  --ad-border: rgba(255, 255, 255, 0.14);
+  --ad-border-strong: rgba(255, 255, 255, 0.24);
+  --ad-border-accent: rgba(246, 190, 0, 0.45);
 
   /* Text */
   --ad-fg: rgba(255, 255, 255, 0.92);

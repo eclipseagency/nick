@@ -212,57 +212,63 @@ function ProfilePanel({ me, onUpdated }: { me: Me; onUpdated: (u: Partial<Me>) =
   }
 
   return (
-    <>
-      <Section title="Account identity" description="How you appear to your team">
-        <Card>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Username" hint="Used to sign in — cannot be changed">
-              <Input value={me.username} disabled />
-            </Field>
-            <Field label="Role">
-              <div className="h-9 flex items-center">
-                <Badge tone={ROLE_TONES[me.role]}>
-                  <span className="mr-1 inline-flex">{ROLE_ICONS[me.role]}</span>
-                  {ROLE_LABELS[me.role]}
-                </Badge>
-              </div>
-            </Field>
+    <div className="space-y-6">
+      <Card padded={false}>
+        <div className="px-6 pt-5 pb-4 border-b border-[var(--ad-border)]">
+          <h2 className="text-[15px] font-semibold text-[var(--ad-fg)]">Account identity</h2>
+          <p className="mt-0.5 text-[12.5px] text-[var(--ad-fg-muted)]">How you appear to your team</p>
+        </div>
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <Field label="Username" hint="Used to sign in — cannot be changed">
+            <Input value={me.username} disabled />
+          </Field>
+          <Field label="Role">
+            <div className="h-9 flex items-center">
+              <Badge tone={ROLE_TONES[me.role]}>
+                <span className="mr-1 inline-flex">{ROLE_ICONS[me.role]}</span>
+                {ROLE_LABELS[me.role]}
+              </Badge>
+            </div>
+          </Field>
+          <div className="md:col-span-2">
             <Field label="Full name" hint="Shown in the top bar and booking assignments">
               <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" />
             </Field>
           </div>
-          <div className="mt-5 pt-4 border-t border-[var(--ad-border)] flex justify-end">
-            <Button variant="primary" onClick={saveName} loading={savingName}>
-              Save changes
-            </Button>
-          </div>
-        </Card>
-      </Section>
+        </div>
+        <div className="px-6 py-4 border-t border-[var(--ad-border)] bg-[var(--ad-surface-2)]/30 rounded-b-[14px] flex justify-end">
+          <Button variant="primary" onClick={saveName} loading={savingName}>
+            Save changes
+          </Button>
+        </div>
+      </Card>
 
-      <Section title="Password" description="Use a strong password you're not using elsewhere">
-        <Card>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="New password" required>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" autoComplete="new-password" />
-            </Field>
-            <Field label="Confirm new password" required>
-              <Input type="password" value={password2} onChange={(e) => setPassword2(e.target.value)} autoComplete="new-password" />
-            </Field>
-          </div>
-          <div className="mt-5 pt-4 border-t border-[var(--ad-border)] flex justify-end">
-            <Button
-              variant="primary"
-              icon={<KeyRound className="w-3.5 h-3.5" />}
-              onClick={changePw}
-              loading={savingPw}
-              disabled={!password || !password2}
-            >
-              Change password
-            </Button>
-          </div>
-        </Card>
-      </Section>
-    </>
+      <Card padded={false}>
+        <div className="px-6 pt-5 pb-4 border-b border-[var(--ad-border)]">
+          <h2 className="text-[15px] font-semibold text-[var(--ad-fg)]">Password</h2>
+          <p className="mt-0.5 text-[12.5px] text-[var(--ad-fg-muted)]">Use a strong password you&apos;re not using elsewhere</p>
+        </div>
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <Field label="New password" required>
+            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" autoComplete="new-password" />
+          </Field>
+          <Field label="Confirm new password" required>
+            <Input type="password" value={password2} onChange={(e) => setPassword2(e.target.value)} autoComplete="new-password" />
+          </Field>
+        </div>
+        <div className="px-6 py-4 border-t border-[var(--ad-border)] bg-[var(--ad-surface-2)]/30 rounded-b-[14px] flex justify-end">
+          <Button
+            variant="primary"
+            icon={<KeyRound className="w-3.5 h-3.5" />}
+            onClick={changePw}
+            loading={savingPw}
+            disabled={!password || !password2}
+          >
+            Change password
+          </Button>
+        </div>
+      </Card>
+    </div>
   );
 }
 
