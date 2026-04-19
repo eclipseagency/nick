@@ -317,6 +317,57 @@ export default function Booking() {
     }
   };
 
+  // Save booking and redirect to Neoleap online payment
+  const saveBookingOnline = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    setBookingError("");
+    // Validate form (same as saveBooking)
+    if (!formValid) {
+      setBookingError(isAr ? "يرجى تعبئة جميع الحقول المطلوبة" : "Please fill in all required fields");
+      setSubmitting(false);
+      return;
+    }
+    try {
+      const res = await fetch("/api/payment/initiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer_name: form.name,
+          customer_phone: form.phone,
+          customer_notes: form.notes || null,
+          car_make: null,
+          preferred_date: form.preferredDate,
+          car_size: size,
+          package_id: null,
+          service_ids: sel,
+          addon_ids: selAddons,
+          subtotal: svcTotal + addonTotal,
+          discount: 0,
+          total,
+          locale,
+        }),
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        setBookingError(errData?.error || `Payment initiation failed (${res.status})`);
+        setSubmitting(false);
+        return;
+      }
+      const data = await res.json();
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+      } else {
+        setBookingError(isAr ? "لم يتم الحصول على رابط الدفع" : "Could not get payment URL");
+        setSubmitting(false);
+      }
+    } catch (e) {
+      console.error("Failed to initiate payment:", e);
+      setBookingError(isAr ? "حدث خطأ أثناء بدء الدفع. حاول مرة أخرى." : "Something went wrong. Please try again.");
+      setSubmitting(false);
+    }
+  };
+
   const bnplBase: React.CSSProperties = {
     display: "flex", alignItems: "center", justifyContent: "space-between",
     width: "100%", padding: "16px 20px", borderRadius: 12,
@@ -343,6 +394,8 @@ export default function Booking() {
   // For the step indicators, we derive from user progress
   // Eid countdown — ends ~April 15, 2026
   const [ramadanDays, setRamadanDays] = useState(0);
+  // Earliest selectable booking date — set post-mount so SSR and hydration agree
+  const [minDate, setMinDate] = useState("");
   useEffect(() => {
     const calcDays = () => {
       const end = new Date("2026-04-15T23:59:59");
@@ -351,6 +404,7 @@ export default function Booking() {
       setRamadanDays(Math.max(0, diff));
     };
     calcDays();
+    setMinDate(new Date().toISOString().slice(0, 10));
     const timer = setInterval(calcDays, 60000);
     return () => clearInterval(timer);
   }, []);
@@ -581,15 +635,21 @@ export default function Booking() {
               const isDetailsOpen = detailsOpenId === s.id;
               return (
                 <div key={s.id} style={{ display: "flex", flexDirection: "column" }}>
-                  <button onClick={() => toggleSvc(s.id)} style={{
-                    position: "relative",
-                    width: "100%", padding: 0, cursor: "pointer", background: "none", border: "none",
-                    borderRadius: 16, overflow: "hidden", transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
-                    outline: isSelected ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
-                    outlineOffset: -2,
-                    boxShadow: isSelected ? "0 0 24px rgba(246,190,0,0.12), 0 0 0 1px rgba(246,190,0,0.06) inset" : "0 2px 12px rgba(0,0,0,0.3)",
-                    textAlign: dir === "rtl" ? "right" : "left",
-                  }}
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={isSelected}
+                    onClick={() => toggleSvc(s.id)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSvc(s.id); } }}
+                    style={{
+                      position: "relative",
+                      width: "100%", padding: 0, cursor: "pointer",
+                      borderRadius: 16, overflow: "hidden", transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+                      outline: isSelected ? "2px solid #F6BE00" : "2px solid rgba(255,255,255,0.06)",
+                      outlineOffset: -2,
+                      boxShadow: isSelected ? "0 0 24px rgba(246,190,0,0.12), 0 0 0 1px rgba(246,190,0,0.06) inset" : "0 2px 12px rgba(0,0,0,0.3)",
+                      textAlign: dir === "rtl" ? "right" : "left",
+                    }}
                     onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 12px 32px rgba(0,0,0,0.5)"; e.currentTarget.style.outlineColor = "rgba(246,190,0,0.3)"; } }}
                     onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.3)"; e.currentTarget.style.outlineColor = "rgba(255,255,255,0.06)"; } }}
                   >
@@ -720,7 +780,7 @@ export default function Booking() {
                         </div>
                       )}
                     </div>
-                  </button>
+                  </div>
                 </div>
               );
             })}
@@ -1131,7 +1191,7 @@ export default function Booking() {
             <div>
               <label style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 6 }}>{t.booking.preferredDateLabel}</label>
               <input type="date" id="booking-date" aria-label={t.booking.preferredDateLabel} value={form.preferredDate}
-                min={new Date().toISOString().slice(0, 10)}
+                min={minDate}
                 onChange={e => {
                   const val = e.target.value;
                   if (unavailableDates.includes(val)) return;
@@ -1202,6 +1262,27 @@ export default function Booking() {
                 </svg>
                 {submitting && <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ animation: "spin 1s linear infinite" }}><path d="M12 2a10 10 0 0 1 10 10" /></svg>}
                 {submitting ? (isAr ? "جاري المعالجة..." : "Processing...") : (isAr ? `احجز الان ، وسيارتك فى عهدتنا — ${displayTotal.toLocaleString()} ${cur}` : `Book Now — ${displayTotal.toLocaleString()} ${cur}`)}
+              </button>
+
+              {/* Pay Online — Neoleap */}
+              <button
+                onClick={() => { saveBookingOnline(); }}
+                disabled={!formValid || submitting}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  width: "100%", padding: isMobile ? "14px 14px" : "16px 20px", borderRadius: 12, cursor: "pointer",
+                  background: (!formValid || submitting) ? "rgba(26,115,232,0.3)" : "linear-gradient(135deg, #1a73e8, #0d47a1)",
+                  border: "none", color: "#fff", fontSize: isMobile ? 13 : 15, fontWeight: 700,
+                  textAlign: "center" as const,
+                  transition: "all 0.3s",
+                  opacity: (!formValid || submitting) ? 0.4 : 1,
+                }}
+              >
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+                </svg>
+                {submitting ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ animation: "spin 1s linear infinite" }}><path d="M12 2a10 10 0 0 1 10 10" /></svg> : null}
+                {submitting ? (isAr ? t.booking.redirectingToPayment : t.booking.redirectingToPayment) : (isAr ? `${t.booking.payOnline} — ${displayTotal.toLocaleString()} ${cur}` : `${t.booking.payOnline} — ${displayTotal.toLocaleString()} ${cur}`)}
               </button>
 
               <div style={{ display: "flex", alignItems: "center", gap: 14, margin: "6px 0" }}>

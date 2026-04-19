@@ -42,20 +42,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Sync document attributes whenever locale changes
+  // Sync document attributes whenever locale changes.
+  // Body font-family is handled by the `[dir="rtl"] body` rule in globals.css,
+  // so we only toggle lang/dir here — mutating body.style caused a hydration mismatch.
   useEffect(() => {
     const dir: Dir = locale === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = locale;
     document.documentElement.dir = dir;
 
-    // Swap body font for Arabic
-    if (locale === "ar") {
-      document.body.style.fontFamily = "var(--font-ar), system-ui, sans-serif";
-    } else {
-      document.body.style.fontFamily = "var(--font-sans), system-ui, sans-serif";
-    }
-
-    // Update document title & meta description
     const dict = dictionaries[locale];
     document.title = dict.meta.title;
     const metaDesc = document.querySelector('meta[name="description"]');

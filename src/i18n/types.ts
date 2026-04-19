@@ -181,6 +181,7 @@ export interface Dictionary {
     notesPh: string;
     paymentMethod: string;
     payOnline: string;
+    redirectingToPayment: string;
     splitIn4: string;
     splitIn3: string;
     or: string;

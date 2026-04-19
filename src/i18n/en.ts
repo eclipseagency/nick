@@ -183,6 +183,7 @@ export const en: Dictionary = {
     notesPh: "Additional notes...",
     paymentMethod: "Payment Method",
     payOnline: "Pay Online",
+    redirectingToPayment: "Redirecting to payment...",
     splitIn4: "Split in 4 payments",
     splitIn3: "Split in 3 payments",
     or: "or",
