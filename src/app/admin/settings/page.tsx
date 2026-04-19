@@ -384,75 +384,76 @@ function UsersPanel({ isSuper, meId }: { isSuper: boolean; meId?: string }) {
               const isMe = u.id === meId;
               const inactive = !u.is_active;
               return (
-                <div
-                  key={u.id}
-                  className={`grid gap-3 p-4 items-center ${inactive ? "opacity-60" : ""}`}
-                  style={{
-                    gridTemplateColumns: "minmax(180px,1fr) minmax(130px,160px) minmax(140px,180px) auto",
-                  }}
-                >
-                  {/* Identity */}
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-full bg-[var(--ad-accent-bg)] border border-[var(--ad-border-accent)] flex items-center justify-center text-[13px] font-bold text-[var(--ad-accent)] flex-shrink-0">
-                      {(u.full_name || u.username).slice(0, 1).toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[14px] font-medium text-[var(--ad-fg)] truncate">{u.full_name || u.username}</span>
-                        {isMe && <Badge tone="gold">You</Badge>}
-                        {inactive && <Badge tone="danger">Off</Badge>}
+                <div key={u.id} className={`p-4 ${inactive ? "opacity-60" : ""}`}>
+                  {/* Desktop: single row. Mobile: stacks naturally via flex-wrap */}
+                  <div className="flex items-center gap-3 flex-wrap md:flex-nowrap">
+                    {/* Identity — flexes to fill remaining space */}
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="w-9 h-9 rounded-full bg-[var(--ad-accent-bg)] border border-[var(--ad-border-accent)] flex items-center justify-center text-[13px] font-bold text-[var(--ad-accent)] flex-shrink-0">
+                        {(u.full_name || u.username).slice(0, 1).toUpperCase()}
                       </div>
-                      <div className="text-[12px] text-[var(--ad-fg-muted)] truncate mt-0.5">
-                        @{u.username}
-                        {u.branch_id && <span className="ml-1.5">· {branchName(u.branch_id)}</span>}
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[14px] font-medium text-[var(--ad-fg)] truncate">{u.full_name || u.username}</span>
+                          {isMe && <Badge tone="gold">You</Badge>}
+                          {inactive && <Badge tone="danger">Off</Badge>}
+                        </div>
+                        <div className="text-[12px] text-[var(--ad-fg-muted)] truncate mt-0.5">
+                          @{u.username}
+                          {u.branch_id && <span className="ml-1.5">· {branchName(u.branch_id)}</span>}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {/* Role */}
-                  <Select
-                    value={u.role}
-                    disabled={isMe}
-                    onChange={(e) => updateUser(u, { role: e.target.value as Role })}
-                    aria-label="Role"
-                  >
-                    {(["super_admin", "manager", "reception", "technician"] as Role[]).map((r) => (
-                      <option key={r} value={r}>
-                        {ROLE_LABELS[r]}
-                      </option>
-                    ))}
-                  </Select>
-                  {/* Branch */}
-                  <Select
-                    value={u.branch_id || ""}
-                    onChange={(e) => updateUser(u, { branch_id: e.target.value || null })}
-                    aria-label="Branch"
-                  >
-                    <option value="">No branch</option>
-                    {branches.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {b.name_en}
-                      </option>
-                    ))}
-                  </Select>
-                  {/* Actions */}
-                  <div className="flex items-center gap-1.5 justify-end">
-                    {!isMe && (
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => updateUser(u, { is_active: !u.is_active })}
+                    {/* Role — fixed width */}
+                    <div className="w-[150px] flex-shrink-0">
+                      <Select
+                        value={u.role}
+                        disabled={isMe}
+                        onChange={(e) => updateUser(u, { role: e.target.value as Role })}
+                        aria-label="Role"
                       >
-                        {u.is_active ? "Disable" : "Enable"}
-                      </Button>
-                    )}
-                    <IconButton size="sm" label="Reset password" onClick={() => resetPassword(u)}>
-                      <KeyRound className="w-3.5 h-3.5" />
-                    </IconButton>
-                    {!isMe && (
-                      <IconButton size="sm" label="Delete user" onClick={() => deleteUser(u)}>
-                        <Trash2 className="w-3.5 h-3.5" />
+                        {(["super_admin", "manager", "reception", "technician"] as Role[]).map((r) => (
+                          <option key={r} value={r}>
+                            {ROLE_LABELS[r]}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
+                    {/* Branch — fixed width */}
+                    <div className="w-[170px] flex-shrink-0">
+                      <Select
+                        value={u.branch_id || ""}
+                        onChange={(e) => updateUser(u, { branch_id: e.target.value || null })}
+                        aria-label="Branch"
+                      >
+                        <option value="">No branch</option>
+                        {branches.map((b) => (
+                          <option key={b.id} value={b.id}>
+                            {b.name_en}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
+                    {/* Actions — tight, fixed */}
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {!isMe && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => updateUser(u, { is_active: !u.is_active })}
+                        >
+                          {u.is_active ? "Disable" : "Enable"}
+                        </Button>
+                      )}
+                      <IconButton size="sm" label="Reset password" onClick={() => resetPassword(u)}>
+                        <KeyRound className="w-3.5 h-3.5" />
                       </IconButton>
-                    )}
+                      {!isMe && (
+                        <IconButton size="sm" label="Delete user" onClick={() => deleteUser(u)}>
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </IconButton>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
