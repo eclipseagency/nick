@@ -21,8 +21,8 @@ export default function Navbar() {
     { t: t.nav.about, h: "/about" },
     { t: t.nav.services, h: "/services" },
     { t: t.nav.gallery, h: "/gallery" },
-    { t: t.nav.contact, h: "/contact" },
     { t: t.nav.warranty, h: "/warranty" },
+    { t: t.nav.contact, h: "/contact" },
   ];
 
   const isAr = locale === "ar";
