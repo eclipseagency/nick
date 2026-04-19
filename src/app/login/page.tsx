@@ -90,7 +90,7 @@ export default function LoginPage() {
 
       <form
         onSubmit={handleSubmit}
-        className="relative z-10 w-full max-w-[420px] rounded-3xl p-9 sm:p-10 backdrop-blur-xl"
+        className="relative z-10 w-full max-w-[460px] rounded-3xl px-8 py-12 sm:px-12 sm:py-14 backdrop-blur-xl"
         style={{
           background: "linear-gradient(180deg, rgba(22,22,22,0.85) 0%, rgba(12,12,12,0.9) 100%)",
           border: "1px solid rgba(246,190,0,0.14)",
@@ -100,7 +100,7 @@ export default function LoginPage() {
       >
         {/* Top gold hairline */}
         <div
-          className="absolute top-0 left-10 right-10 h-px"
+          className="absolute top-0 left-12 right-12 h-px"
           style={{
             background:
               "linear-gradient(90deg, transparent 0%, rgba(246,190,0,0.6) 50%, transparent 100%)",
@@ -108,8 +108,8 @@ export default function LoginPage() {
         />
 
         {/* Logo + heading */}
-        <div className="text-center mb-10">
-          <Link href="/" className="inline-block mb-7 group">
+        <div className="text-center mb-14">
+          <Link href="/" className="inline-block mb-8 group">
             <Image
               src="/images/logo-white.png"
               alt="NICK"
@@ -119,7 +119,7 @@ export default function LoginPage() {
               className="h-10 w-auto mx-auto transition-opacity duration-300 group-hover:opacity-80"
             />
           </Link>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full mb-4"
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6"
             style={{
               background: "rgba(246,190,0,0.08)",
               border: "1px solid rgba(246,190,0,0.2)",
@@ -127,20 +127,20 @@ export default function LoginPage() {
             }}
           >
             <LockIcon />
-            <span className="text-[10px] font-semibold tracking-[0.18em] uppercase">
+            <span className="text-[10px] font-semibold tracking-[0.2em] uppercase">
               Secure Access
             </span>
           </div>
-          <h1 className="text-2xl sm:text-[26px] font-bold text-white mb-1.5 tracking-tight">
+          <h1 className="text-2xl sm:text-[26px] font-bold text-white mb-3 tracking-tight">
             Admin Dashboard
           </h1>
-          <p className="text-white/45 text-[13px]">
-            Sign in to manage bookings & services
+          <p className="text-white/45 text-[13px] leading-relaxed">
+            Sign in to manage bookings &amp; services
           </p>
         </div>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/25 rounded-xl px-4 py-3 mb-5 text-red-400 text-sm flex items-start gap-2">
+          <div className="bg-red-500/10 border border-red-500/25 rounded-xl px-4 py-3 mb-8 text-red-400 text-sm flex items-start gap-2.5">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0">
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="12" />
@@ -150,8 +150,8 @@ export default function LoginPage() {
           </div>
         )}
 
-        <div className="mb-5">
-          <label className="block text-[11px] text-white/55 mb-2 uppercase tracking-[0.14em] font-semibold">
+        <div className="mb-7">
+          <label className="block text-[11px] text-white/55 mb-3 uppercase tracking-[0.16em] font-semibold">
             Username
           </label>
           <input
@@ -162,12 +162,12 @@ export default function LoginPage() {
             autoFocus
             autoComplete="username"
             placeholder="admin"
-            className="w-full px-4 py-3.5 bg-black/40 border border-white/[0.08] rounded-xl text-white text-sm outline-none transition-all duration-200 placeholder:text-white/20 focus:border-gold/40 focus:ring-2 focus:ring-gold/10 focus:bg-black/60"
+            className="w-full px-5 py-4 bg-black/40 border border-white/[0.08] rounded-xl text-white text-sm outline-none transition-all duration-200 placeholder:text-white/20 focus:border-gold/40 focus:ring-2 focus:ring-gold/10 focus:bg-black/60"
           />
         </div>
 
-        <div className="mb-7">
-          <label className="block text-[11px] text-white/55 mb-2 uppercase tracking-[0.14em] font-semibold">
+        <div className="mb-10">
+          <label className="block text-[11px] text-white/55 mb-3 uppercase tracking-[0.16em] font-semibold">
             Password
           </label>
           <div className="relative">
@@ -178,12 +178,12 @@ export default function LoginPage() {
               required
               autoComplete="current-password"
               placeholder="••••••••"
-              className="w-full px-4 py-3.5 pr-12 bg-black/40 border border-white/[0.08] rounded-xl text-white text-sm outline-none transition-all duration-200 placeholder:text-white/20 focus:border-gold/40 focus:ring-2 focus:ring-gold/10 focus:bg-black/60"
+              className="w-full px-5 py-4 pr-14 bg-black/40 border border-white/[0.08] rounded-xl text-white text-sm outline-none transition-all duration-200 placeholder:text-white/20 focus:border-gold/40 focus:ring-2 focus:ring-gold/10 focus:bg-black/60"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute inset-y-0 right-0 flex items-center px-4 text-white/35 hover:text-gold transition-colors"
+              className="absolute inset-y-0 right-0 flex items-center px-5 text-white/35 hover:text-gold transition-colors"
               tabIndex={-1}
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
@@ -195,13 +195,13 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="relative w-full py-3.5 px-7 text-black font-bold text-sm uppercase tracking-[0.12em] rounded-xl cursor-pointer transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group"
+          className="relative w-full py-4 px-7 text-black font-bold text-sm uppercase tracking-[0.14em] rounded-xl cursor-pointer transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group"
           style={{
             background: "linear-gradient(135deg, #F6BE00 0%, #FFD54F 50%, #F6BE00 100%)",
             boxShadow: "0 10px 30px rgba(246,190,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3)",
           }}
         >
-          <span className="relative z-10 inline-flex items-center justify-center gap-2">
+          <span className="relative z-10 inline-flex items-center justify-center gap-2.5">
             {loading ? (
               <>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="animate-spin">
@@ -221,10 +221,10 @@ export default function LoginPage() {
           </span>
         </button>
 
-        <div className="mt-8 pt-6 text-center border-t border-white/[0.05]">
+        <div className="mt-12 pt-8 text-center border-t border-white/[0.05]">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-[11px] text-white/40 hover:text-gold transition-colors uppercase tracking-[0.14em]"
+            className="inline-flex items-center gap-2 text-[11px] text-white/40 hover:text-gold transition-colors uppercase tracking-[0.16em]"
           >
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path d="M8 2L4 6L8 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
