@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import https from "https";
+import tls from "tls";
 
 const IV = "PGKEYENCDECIVSPC"; // Fixed IV per Neoleap docs
 const ALGORITHM = "aes-256-cbc";
@@ -36,7 +37,13 @@ hriSqHKvoflShx8xpfywgVcvzfTO3PYkz6fiNJBonf6q8amaEsybwMbDqKWwIX7e
 SPY=
 -----END CERTIFICATE-----`;
 
-const neoleapAgent = new https.Agent({ ca: NEOLEAP_INTERMEDIATE_CA, keepAlive: false });
+// Merge our intermediate with Node's default root trust store. Setting `ca`
+// *replaces* the default roots, so we must union them or the root that signed
+// our intermediate becomes untrusted.
+const neoleapAgent = new https.Agent({
+  ca: [...tls.rootCertificates, NEOLEAP_INTERMEDIATE_CA],
+  keepAlive: false,
+});
 
 function httpsPostJson(urlStr: string, body: string, headers: Record<string, string>, timeoutMs = 20000): Promise<string> {
   return new Promise((resolve, reject) => {
