@@ -102,7 +102,7 @@ export default function SettingsPage() {
         subtitle="Your profile, team members, and branches"
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-8 lg:gap-10">
         {/* Left tabs */}
         <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible">
           {[
@@ -212,13 +212,13 @@ function ProfilePanel({ me, onUpdated }: { me: Me; onUpdated: (u: Partial<Me>) =
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <Card padded={false}>
-        <div className="px-6 pt-5 pb-4 border-b border-[var(--ad-border)]">
-          <h2 className="text-[15px] font-semibold text-[var(--ad-fg)]">Account identity</h2>
-          <p className="mt-0.5 text-[12.5px] text-[var(--ad-fg-muted)]">How you appear to your team</p>
+        <div className="px-8 pt-7 pb-6 border-b border-[var(--ad-border)]">
+          <h2 className="text-[16px] font-semibold text-[var(--ad-fg)] tracking-tight">Account identity</h2>
+          <p className="mt-1.5 text-[13px] text-[var(--ad-fg-muted)]">How you appear to your team</p>
         </div>
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-7">
           <Field label="Username" hint="Used to sign in — cannot be changed">
             <Input value={me.username} disabled />
           </Field>
@@ -236,7 +236,7 @@ function ProfilePanel({ me, onUpdated }: { me: Me; onUpdated: (u: Partial<Me>) =
             </Field>
           </div>
         </div>
-        <div className="px-6 py-4 border-t border-[var(--ad-border)] bg-[var(--ad-surface-2)]/30 rounded-b-[14px] flex justify-end">
+        <div className="px-8 py-5 border-t border-[var(--ad-border)] bg-[var(--ad-surface-2)]/40 rounded-b-[14px] flex justify-end">
           <Button variant="primary" onClick={saveName} loading={savingName}>
             Save changes
           </Button>
@@ -244,11 +244,11 @@ function ProfilePanel({ me, onUpdated }: { me: Me; onUpdated: (u: Partial<Me>) =
       </Card>
 
       <Card padded={false}>
-        <div className="px-6 pt-5 pb-4 border-b border-[var(--ad-border)]">
-          <h2 className="text-[15px] font-semibold text-[var(--ad-fg)]">Password</h2>
-          <p className="mt-0.5 text-[12.5px] text-[var(--ad-fg-muted)]">Use a strong password you&apos;re not using elsewhere</p>
+        <div className="px-8 pt-7 pb-6 border-b border-[var(--ad-border)]">
+          <h2 className="text-[16px] font-semibold text-[var(--ad-fg)] tracking-tight">Password</h2>
+          <p className="mt-1.5 text-[13px] text-[var(--ad-fg-muted)]">Use a strong password you&apos;re not using elsewhere</p>
         </div>
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-7">
           <Field label="New password" required>
             <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" autoComplete="new-password" />
           </Field>
@@ -256,7 +256,7 @@ function ProfilePanel({ me, onUpdated }: { me: Me; onUpdated: (u: Partial<Me>) =
             <Input type="password" value={password2} onChange={(e) => setPassword2(e.target.value)} autoComplete="new-password" />
           </Field>
         </div>
-        <div className="px-6 py-4 border-t border-[var(--ad-border)] bg-[var(--ad-surface-2)]/30 rounded-b-[14px] flex justify-end">
+        <div className="px-8 py-5 border-t border-[var(--ad-border)] bg-[var(--ad-surface-2)]/40 rounded-b-[14px] flex justify-end">
           <Button
             variant="primary"
             icon={<KeyRound className="w-3.5 h-3.5" />}
@@ -365,102 +365,104 @@ function UsersPanel({ isSuper, meId }: { isSuper: boolean; meId?: string }) {
         </Button>
       }
     >
-      <Card padded={false}>
-        {loading ? (
-          <div className="p-6 space-y-3">
-            <Skeleton className="w-full h-8" />
-            <Skeleton className="w-full h-8" />
-            <Skeleton className="w-full h-8" />
+      {loading ? (
+        <Card padded>
+          <div className="space-y-4">
+            <Skeleton className="w-full h-10" />
+            <Skeleton className="w-full h-10" />
+            <Skeleton className="w-full h-10" />
           </div>
-        ) : users.length === 0 ? (
+        </Card>
+      ) : users.length === 0 ? (
+        <Card padded>
           <EmptyState
             icon={<UsersIcon className="w-5 h-5" />}
             title="No team members yet"
             description="Add your first team member to start assigning roles."
           />
-        ) : (
-          <div className="divide-y divide-[var(--ad-border)]">
-            {users.map((u) => {
-              const isMe = u.id === meId;
-              const inactive = !u.is_active;
-              return (
-                <div key={u.id} className={`p-4 ${inactive ? "opacity-60" : ""}`}>
-                  {/* Desktop: single row. Mobile: stacks naturally via flex-wrap */}
-                  <div className="flex items-center gap-3 flex-wrap md:flex-nowrap">
-                    {/* Identity — flexes to fill remaining space */}
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="w-9 h-9 rounded-full bg-[var(--ad-accent-bg)] border border-[var(--ad-border-accent)] flex items-center justify-center text-[13px] font-bold text-[var(--ad-accent)] flex-shrink-0">
-                        {(u.full_name || u.username).slice(0, 1).toUpperCase()}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[14px] font-medium text-[var(--ad-fg)] truncate">{u.full_name || u.username}</span>
-                          {isMe && <Badge tone="gold">You</Badge>}
-                          {inactive && <Badge tone="danger">Off</Badge>}
-                        </div>
-                        <div className="text-[12px] text-[var(--ad-fg-muted)] truncate mt-0.5">
-                          @{u.username}
-                          {u.branch_id && <span className="ml-1.5">· {branchName(u.branch_id)}</span>}
-                        </div>
-                      </div>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {users.map((u) => {
+            const isMe = u.id === meId;
+            const inactive = !u.is_active;
+            return (
+              <div
+                key={u.id}
+                className={`flex items-center gap-4 flex-wrap md:flex-nowrap px-6 py-5 bg-[var(--ad-surface)] border border-[var(--ad-border)] rounded-[12px] transition-colors hover:border-[var(--ad-border-strong)] ${inactive ? "opacity-60" : ""}`}
+              >
+                {/* Identity — flexes to fill remaining space */}
+                <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                  <div className="w-10 h-10 rounded-full bg-[var(--ad-accent-bg)] border border-[var(--ad-border-accent)] flex items-center justify-center text-[14px] font-bold text-[var(--ad-accent)] flex-shrink-0">
+                    {(u.full_name || u.username).slice(0, 1).toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[14.5px] font-medium text-[var(--ad-fg)] truncate">{u.full_name || u.username}</span>
+                      {isMe && <Badge tone="gold">You</Badge>}
+                      {inactive && <Badge tone="danger">Off</Badge>}
                     </div>
-                    {/* Role — fixed width */}
-                    <div className="w-[150px] flex-shrink-0">
-                      <Select
-                        value={u.role}
-                        disabled={isMe}
-                        onChange={(e) => updateUser(u, { role: e.target.value as Role })}
-                        aria-label="Role"
-                      >
-                        {(["super_admin", "manager", "reception", "technician"] as Role[]).map((r) => (
-                          <option key={r} value={r}>
-                            {ROLE_LABELS[r]}
-                          </option>
-                        ))}
-                      </Select>
-                    </div>
-                    {/* Branch — fixed width */}
-                    <div className="w-[170px] flex-shrink-0">
-                      <Select
-                        value={u.branch_id || ""}
-                        onChange={(e) => updateUser(u, { branch_id: e.target.value || null })}
-                        aria-label="Branch"
-                      >
-                        <option value="">No branch</option>
-                        {branches.map((b) => (
-                          <option key={b.id} value={b.id}>
-                            {b.name_en}
-                          </option>
-                        ))}
-                      </Select>
-                    </div>
-                    {/* Actions — tight, fixed */}
-                    <div className="flex items-center gap-1.5 flex-shrink-0">
-                      {!isMe && (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => updateUser(u, { is_active: !u.is_active })}
-                        >
-                          {u.is_active ? "Disable" : "Enable"}
-                        </Button>
-                      )}
-                      <IconButton size="sm" label="Reset password" onClick={() => resetPassword(u)}>
-                        <KeyRound className="w-3.5 h-3.5" />
-                      </IconButton>
-                      {!isMe && (
-                        <IconButton size="sm" label="Delete user" onClick={() => deleteUser(u)}>
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </IconButton>
-                      )}
+                    <div className="text-[12.5px] text-[var(--ad-fg-muted)] truncate mt-1">
+                      @{u.username}
+                      {u.branch_id && <span className="ml-1.5">· {branchName(u.branch_id)}</span>}
                     </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </Card>
+                {/* Role — fixed width */}
+                <div className="w-[150px] flex-shrink-0">
+                  <Select
+                    value={u.role}
+                    disabled={isMe}
+                    onChange={(e) => updateUser(u, { role: e.target.value as Role })}
+                    aria-label="Role"
+                  >
+                    {(["super_admin", "manager", "reception", "technician"] as Role[]).map((r) => (
+                      <option key={r} value={r}>
+                        {ROLE_LABELS[r]}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+                {/* Branch — fixed width */}
+                <div className="w-[170px] flex-shrink-0">
+                  <Select
+                    value={u.branch_id || ""}
+                    onChange={(e) => updateUser(u, { branch_id: e.target.value || null })}
+                    aria-label="Branch"
+                  >
+                    <option value="">No branch</option>
+                    {branches.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name_en}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+                {/* Actions — tight, fixed */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {!isMe && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => updateUser(u, { is_active: !u.is_active })}
+                    >
+                      {u.is_active ? "Disable" : "Enable"}
+                    </Button>
+                  )}
+                  <IconButton size="sm" label="Reset password" onClick={() => resetPassword(u)}>
+                    <KeyRound className="w-3.5 h-3.5" />
+                  </IconButton>
+                  {!isMe && (
+                    <IconButton size="sm" label="Delete user" onClick={() => deleteUser(u)}>
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </IconButton>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {adding && (
         <AddUserDialog
@@ -653,51 +655,56 @@ function BranchesPanel({ isSuper }: { isSuper: boolean }) {
         </Button>
       }
     >
-      <Card padded={false}>
-        {loading ? (
-          <div className="p-6 space-y-3">
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
+      {loading ? (
+        <Card padded>
+          <div className="space-y-4">
+            <Skeleton className="w-full h-14" />
+            <Skeleton className="w-full h-14" />
           </div>
-        ) : branches.length === 0 ? (
+        </Card>
+      ) : branches.length === 0 ? (
+        <Card padded>
           <EmptyState
             icon={<Building2 className="w-5 h-5" />}
             title="No branches yet"
             description="Add your first branch to start assigning users and bookings."
           />
-        ) : (
-          <div className="divide-y divide-[var(--ad-border)]">
-            {branches.map((b) => (
-              <div key={b.id} className={`flex flex-wrap items-center gap-3 p-4 ${!b.is_active ? "opacity-60" : ""}`}>
-                <div className="w-9 h-9 rounded-[8px] bg-[var(--ad-accent-bg)] border border-[var(--ad-border-accent)] flex items-center justify-center text-[var(--ad-accent)] flex-shrink-0">
-                  <Building2 className="w-4 h-4" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[14px] font-medium text-[var(--ad-fg)]">{b.name_en}</span>
-                    <span className="text-[12px] text-[var(--ad-fg-muted)]" dir="rtl">{b.name_ar}</span>
-                    {!b.is_active && <Badge tone="danger">Inactive</Badge>}
-                  </div>
-                  <div className="text-[12px] text-[var(--ad-fg-muted)] mt-0.5 truncate">
-                    {b.address || "—"} {b.phone && <span className="ml-2">· {b.phone}</span>}
-                  </div>
-                </div>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => updateBranch(b, { is_active: !b.is_active })}
-                  icon={b.is_active ? <X className="w-3 h-3" /> : <Check className="w-3 h-3" />}
-                >
-                  {b.is_active ? "Deactivate" : "Activate"}
-                </Button>
-                <IconButton size="sm" label="Delete branch" onClick={() => deleteBranch(b)}>
-                  <Trash2 className="w-3.5 h-3.5" />
-                </IconButton>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {branches.map((b) => (
+            <div
+              key={b.id}
+              className={`flex flex-wrap items-center gap-4 px-6 py-5 bg-[var(--ad-surface)] border border-[var(--ad-border)] rounded-[12px] transition-colors hover:border-[var(--ad-border-strong)] ${!b.is_active ? "opacity-60" : ""}`}
+            >
+              <div className="w-10 h-10 rounded-[10px] bg-[var(--ad-accent-bg)] border border-[var(--ad-border-accent)] flex items-center justify-center text-[var(--ad-accent)] flex-shrink-0">
+                <Building2 className="w-4 h-4" />
               </div>
-            ))}
-          </div>
-        )}
-      </Card>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <span className="text-[14.5px] font-medium text-[var(--ad-fg)]">{b.name_en}</span>
+                  <span className="text-[13px] text-[var(--ad-fg-muted)]" dir="rtl">{b.name_ar}</span>
+                  {!b.is_active && <Badge tone="danger">Inactive</Badge>}
+                </div>
+                <div className="text-[12.5px] text-[var(--ad-fg-muted)] mt-1 truncate">
+                  {b.address || "No address set"} {b.phone && <span className="ml-2">· {b.phone}</span>}
+                </div>
+              </div>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => updateBranch(b, { is_active: !b.is_active })}
+                icon={b.is_active ? <X className="w-3 h-3" /> : <Check className="w-3 h-3" />}
+              >
+                {b.is_active ? "Deactivate" : "Activate"}
+              </Button>
+              <IconButton size="sm" label="Delete branch" onClick={() => deleteBranch(b)}>
+                <Trash2 className="w-3.5 h-3.5" />
+              </IconButton>
+            </div>
+          ))}
+        </div>
+      )}
 
       {adding && (
         <AddBranchDialog
