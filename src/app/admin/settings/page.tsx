@@ -1,460 +1,763 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  User as UserIcon,
+  Users as UsersIcon,
+  Building2,
+  Plus,
+  Trash2,
+  Shield,
+  ShieldCheck,
+  Wrench,
+  Check,
+  X,
+  KeyRound,
+} from "lucide-react";
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Field,
+  IconButton,
+  Input,
+  PageHeader,
+  Section,
+  Select,
+  Skeleton,
+  useToast,
+  type BadgeTone,
+} from "../_ui";
 
-interface User {
+type Role = "super_admin" | "manager" | "reception" | "technician";
+
+interface Me {
   id: string;
   username: string;
+  full_name: string | null;
+  role: Role;
+  branch_id: string | null;
+}
+
+interface AdminUser {
+  id: string;
+  username: string;
+  full_name: string | null;
+  role: Role;
+  branch_id: string | null;
+  is_active: boolean;
   created_at: string;
 }
 
-const cardStyle: React.CSSProperties = {
-  background: "#111111",
-  border: "1px solid rgba(255,255,255,0.06)",
-  borderRadius: 16,
-  padding: 24,
+interface Branch {
+  id: string;
+  name_en: string;
+  name_ar: string;
+  address: string | null;
+  phone: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+const ROLE_LABELS: Record<Role, string> = {
+  super_admin: "Super Admin",
+  manager: "Manager",
+  reception: "Reception",
+  technician: "Technician",
 };
 
-const labelStyle: React.CSSProperties = {
-  fontSize: 12,
-  fontWeight: 600,
-  color: "rgba(255,255,255,0.3)",
-  marginBottom: 6,
-  display: "block",
+const ROLE_TONES: Record<Role, BadgeTone> = {
+  super_admin: "gold",
+  manager: "info",
+  reception: "success",
+  technician: "neutral",
 };
 
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.06)",
-  borderRadius: 8,
-  padding: "10px 14px",
-  color: "#f5f5f5",
-  fontSize: 14,
-  fontFamily: "inherit",
-  outline: "none",
-  boxSizing: "border-box",
+const ROLE_ICONS: Record<Role, React.ReactNode> = {
+  super_admin: <ShieldCheck className="w-3 h-3" />,
+  manager: <Shield className="w-3 h-3" />,
+  reception: <UserIcon className="w-3 h-3" />,
+  technician: <Wrench className="w-3 h-3" />,
 };
 
-const primaryButtonStyle: React.CSSProperties = {
-  background: "#F6BE00",
-  color: "#000",
-  fontWeight: 700,
-  borderRadius: 10,
-  padding: "10px 24px",
-  fontSize: 13,
-  border: "none",
-  cursor: "pointer",
-  fontFamily: "inherit",
-};
+export default function SettingsPage() {
+  const [tab, setTab] = useState<"profile" | "users" | "branches">("profile");
+  const [me, setMe] = useState<Me | null>(null);
+  const [loadingMe, setLoadingMe] = useState(true);
 
-function InputField({
-  label,
-  type,
-  value,
-  onChange,
-  placeholder,
-}: {
-  label: string;
-  type: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder: string;
-}) {
-  const [focused, setFocused] = useState(false);
+  useEffect(() => {
+    fetch("/api/auth")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d && setMe(d))
+      .finally(() => setLoadingMe(false));
+  }, []);
+
+  const isSuper = me?.role === "super_admin";
+
   return (
     <div>
-      <label style={labelStyle}>{label}</label>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={{
-          ...inputStyle,
-          borderColor: focused ? "rgba(246,190,0,0.2)" : "rgba(255,255,255,0.06)",
-        }}
+      <PageHeader
+        title="Settings"
+        subtitle="Your profile, team members, and branches"
       />
+
+      <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-6">
+        {/* Left tabs */}
+        <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible">
+          {[
+            { key: "profile", label: "My Profile", icon: <UserIcon className="w-4 h-4" /> },
+            ...(isSuper
+              ? [
+                  { key: "users", label: "Users & Roles", icon: <UsersIcon className="w-4 h-4" /> },
+                  { key: "branches", label: "Branches", icon: <Building2 className="w-4 h-4" /> },
+                ]
+              : []),
+          ].map((t) => {
+            const active = tab === t.key;
+            return (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key as typeof tab)}
+                className={`flex items-center gap-2.5 px-3 h-10 rounded-[8px] text-[13px] font-medium whitespace-nowrap transition-colors ${
+                  active
+                    ? "bg-[var(--ad-accent-bg)] text-[var(--ad-accent)]"
+                    : "text-[var(--ad-fg-muted)] hover:text-[var(--ad-fg)] hover:bg-[var(--ad-surface-2)]"
+                }`}
+              >
+                {t.icon}
+                {t.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Content */}
+        <div className="min-w-0">
+          {loadingMe ? (
+            <Card>
+              <Skeleton className="w-48 h-4 mb-4" />
+              <Skeleton className="w-full h-9 mb-3" />
+              <Skeleton className="w-full h-9" />
+            </Card>
+          ) : tab === "profile" ? (
+            me && <ProfilePanel me={me} onUpdated={(next) => setMe({ ...me, ...next })} />
+          ) : tab === "users" ? (
+            <UsersPanel isSuper={!!isSuper} meId={me?.id} />
+          ) : (
+            <BranchesPanel isSuper={!!isSuper} />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
 
-export default function SettingsPage() {
-  const [currentUser, setCurrentUser] = useState("");
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+// ─────────────────────────────────────────────────────────────────
+// Profile panel
+// ─────────────────────────────────────────────────────────────────
+function ProfilePanel({ me, onUpdated }: { me: Me; onUpdated: (u: Partial<Me>) => void }) {
+  const toast = useToast();
+  const [fullName, setFullName] = useState(me.full_name || "");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [savingName, setSavingName] = useState(false);
+  const [savingPw, setSavingPw] = useState(false);
 
-  // Change password state
-  const [newPw, setNewPw] = useState("");
-  const [confirmPw, setConfirmPw] = useState("");
-  const [pwMsg, setPwMsg] = useState("");
-  const [pwError, setPwError] = useState(false);
-  const [pwSaving, setPwSaving] = useState(false);
-
-  // Add user state
-  const [newUsername, setNewUsername] = useState("");
-  const [newUserPw, setNewUserPw] = useState("");
-  const [userMsg, setUserMsg] = useState("");
-  const [userError, setUserError] = useState(false);
-  const [userSaving, setUserSaving] = useState(false);
-
-  // Delete confirm
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-
-  useEffect(() => {
-    Promise.all([
-      fetch("/api/auth").then((r) => r.json()),
-      fetch("/api/users").then((r) => r.json()),
-    ])
-      .then(([auth, usersData]) => {
-        if (auth.username) setCurrentUser(auth.username);
-        if (Array.isArray(usersData)) setUsers(usersData);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  async function handleChangePassword() {
-    setPwMsg("");
-    setPwError(false);
-
-    if (!newPw) {
-      setPwMsg("Please enter a new password");
-      setPwError(true);
-      return;
-    }
-    if (newPw !== confirmPw) {
-      setPwMsg("New passwords do not match");
-      setPwError(true);
-      return;
-    }
-    if (newPw.length < 4) {
-      setPwMsg("Password must be at least 4 characters");
-      setPwError(true);
-      return;
-    }
-
-    setPwSaving(true);
+  async function saveName() {
+    setSavingName(true);
     try {
       const res = await fetch("/api/users", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          new_password: newPw,
-        }),
+        body: JSON.stringify({ id: me.id, full_name: fullName }),
       });
-      const data = await res.json();
-      if (res.ok) {
-        setPwMsg("Password changed successfully");
-        setPwError(false);
-        setNewPw("");
-        setConfirmPw("");
-      } else {
-        setPwMsg(data.error || "Failed to change password");
-        setPwError(true);
-      }
-    } catch {
-      setPwMsg("Failed to change password");
-      setPwError(true);
+      if (!res.ok) throw new Error((await res.json()).error || "Failed");
+      const next = await res.json();
+      onUpdated({ full_name: next.full_name });
+      toast.success("Profile updated");
+    } catch (e) {
+      toast.error("Couldn't save", (e as Error).message);
+    } finally {
+      setSavingName(false);
     }
-    setPwSaving(false);
   }
 
-  async function handleAddUser() {
-    setUserMsg("");
-    setUserError(false);
-
-    if (!newUsername || !newUserPw) {
-      setUserMsg("Please fill in all fields");
-      setUserError(true);
+  async function changePw() {
+    if (!password) return;
+    if (password !== password2) {
+      toast.error("Passwords do not match");
       return;
     }
-    if (newUserPw.length < 4) {
-      setUserMsg("Password must be at least 4 characters");
-      setUserError(true);
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
       return;
     }
-
-    setUserSaving(true);
+    setSavingPw(true);
     try {
       const res = await fetch("/api/users", {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: newUsername, password: newUserPw }),
+        body: JSON.stringify({ id: me.id, password }),
       });
-      const data = await res.json();
-      if (res.ok) {
-        setUserMsg("User created successfully");
-        setUserError(false);
-        setNewUsername("");
-        setNewUserPw("");
-        // Refresh users list
-        const usersRes = await fetch("/api/users");
-        const usersData = await usersRes.json();
-        if (Array.isArray(usersData)) setUsers(usersData);
-      } else {
-        setUserMsg(data.error || "Failed to create user");
-        setUserError(true);
-      }
-    } catch {
-      setUserMsg("Failed to create user");
-      setUserError(true);
+      if (!res.ok) throw new Error((await res.json()).error || "Failed");
+      setPassword("");
+      setPassword2("");
+      toast.success("Password changed");
+    } catch (e) {
+      toast.error("Couldn't change password", (e as Error).message);
+    } finally {
+      setSavingPw(false);
     }
-    setUserSaving(false);
   }
 
-  async function handleDeleteUser(username: string) {
+  return (
+    <>
+      <Section title="Account identity" description="How you appear to your team">
+        <Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label="Username" hint="Used to sign in — cannot be changed">
+              <Input value={me.username} disabled />
+            </Field>
+            <Field label="Role">
+              <div className="h-9 flex items-center">
+                <Badge tone={ROLE_TONES[me.role]}>
+                  <span className="mr-1 inline-flex">{ROLE_ICONS[me.role]}</span>
+                  {ROLE_LABELS[me.role]}
+                </Badge>
+              </div>
+            </Field>
+            <Field label="Full name" hint="Shown in the top bar and booking assignments">
+              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" />
+            </Field>
+          </div>
+          <div className="mt-5 pt-4 border-t border-[var(--ad-border)] flex justify-end">
+            <Button variant="primary" onClick={saveName} loading={savingName}>
+              Save changes
+            </Button>
+          </div>
+        </Card>
+      </Section>
+
+      <Section title="Password" description="Use a strong password you're not using elsewhere">
+        <Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label="New password" required>
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" autoComplete="new-password" />
+            </Field>
+            <Field label="Confirm new password" required>
+              <Input type="password" value={password2} onChange={(e) => setPassword2(e.target.value)} autoComplete="new-password" />
+            </Field>
+          </div>
+          <div className="mt-5 pt-4 border-t border-[var(--ad-border)] flex justify-end">
+            <Button
+              variant="primary"
+              icon={<KeyRound className="w-3.5 h-3.5" />}
+              onClick={changePw}
+              loading={savingPw}
+              disabled={!password || !password2}
+            >
+              Change password
+            </Button>
+          </div>
+        </Card>
+      </Section>
+    </>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Users panel
+// ─────────────────────────────────────────────────────────────────
+function UsersPanel({ isSuper, meId }: { isSuper: boolean; meId?: string }) {
+  const toast = useToast();
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [adding, setAdding] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const [u, b] = await Promise.all([fetch("/api/users"), fetch("/api/branches")]);
+    if (u.ok) setUsers(await u.json());
+    if (b.ok) setBranches(await b.json());
+    setLoading(false);
+  }, []);
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const branchName = (id: string | null) => branches.find((b) => b.id === id)?.name_en || "—";
+
+  async function updateUser(u: AdminUser, patch: Partial<AdminUser>) {
+    try {
+      const res = await fetch("/api/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: u.id, ...patch }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || "Failed");
+      const next = await res.json();
+      setUsers((prev) => prev.map((x) => (x.id === u.id ? next : x)));
+      toast.success("Updated");
+    } catch (e) {
+      toast.error("Couldn't save", (e as Error).message);
+    }
+  }
+
+  async function deleteUser(u: AdminUser) {
+    if (!confirm(`Delete ${u.username}? This cannot be undone.`)) return;
     try {
       const res = await fetch("/api/users", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username }),
+        body: JSON.stringify({ id: u.id }),
       });
-      if (res.ok) {
-        setUsers((prev) => prev.filter((u) => u.username !== username));
-      }
-    } catch {
-      // ignore
+      if (!res.ok) throw new Error((await res.json()).error || "Failed");
+      setUsers((prev) => prev.filter((x) => x.id !== u.id));
+      toast.success("User deleted");
+    } catch (e) {
+      toast.error("Couldn't delete", (e as Error).message);
     }
-    setDeleteConfirm(null);
   }
 
-  if (loading) {
+  async function resetPassword(u: AdminUser) {
+    const newPw = prompt(`Set a new password for ${u.username} (min 6 chars):`);
+    if (!newPw) return;
+    try {
+      const res = await fetch("/api/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: u.id, password: newPw }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || "Failed");
+      toast.success("Password reset", `New password set for ${u.username}`);
+    } catch (e) {
+      toast.error("Couldn't reset password", (e as Error).message);
+    }
+  }
+
+  if (!isSuper) {
     return (
-      <div style={{ position: "relative", zIndex: 1 }}>
-        <div className="admin-skeleton" style={{ height: 28, width: 120, borderRadius: 8, marginBottom: 28 }} />
-        <div style={{ display: "grid", gap: 20, maxWidth: 640 }}>
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="admin-skeleton" style={{ height: 200, borderRadius: 16 }} />
-          ))}
-        </div>
-      </div>
+      <Card>
+        <EmptyState
+          icon={<Shield className="w-5 h-5" />}
+          title="Super admin access required"
+          description="Only super admins can manage team members and roles."
+        />
+      </Card>
     );
   }
 
   return (
-    <div style={{ position: "relative", zIndex: 1 }}>
-      <h1 style={{ fontSize: 22, fontWeight: 800, color: "#f5f5f5", marginBottom: 28 }}>
-        Settings
-      </h1>
-
-      <div style={{ display: "grid", gap: 20, maxWidth: 640 }}>
-        {/* Change Password */}
-        <div style={cardStyle}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: "#f5f5f5", margin: "0 0 4px 0" }}>
-            Change Password
-          </h2>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 20 }}>
-            Logged in as{" "}
-            <span style={{ color: "#F6BE00" }}>{currentUser}</span>
-          </p>
-
-          <div style={{ display: "grid", gap: 14 }}>
-            <InputField
-              label="New Password"
-              type="password"
-              value={newPw}
-              onChange={(e) => setNewPw(e.target.value)}
-              placeholder="Enter new password"
-            />
-            <InputField
-              label="Confirm New Password"
-              type="password"
-              value={confirmPw}
-              onChange={(e) => setConfirmPw(e.target.value)}
-              placeholder="Confirm new password"
-            />
-
-            {pwMsg && (
-              <div
-                style={{
-                  fontSize: 13,
-                  padding: "10px 14px",
-                  borderRadius: 8,
-                  color: pwError ? "#FCA5A5" : "#34D399",
-                  background: pwError ? "rgba(239,68,68,0.08)" : "rgba(16,185,129,0.08)",
-                }}
-              >
-                {pwMsg}
-              </div>
-            )}
-
-            <div>
-              <button
-                onClick={handleChangePassword}
-                disabled={pwSaving}
-                style={{
-                  ...primaryButtonStyle,
-                  opacity: pwSaving ? 0.5 : 1,
-                  cursor: pwSaving ? "not-allowed" : "pointer",
-                }}
-              >
-                {pwSaving ? "Saving..." : "Change Password"}
-              </button>
-            </div>
+    <Section
+      title="Team members"
+      description={`${users.length} user${users.length === 1 ? "" : "s"} across ${branches.length} branch${branches.length === 1 ? "" : "es"}`}
+      action={
+        <Button variant="primary" icon={<Plus className="w-3.5 h-3.5" />} onClick={() => setAdding(true)}>
+          Add user
+        </Button>
+      }
+    >
+      <Card padded={false}>
+        {loading ? (
+          <div className="p-6 space-y-3">
+            <Skeleton className="w-full h-8" />
+            <Skeleton className="w-full h-8" />
+            <Skeleton className="w-full h-8" />
           </div>
-        </div>
-
-        {/* Add New User */}
-        <div style={cardStyle}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: "#f5f5f5", margin: "0 0 20px 0" }}>
-            Add New User
-          </h2>
-
-          <div style={{ display: "grid", gap: 14 }}>
-            <InputField
-              label="Username"
-              type="text"
-              value={newUsername}
-              onChange={(e) => setNewUsername(e.target.value)}
-              placeholder="Enter username"
-            />
-            <InputField
-              label="Password"
-              type="password"
-              value={newUserPw}
-              onChange={(e) => setNewUserPw(e.target.value)}
-              placeholder="Enter password"
-            />
-
-            {userMsg && (
-              <div
-                style={{
-                  fontSize: 13,
-                  padding: "10px 14px",
-                  borderRadius: 8,
-                  color: userError ? "#FCA5A5" : "#34D399",
-                  background: userError ? "rgba(239,68,68,0.08)" : "rgba(16,185,129,0.08)",
-                }}
-              >
-                {userMsg}
-              </div>
-            )}
-
-            <div>
-              <button
-                onClick={handleAddUser}
-                disabled={userSaving}
-                style={{
-                  ...primaryButtonStyle,
-                  opacity: userSaving ? 0.5 : 1,
-                  cursor: userSaving ? "not-allowed" : "pointer",
-                }}
-              >
-                {userSaving ? "Creating..." : "Add User"}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Admin Users */}
-        <div style={cardStyle}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: "#f5f5f5", margin: "0 0 20px 0" }}>
-            Admin Users
-          </h2>
-
-          {users.length === 0 ? (
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)" }}>No users found</p>
-          ) : (
-            <div style={{ display: "grid", gap: 8 }}>
-              {users.map((u) => (
-                <div
-                  key={u.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "10px 14px",
-                    background: "rgba(255,255,255,0.02)",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                    borderRadius: 12,
-                  }}
-                >
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 14, color: "#f5f5f5", fontWeight: 500 }}>
-                        {u.username}
-                      </span>
-                      {u.username === currentUser && (
-                        <span
-                          style={{
-                            fontSize: 10,
-                            color: "#F6BE00",
-                            fontWeight: 700,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.05em",
-                          }}
-                        >
+        ) : users.length === 0 ? (
+          <EmptyState
+            icon={<UsersIcon className="w-5 h-5" />}
+            title="No team members yet"
+            description="Add your first team member to start assigning roles."
+          />
+        ) : (
+          <div className="divide-y divide-[var(--ad-border)]">
+            {users.map((u) => {
+              const isMe = u.id === meId;
+              const inactive = !u.is_active;
+              return (
+                <div key={u.id} className={`flex flex-wrap items-center gap-3 p-4 ${inactive ? "opacity-60" : ""}`}>
+                  <div className="w-9 h-9 rounded-full bg-[var(--ad-surface-2)] border border-[var(--ad-border)] flex items-center justify-center text-[13px] font-semibold text-[var(--ad-accent)] flex-shrink-0">
+                    {(u.full_name || u.username).slice(0, 1).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[14px] font-medium text-[var(--ad-fg)] truncate">{u.full_name || u.username}</span>
+                      {isMe && (
+                        <Badge tone="gold">
+                          <Check className="w-3 h-3 mr-0.5" />
                           You
-                        </span>
+                        </Badge>
                       )}
+                      {inactive && <Badge tone="danger">Inactive</Badge>}
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
-                      Created {new Date(u.created_at).toLocaleDateString()}
+                    <div className="text-[12px] text-[var(--ad-fg-muted)] mt-0.5">
+                      @{u.username} · {branchName(u.branch_id)}
                     </div>
                   </div>
-
-                  {u.username !== currentUser && (
-                    <>
-                      {deleteConfirm === u.username ? (
-                        <div style={{ display: "flex", gap: 6 }}>
-                          <button
-                            onClick={() => handleDeleteUser(u.username)}
-                            style={{
-                              padding: "4px 12px",
-                              background: "rgba(239,68,68,0.12)",
-                              border: "1px solid rgba(239,68,68,0.3)",
-                              borderRadius: 6,
-                              color: "#FCA5A5",
-                              fontSize: 11,
-                              fontWeight: 600,
-                              cursor: "pointer",
-                              fontFamily: "inherit",
-                            }}
-                          >
-                            Confirm
-                          </button>
-                          <button
-                            onClick={() => setDeleteConfirm(null)}
-                            style={{
-                              padding: "4px 12px",
-                              background: "transparent",
-                              border: "1px solid rgba(255,255,255,0.1)",
-                              borderRadius: 6,
-                              color: "rgba(255,255,255,0.4)",
-                              fontSize: 11,
-                              cursor: "pointer",
-                              fontFamily: "inherit",
-                            }}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => setDeleteConfirm(u.username)}
-                          style={{
-                            padding: "4px 12px",
-                            background: "transparent",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            borderRadius: 6,
-                            color: "rgba(255,255,255,0.3)",
-                            fontSize: 11,
-                            cursor: "pointer",
-                            fontFamily: "inherit",
-                          }}
-                        >
-                          Delete
-                        </button>
-                      )}
-                    </>
+                  <Select
+                    value={u.role}
+                    disabled={isMe}
+                    onChange={(e) => updateUser(u, { role: e.target.value as Role })}
+                    className="w-36"
+                  >
+                    {(["super_admin", "manager", "reception", "technician"] as Role[]).map((r) => (
+                      <option key={r} value={r}>
+                        {ROLE_LABELS[r]}
+                      </option>
+                    ))}
+                  </Select>
+                  <Select
+                    value={u.branch_id || ""}
+                    onChange={(e) => updateUser(u, { branch_id: e.target.value || null })}
+                    className="w-40"
+                  >
+                    <option value="">No branch</option>
+                    {branches.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name_en}
+                      </option>
+                    ))}
+                  </Select>
+                  {!isMe && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => updateUser(u, { is_active: !u.is_active })}
+                      icon={u.is_active ? <X className="w-3 h-3" /> : <Check className="w-3 h-3" />}
+                    >
+                      {u.is_active ? "Disable" : "Enable"}
+                    </Button>
+                  )}
+                  <IconButton size="sm" label="Reset password" onClick={() => resetPassword(u)}>
+                    <KeyRound className="w-3.5 h-3.5" />
+                  </IconButton>
+                  {!isMe && (
+                    <IconButton size="sm" label="Delete user" onClick={() => deleteUser(u)}>
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </IconButton>
                   )}
                 </div>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
+        )}
+      </Card>
+
+      {adding && (
+        <AddUserDialog
+          branches={branches}
+          onClose={() => setAdding(false)}
+          onCreated={(u) => {
+            setUsers((prev) => [...prev, u]);
+            setAdding(false);
+          }}
+        />
+      )}
+    </Section>
+  );
+}
+
+function AddUserDialog({
+  branches,
+  onClose,
+  onCreated,
+}: {
+  branches: Branch[];
+  onClose: () => void;
+  onCreated: (u: AdminUser) => void;
+}) {
+  const toast = useToast();
+  const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState<Role>("reception");
+  const [branchId, setBranchId] = useState<string>(branches[0]?.id || "");
+  const [saving, setSaving] = useState(false);
+
+  async function submit() {
+    if (!username.trim() || !password) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: username.trim(),
+          full_name: fullName.trim() || username.trim(),
+          password,
+          role,
+          branch_id: branchId || null,
+        }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || "Failed");
+      onCreated(await res.json());
+      toast.success("User created", `@${username.trim()} can now sign in`);
+    } catch (e) {
+      toast.error("Couldn't create user", (e as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+      <div
+        className="w-full max-w-lg bg-[var(--ad-surface)] border border-[var(--ad-border)] rounded-[12px] shadow-[var(--ad-shadow-lg)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--ad-border)]">
+          <h2 className="text-[15px] font-semibold">Add team member</h2>
+          <IconButton label="Close" onClick={onClose}>
+            <X className="w-4 h-4" />
+          </IconButton>
+        </div>
+        <div className="p-5 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label="Username" required hint="Lowercase letters, numbers, dots">
+              <Input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus autoComplete="off" />
+            </Field>
+            <Field label="Full name">
+              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Optional" />
+            </Field>
+            <Field label="Temporary password" required hint="At least 6 characters — they can change it after login">
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" />
+            </Field>
+            <Field label="Role" required>
+              <Select value={role} onChange={(e) => setRole(e.target.value as Role)}>
+                {(["super_admin", "manager", "reception", "technician"] as Role[]).map((r) => (
+                  <option key={r} value={r}>
+                    {ROLE_LABELS[r]}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <Field label="Branch">
+              <Select value={branchId} onChange={(e) => setBranchId(e.target.value)}>
+                <option value="">No branch</option>
+                {branches.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name_en}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          </div>
+        </div>
+        <div className="flex justify-end gap-2 px-5 py-4 border-t border-[var(--ad-border)]">
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={submit}
+            loading={saving}
+            disabled={!username.trim() || password.length < 6}
+          >
+            Create user
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Branches panel
+// ─────────────────────────────────────────────────────────────────
+function BranchesPanel({ isSuper }: { isSuper: boolean }) {
+  const toast = useToast();
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [adding, setAdding] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const res = await fetch("/api/branches");
+    if (res.ok) setBranches(await res.json());
+    setLoading(false);
+  }, []);
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function updateBranch(b: Branch, patch: Partial<Branch>) {
+    try {
+      const res = await fetch("/api/branches", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: b.id, ...patch }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || "Failed");
+      const next = await res.json();
+      setBranches((prev) => prev.map((x) => (x.id === b.id ? next : x)));
+      toast.success("Branch updated");
+    } catch (e) {
+      toast.error("Couldn't save", (e as Error).message);
+    }
+  }
+
+  async function deleteBranch(b: Branch) {
+    if (!confirm(`Delete branch "${b.name_en}"?`)) return;
+    try {
+      const res = await fetch("/api/branches", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: b.id }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || "Failed");
+      setBranches((prev) => prev.filter((x) => x.id !== b.id));
+      toast.success("Branch deleted");
+    } catch (e) {
+      toast.error("Couldn't delete", (e as Error).message);
+    }
+  }
+
+  if (!isSuper) {
+    return (
+      <Card>
+        <EmptyState
+          icon={<Shield className="w-5 h-5" />}
+          title="Super admin access required"
+          description="Only super admins can manage branches."
+        />
+      </Card>
+    );
+  }
+
+  return (
+    <Section
+      title="Branches"
+      description={`${branches.length} branch${branches.length === 1 ? "" : "es"}`}
+      action={
+        <Button variant="primary" icon={<Plus className="w-3.5 h-3.5" />} onClick={() => setAdding(true)}>
+          Add branch
+        </Button>
+      }
+    >
+      <Card padded={false}>
+        {loading ? (
+          <div className="p-6 space-y-3">
+            <Skeleton className="w-full h-12" />
+            <Skeleton className="w-full h-12" />
+          </div>
+        ) : branches.length === 0 ? (
+          <EmptyState
+            icon={<Building2 className="w-5 h-5" />}
+            title="No branches yet"
+            description="Add your first branch to start assigning users and bookings."
+          />
+        ) : (
+          <div className="divide-y divide-[var(--ad-border)]">
+            {branches.map((b) => (
+              <div key={b.id} className={`flex flex-wrap items-center gap-3 p-4 ${!b.is_active ? "opacity-60" : ""}`}>
+                <div className="w-9 h-9 rounded-[8px] bg-[var(--ad-accent-bg)] border border-[var(--ad-border-accent)] flex items-center justify-center text-[var(--ad-accent)] flex-shrink-0">
+                  <Building2 className="w-4 h-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[14px] font-medium text-[var(--ad-fg)]">{b.name_en}</span>
+                    <span className="text-[12px] text-[var(--ad-fg-muted)]" dir="rtl">{b.name_ar}</span>
+                    {!b.is_active && <Badge tone="danger">Inactive</Badge>}
+                  </div>
+                  <div className="text-[12px] text-[var(--ad-fg-muted)] mt-0.5 truncate">
+                    {b.address || "—"} {b.phone && <span className="ml-2">· {b.phone}</span>}
+                  </div>
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => updateBranch(b, { is_active: !b.is_active })}
+                  icon={b.is_active ? <X className="w-3 h-3" /> : <Check className="w-3 h-3" />}
+                >
+                  {b.is_active ? "Deactivate" : "Activate"}
+                </Button>
+                <IconButton size="sm" label="Delete branch" onClick={() => deleteBranch(b)}>
+                  <Trash2 className="w-3.5 h-3.5" />
+                </IconButton>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      {adding && (
+        <AddBranchDialog
+          onClose={() => setAdding(false)}
+          onCreated={(b) => {
+            setBranches((prev) => [...prev, b]);
+            setAdding(false);
+          }}
+        />
+      )}
+    </Section>
+  );
+}
+
+function AddBranchDialog({ onClose, onCreated }: { onClose: () => void; onCreated: (b: Branch) => void }) {
+  const toast = useToast();
+  const [nameEn, setNameEn] = useState("");
+  const [nameAr, setNameAr] = useState("");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function submit() {
+    if (!nameEn.trim() || !nameAr.trim()) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/branches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name_en: nameEn, name_ar: nameAr, address, phone }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || "Failed");
+      onCreated(await res.json());
+      toast.success("Branch created");
+    } catch (e) {
+      toast.error("Couldn't create branch", (e as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+      <div
+        className="w-full max-w-lg bg-[var(--ad-surface)] border border-[var(--ad-border)] rounded-[12px] shadow-[var(--ad-shadow-lg)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--ad-border)]">
+          <h2 className="text-[15px] font-semibold">Add branch</h2>
+          <IconButton label="Close" onClick={onClose}>
+            <X className="w-4 h-4" />
+          </IconButton>
+        </div>
+        <div className="p-5 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label="English name" required>
+              <Input value={nameEn} onChange={(e) => setNameEn(e.target.value)} placeholder="e.g. Jeddah Main" autoFocus />
+            </Field>
+            <Field label="Arabic name" required>
+              <Input value={nameAr} onChange={(e) => setNameAr(e.target.value)} placeholder="مثال: جدة - الرئيسي" dir="rtl" />
+            </Field>
+            <Field label="Address">
+              <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Street, district, city" />
+            </Field>
+            <Field label="Phone">
+              <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+966..." />
+            </Field>
+          </div>
+        </div>
+        <div className="flex justify-end gap-2 px-5 py-4 border-t border-[var(--ad-border)]">
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={submit} loading={saving} disabled={!nameEn.trim() || !nameAr.trim()}>
+            Create branch
+          </Button>
         </div>
       </div>
     </div>

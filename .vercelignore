@@ -1,0 +1,22 @@
+node_modules
+.next
+.git
+.migration
+.vercel-token
+deploy.sh
+LOGO
+LOGO.zip
+Smash
+"Nick _ Original Images (HQ)"
+public/images-backup
+public/images/optimized
+*.tsbuildinfo
+.env.production.old
+.env.preview.old
+.env.development.old
+0407(1).mp4
+"Artboard 2 (1).png"
+ayio78h4bpxc.jpg
+"tint-windshield-small (2).avif"
+tt.png
+wmremove-transformed.png

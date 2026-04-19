@@ -343,6 +343,68 @@ body::before {
   text-transform: none;
 }
 
+/* =================================================================
+   Admin design system — tokens + layout
+   Scoped with .admin-theme on the admin layout root.
+   ================================================================= */
+.admin-theme {
+  /* Surfaces */
+  --ad-bg: #050505;
+  --ad-surface: #0d0d0d;
+  --ad-surface-2: #141414;
+  --ad-surface-hover: #1a1a1a;
+  --ad-surface-active: #202020;
+
+  /* Borders */
+  --ad-border: rgba(255, 255, 255, 0.08);
+  --ad-border-strong: rgba(255, 255, 255, 0.14);
+  --ad-border-accent: rgba(246, 190, 0, 0.3);
+
+  /* Text */
+  --ad-fg: rgba(255, 255, 255, 0.92);
+  --ad-fg-muted: rgba(255, 255, 255, 0.6);
+  --ad-fg-subtle: rgba(255, 255, 255, 0.4);
+  --ad-fg-faint: rgba(255, 255, 255, 0.25);
+
+  /* Accent */
+  --ad-accent: #F6BE00;
+  --ad-accent-hover: #FFD54F;
+  --ad-accent-dark: #D4A300;
+  --ad-accent-bg: rgba(246, 190, 0, 0.1);
+  --ad-accent-bg-hover: rgba(246, 190, 0, 0.16);
+
+  /* Semantic */
+  --ad-success: #10b981;
+  --ad-success-bg: rgba(16, 185, 129, 0.12);
+  --ad-warning: #f59e0b;
+  --ad-warning-bg: rgba(245, 158, 11, 0.12);
+  --ad-danger: #ef4444;
+  --ad-danger-bg: rgba(239, 68, 68, 0.12);
+  --ad-info: #3b82f6;
+  --ad-info-bg: rgba(59, 130, 246, 0.12);
+
+  /* Radius */
+  --ad-r-sm: 6px;
+  --ad-r-md: 8px;
+  --ad-r-lg: 12px;
+  --ad-r-xl: 16px;
+
+  /* Shadow */
+  --ad-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --ad-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --ad-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+
+  background: var(--ad-bg);
+  color: var(--ad-fg);
+}
+
+/* Focus ring for all interactive admin elements */
+.admin-theme *:focus-visible {
+  outline: 2px solid var(--ad-accent);
+  outline-offset: 2px;
+  border-radius: var(--ad-r-sm);
+}
+
 /* Admin layout */
 @media (min-width: 1024px) {
   .admin-content { margin-left: 220px; }

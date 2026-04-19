@@ -12,15 +12,15 @@ export async function POST(req: NextRequest) {
   const db = getAdminClient();
   const { data: admin } = await db
     .from("nick_admins")
-    .select("username, password_hash")
+    .select("username, password_hash, is_active")
     .eq("username", username)
     .maybeSingle();
 
-  if (!admin || !(await bcrypt.compare(password, admin.password_hash))) {
+  if (!admin || admin.is_active === false || !(await bcrypt.compare(password, admin.password_hash))) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  const token = await signToken(username);
+  const token = await signToken(admin.username);
   const res = NextResponse.json({ ok: true });
   res.cookies.set(COOKIE_NAME, token, {
     httpOnly: true,
@@ -37,7 +37,26 @@ export async function GET() {
   if (!session) {
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
-  return NextResponse.json({ authenticated: true, username: session.username });
+
+  const db = getAdminClient();
+  const { data: me } = await db
+    .from("nick_admins")
+    .select("id, username, role, full_name, branch_id, is_active")
+    .eq("username", session.username)
+    .maybeSingle();
+
+  if (!me || me.is_active === false) {
+    return NextResponse.json({ authenticated: false }, { status: 401 });
+  }
+
+  return NextResponse.json({
+    authenticated: true,
+    username: me.username,
+    id: me.id,
+    role: me.role,
+    full_name: me.full_name,
+    branch_id: me.branch_id,
+  });
 }
 
 export async function DELETE() {
