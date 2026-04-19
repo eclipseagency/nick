@@ -25,7 +25,15 @@ export async function GET() {
     .select("id, name_en, name_ar, address, phone, is_active, created_at")
     .order("created_at", { ascending: true });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    // PostgREST schema cache may not yet know the new table right after the
+    // migration. Return an empty list so the UI renders cleanly until the
+    // cache refreshes (normally within a few minutes).
+    if (error.message?.toLowerCase().includes("schema cache")) {
+      return NextResponse.json([]);
+    }
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
   return NextResponse.json(data);
 }
 
