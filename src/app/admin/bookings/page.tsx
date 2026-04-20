@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 
 const ADDON_NAMES: Record<string, string> = {
   ozone: "Ozone Sanitization",
@@ -100,6 +100,48 @@ const PAYMENT_LABELS: Record<string, string> = {
   tamara: "Tamara (3×)",
 };
 
+const STATUS_STRIPE: Record<string, string> = {
+  pending: "#FBBF24",
+  confirmed: "#60A5FA",
+  in_progress: "#F59E0B",
+  completed: "#34D399",
+  cancelled: "#FCA5A5",
+  pending_payment: "#9CA3AF",
+};
+
+type SortKey = "newest" | "oldest" | "preferred-soonest" | "total-desc" | "total-asc";
+type ViewMode = "table" | "cards";
+type Bucket = "overdue" | "today" | "tomorrow" | "thisWeek" | "later" | "noDate" | "past";
+
+const BUCKET_LABELS: Record<Bucket, string> = {
+  overdue: "Overdue",
+  today: "Today",
+  tomorrow: "Tomorrow",
+  thisWeek: "This Week",
+  later: "Later",
+  noDate: "No Preferred Date",
+  past: "Past",
+};
+
+function getDateBucket(b: { preferred_date: string | null; status: string; created_at: string }): Bucket {
+  const isPastStatus = b.status === "completed" || b.status === "cancelled";
+  if (isPastStatus) return "past";
+  if (!b.preferred_date) return "noDate";
+  const datePart = b.preferred_date.trim().split(/\s+/)[0];
+  const pref = new Date(datePart + "T00:00:00");
+  if (isNaN(pref.getTime())) return "noDate";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffDays = Math.floor((pref.getTime() - today.getTime()) / 86400000);
+  if (diffDays < 0) return "overdue";
+  if (diffDays === 0) return "today";
+  if (diffDays === 1) return "tomorrow";
+  if (diffDays <= 7) return "thisWeek";
+  return "later";
+}
+
+const BUCKET_ORDER: Bucket[] = ["overdue", "today", "tomorrow", "thisWeek", "later", "noDate", "past"];
+
 function badgeStyle(status: string): React.CSSProperties {
   const colors: Record<string, [string, string]> = {
     pending: ["rgba(246,190,0,0.15)", "#FBBF24"],
@@ -139,6 +181,236 @@ const tdStyle: React.CSSProperties = {
   color: "rgba(255,255,255,0.55)",
 };
 
+function InlineStatusActions({ status, onUpdate, updating }: { status: string; onUpdate: (s: string) => void; updating: boolean }) {
+  const steps: { from: string; to: string; label: string; color: string }[] = [
+    { from: "pending", to: "confirmed", label: "Confirm", color: "#60A5FA" },
+    { from: "confirmed", to: "in_progress", label: "Start", color: "#F59E0B" },
+    { from: "in_progress", to: "completed", label: "Done", color: "#34D399" },
+  ];
+  const step = steps.find(s => s.from === status);
+  const canCancel = status !== "cancelled" && status !== "completed";
+  return (
+    <span style={{ display: "inline-flex", gap: 4 }} onClick={e => e.stopPropagation()}>
+      {step && (
+        <button
+          onClick={() => onUpdate(step.to)}
+          disabled={updating}
+          title={step.label}
+          style={{
+            padding: "4px 9px", borderRadius: 7, cursor: updating ? "wait" : "pointer",
+            background: `${step.color}22`, border: `1px solid ${step.color}55`,
+            color: step.color, fontSize: 11, fontWeight: 700,
+          }}
+        >
+          {step.label}
+        </button>
+      )}
+      {canCancel && (
+        <button
+          onClick={() => onUpdate("cancelled")}
+          disabled={updating}
+          title="Cancel"
+          style={{
+            padding: "4px 8px", borderRadius: 7, cursor: updating ? "wait" : "pointer",
+            background: "transparent", border: "1px solid rgba(239,68,68,0.25)",
+            color: "#FCA5A5", fontSize: 11, fontWeight: 600,
+          }}
+        >
+          ✕
+        </button>
+      )}
+    </span>
+  );
+}
+
+interface BookingTableProps {
+  items: Booking[];
+  selected: Set<string>;
+  expandedId: string | null;
+  onToggleSelect: (id: string) => void;
+  onToggleSelectAll: (ids: string[]) => void;
+  onToggleExpand: (id: string) => void;
+  onUpdateStatus: (id: string, status: string) => void;
+  updatingId: string | null;
+  ExpandedDetails: React.ComponentType<{ b: Booking }>;
+}
+
+function BookingTable({ items, selected, expandedId, onToggleSelect, onToggleSelectAll, onToggleExpand, onUpdateStatus, updatingId, ExpandedDetails }: BookingTableProps) {
+  return (
+    <div style={{ background: "#111111", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 14, overflowX: "auto" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 720 }}>
+        <thead>
+          <tr>
+            <th style={{ ...thStyle, width: 36, padding: "10px 0 10px 12px" }}>
+              <input
+                type="checkbox"
+                checked={items.length > 0 && items.every(b => selected.has(b.id))}
+                onChange={() => onToggleSelectAll(items.map(b => b.id))}
+                style={{ accentColor: "#F6BE00", cursor: "pointer" }}
+                aria-label="Select all in section"
+              />
+            </th>
+            <th style={thStyle}>Confirmation</th>
+            <th style={thStyle}>Customer</th>
+            <th style={thStyle}>Vehicle</th>
+            <th style={thStyle}>Preferred</th>
+            <th style={thStyle}>Status</th>
+            <th style={thStyle}>Total</th>
+            <th style={thStyle}></th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map(b => {
+            const expanded = expandedId === b.id;
+            const pref = formatPreferred(b.preferred_date);
+            const stripe = STATUS_STRIPE[b.status] || "#9CA3AF";
+            return (
+              <React.Fragment key={b.id}>
+                <tr
+                  className="booking-row"
+                  onClick={() => onToggleExpand(b.id)}
+                  style={{ cursor: "pointer", transition: "background 0.15s", boxShadow: `inset 3px 0 0 ${stripe}` }}
+                >
+                  <td style={{ ...tdStyle, padding: "12px 0 12px 12px" }} onClick={(e) => { e.stopPropagation(); onToggleSelect(b.id); }}>
+                    <input
+                      type="checkbox"
+                      checked={selected.has(b.id)}
+                      onChange={() => onToggleSelect(b.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ accentColor: "#F6BE00", cursor: "pointer" }}
+                      aria-label={`Select booking ${b.customer_name}`}
+                    />
+                  </td>
+                  <td style={tdStyle}>
+                    {b.confirmation_number ? (
+                      <span
+                        onClick={(e) => { e.stopPropagation(); navigator.clipboard?.writeText(b.confirmation_number!); }}
+                        title="Click to copy"
+                        style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#F6BE00", fontWeight: 700, fontSize: 12, letterSpacing: "0.04em", cursor: "copy" }}
+                      >
+                        {b.confirmation_number}
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.2)" }}>—</span>
+                    )}
+                    <br />
+                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{PAYMENT_LABELS[b.payment_method] || b.payment_method}</span>
+                  </td>
+                  <td style={tdStyle}>
+                    <span style={{ color: "#f5f5f5", fontWeight: 600, fontSize: 13 }}>{b.customer_name}</span>
+                    <br />
+                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{b.customer_phone}</span>
+                  </td>
+                  <td style={tdStyle}>
+                    <span style={{ color: "#f5f5f5", fontSize: 12 }}>{b.car_make || "—"}</span>
+                    {(b.car_year || b.car_color) && (
+                      <><br /><span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{[b.car_year, b.car_color].filter(Boolean).join(" · ")}</span></>
+                    )}
+                    <br /><span style={{ fontSize: 10, color: "rgba(246,190,0,0.5)", textTransform: "capitalize" }}>{b.car_size} · {b.service_ids?.length || 0} svc</span>
+                  </td>
+                  <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
+                    <span style={{ color: "#f5f5f5", fontSize: 12 }}>{pref.date}</span>
+                    {pref.time && <><br /><span style={{ fontSize: 10, color: "#F6BE00" }}>{pref.time}</span></>}
+                  </td>
+                  <td style={tdStyle}>
+                    <span style={badgeStyle(b.status)}>{b.status.replace("_", " ")}</span>
+                  </td>
+                  <td style={tdStyle}>
+                    <span style={{ fontWeight: 600, color: "#f5f5f5" }}>
+                      {(b.total || 0).toLocaleString()} SAR
+                    </span>
+                  </td>
+                  <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
+                    <InlineStatusActions status={b.status} onUpdate={(s) => onUpdateStatus(b.id, s)} updating={updatingId === b.id} />
+                  </td>
+                </tr>
+                {expanded && (
+                  <tr>
+                    <td colSpan={8} style={{ padding: 0 }}>
+                      <ExpandedDetails b={b} />
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+interface BookingCardProps {
+  b: Booking;
+  selected: boolean;
+  expanded: boolean;
+  onToggleSelect: () => void;
+  onToggleExpand: () => void;
+  onUpdateStatus: (id: string, status: string) => void;
+  updating: boolean;
+  ExpandedDetails: React.ComponentType<{ b: Booking }>;
+}
+
+function BookingCard({ b, selected, expanded, onToggleSelect, onToggleExpand, onUpdateStatus, updating, ExpandedDetails }: BookingCardProps) {
+  const pref = formatPreferred(b.preferred_date);
+  const stripe = STATUS_STRIPE[b.status] || "#9CA3AF";
+  return (
+    <div
+      style={{
+        background: "#111", border: "1px solid rgba(255,255,255,0.06)",
+        borderLeft: `3px solid ${stripe}`,
+        borderRadius: 12, overflow: "hidden",
+      }}
+    >
+      <div onClick={onToggleExpand} style={{ padding: "12px 14px", cursor: "pointer" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6, gap: 8 }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+            <input
+              type="checkbox"
+              checked={selected}
+              onChange={onToggleSelect}
+              onClick={e => e.stopPropagation()}
+              style={{ accentColor: "#F6BE00", cursor: "pointer" }}
+              aria-label={`Select ${b.customer_name}`}
+            />
+            {b.confirmation_number && (
+              <span
+                onClick={(e) => { e.stopPropagation(); navigator.clipboard?.writeText(b.confirmation_number!); }}
+                title="Click to copy"
+                style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#F6BE00", fontWeight: 700, fontSize: 11, letterSpacing: "0.04em", cursor: "copy" }}
+              >
+                {b.confirmation_number}
+              </span>
+            )}
+          </span>
+          <span style={{ ...badgeStyle(b.status), flexShrink: 0 }}>{b.status.replace("_", " ")}</span>
+        </div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: "#f5f5f5", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {b.customer_name}
+        </div>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+          {b.customer_phone}
+        </div>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>
+          {b.car_make || b.car_size} · {b.service_ids?.length || 0} svc
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8, paddingTop: 8, borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)" }}>
+            {pref.date}{pref.time ? ` · ${pref.time}` : ""}
+          </span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#f5f5f5" }}>
+            {(b.total || 0).toLocaleString()} SAR
+          </span>
+        </div>
+        <div style={{ marginTop: 8 }}>
+          <InlineStatusActions status={b.status} onUpdate={(s) => onUpdateStatus(b.id, s)} updating={updating} />
+        </div>
+      </div>
+      {expanded && <ExpandedDetails b={b} />}
+    </div>
+  );
+}
+
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [services, setServices] = useState<Service[]>([]);
@@ -153,6 +425,9 @@ export default function BookingsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
+  const [sortBy, setSortBy] = useState<SortKey>("preferred-soonest");
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [collapsedBuckets, setCollapsedBuckets] = useState<Set<Bucket>>(new Set(["past"]));
 
   const fetchBookings = useCallback(() => {
     fetch("/api/bookings")
@@ -222,7 +497,7 @@ export default function BookingsPage() {
     return p ? `${p.name_en} (${p.tier})` : id;
   }
 
-  const filtered = bookings.filter((b) => {
+  const filtered = useMemo(() => bookings.filter((b) => {
     if (filter !== "all" && b.status !== filter) return false;
     if (search) {
       const q = search.toLowerCase();
@@ -243,7 +518,59 @@ export default function BookingsPage() {
       if (bookingDate > dateTo) return false;
     }
     return true;
-  });
+  }), [bookings, filter, search, dateFrom, dateTo]);
+
+  const sorted = useMemo(() => {
+    const arr = [...filtered];
+    const prefTime = (b: Booking) => {
+      if (!b.preferred_date) return Number.MAX_SAFE_INTEGER;
+      const datePart = b.preferred_date.trim().split(/\s+/)[0];
+      const t = new Date(datePart + "T00:00:00").getTime();
+      return isNaN(t) ? Number.MAX_SAFE_INTEGER : t;
+    };
+    switch (sortBy) {
+      case "newest": arr.sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at)); break;
+      case "oldest": arr.sort((a, b) => +new Date(a.created_at) - +new Date(b.created_at)); break;
+      case "preferred-soonest": arr.sort((a, b) => prefTime(a) - prefTime(b)); break;
+      case "total-desc": arr.sort((a, b) => (b.total || 0) - (a.total || 0)); break;
+      case "total-asc": arr.sort((a, b) => (a.total || 0) - (b.total || 0)); break;
+    }
+    return arr;
+  }, [filtered, sortBy]);
+
+  const groups = useMemo(() => {
+    const map = new Map<Bucket, Booking[]>();
+    for (const b of sorted) {
+      const k = getDateBucket(b);
+      if (!map.has(k)) map.set(k, []);
+      map.get(k)!.push(b);
+    }
+    return BUCKET_ORDER
+      .filter(k => map.has(k))
+      .map(k => ({ key: k, label: BUCKET_LABELS[k], items: map.get(k)! }));
+  }, [sorted]);
+
+  const summaryStats = useMemo(() => {
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const tomorrowKey = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+    const today = bookings.filter(b => b.preferred_date?.startsWith(todayKey) && b.status !== "cancelled");
+    const tomorrow = bookings.filter(b => b.preferred_date?.startsWith(tomorrowKey) && b.status !== "cancelled");
+    const sum = (arr: Booking[]) => arr.reduce((s, b) => s + (b.total || 0), 0);
+    return {
+      todayCount: today.length, todayRevenue: sum(today),
+      tomorrowCount: tomorrow.length, tomorrowRevenue: sum(tomorrow),
+      pendingCount: bookings.filter(b => b.status === "pending").length,
+      totalRevenue: sum(bookings.filter(b => b.status !== "cancelled")),
+    };
+  }, [bookings]);
+
+  function toggleBucket(k: Bucket) {
+    setCollapsedBuckets(prev => {
+      const next = new Set(prev);
+      if (next.has(k)) next.delete(k); else next.add(k);
+      return next;
+    });
+  }
 
   function toggleSelect(id: string) {
     setSelected(prev => {
@@ -309,7 +636,7 @@ export default function BookingsPage() {
       "Package", "Services", "Subtotal", "Discount", "Total",
       "Payment Method", "Locale", "Created", "Updated",
     ];
-    const rows = filtered.map((b) => [
+    const rows = sorted.map((b) => [
       b.confirmation_number || "",
       b.id,
       b.customer_name,
@@ -609,29 +936,94 @@ export default function BookingsPage() {
 
       <div style={{ position: "relative", zIndex: 1 }}>
         {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28, gap: 16, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, gap: 16, flexWrap: "wrap" }}>
           <div style={{ fontSize: 22, fontWeight: 800, color: "#f5f5f5" }}>Bookings</div>
-          <button
-            onClick={exportCSV}
-            style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              padding: "10px 24px",
-              background: "transparent",
-              color: "#f5f5f5",
-              border: "1.5px solid rgba(255,255,255,0.15)",
-              borderRadius: 10, fontSize: 13, fontWeight: 600,
-              cursor: "pointer", transition: "all 0.2s",
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(246,190,0,0.5)"; e.currentTarget.style.color = "#F6BE00"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "#f5f5f5"; }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            Export CSV
-          </button>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            {/* View toggle */}
+            <div style={{ display: "inline-flex", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, overflow: "hidden" }}>
+              {(["table", "cards"] as ViewMode[]).map(v => (
+                <button
+                  key={v}
+                  onClick={() => setViewMode(v)}
+                  title={v === "table" ? "Table view" : "Card view"}
+                  style={{
+                    padding: "8px 12px",
+                    background: viewMode === v ? "rgba(246,190,0,0.12)" : "transparent",
+                    color: viewMode === v ? "#F6BE00" : "rgba(255,255,255,0.5)",
+                    border: "none", cursor: "pointer", fontSize: 12, fontWeight: 600,
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                  }}
+                >
+                  {v === "table" ? (
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                  ) : (
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                  )}
+                  {v === "table" ? "Table" : "Cards"}
+                </button>
+              ))}
+            </div>
+            {/* Sort */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortKey)}
+              style={{
+                padding: "8px 12px", background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10,
+                color: "#f5f5f5", fontSize: 12, fontWeight: 600, cursor: "pointer",
+              }}
+            >
+              <option value="preferred-soonest">Soonest preferred date</option>
+              <option value="newest">Newest created</option>
+              <option value="oldest">Oldest created</option>
+              <option value="total-desc">Highest revenue</option>
+              <option value="total-asc">Lowest revenue</option>
+            </select>
+            <button
+              onClick={exportCSV}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                padding: "8px 18px",
+                background: "transparent",
+                color: "#f5f5f5",
+                border: "1px solid rgba(255,255,255,0.15)",
+                borderRadius: 10, fontSize: 12, fontWeight: 600,
+                cursor: "pointer", transition: "all 0.2s",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(246,190,0,0.5)"; e.currentTarget.style.color = "#F6BE00"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "#f5f5f5"; }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              CSV
+            </button>
+          </div>
+        </div>
+
+        {/* Summary cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginBottom: 24 }}>
+          {[
+            { label: "Today", count: summaryStats.todayCount, sub: `${summaryStats.todayRevenue.toLocaleString()} SAR`, color: "#F6BE00" },
+            { label: "Tomorrow", count: summaryStats.tomorrowCount, sub: `${summaryStats.tomorrowRevenue.toLocaleString()} SAR`, color: "#60A5FA" },
+            { label: "Pending", count: summaryStats.pendingCount, sub: "awaiting confirm", color: "#FBBF24" },
+            { label: "Total Revenue", count: summaryStats.totalRevenue.toLocaleString(), sub: "SAR (excl. cancelled)", color: "#34D399" },
+          ].map(card => (
+            <div
+              key={card.label}
+              style={{
+                background: "#111", border: "1px solid rgba(255,255,255,0.06)",
+                borderLeft: `3px solid ${card.color}`,
+                borderRadius: 12, padding: "14px 16px",
+              }}
+            >
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>{card.label}</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "#f5f5f5", marginTop: 4, fontFamily: "'Space Grotesk', sans-serif" }}>{card.count}</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{card.sub}</div>
+            </div>
+          ))}
         </div>
 
         {/* Status filter badges */}
@@ -798,169 +1190,77 @@ export default function BookingsPage() {
         )}
 
         {/* Empty state */}
-        {filtered.length === 0 ? (
+        {sorted.length === 0 ? (
           <div style={{ background: "#111111", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: "60px 20px", textAlign: "center" }}>
             <div style={{ fontSize: 40, marginBottom: 12, opacity: 0.15 }}>📋</div>
             <p style={{ fontSize: 14, color: "rgba(255,255,255,0.3)", margin: 0 }}>No bookings found</p>
           </div>
         ) : (
-          <>
-            {/* Desktop table */}
-            <div className="admin-booking-table" style={{ background: "#111111", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, overflow: "hidden" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr>
-                    <th style={{ ...thStyle, width: 36, padding: "10px 0 10px 12px" }}>
-                      <input
-                        type="checkbox"
-                        checked={filtered.length > 0 && filtered.every(b => selected.has(b.id))}
-                        onChange={() => toggleSelectAll(filtered.map(b => b.id))}
-                        style={{ accentColor: "#F6BE00", cursor: "pointer" }}
-                        aria-label="Select all"
-                      />
-                    </th>
-                    <th style={thStyle}>Confirmation</th>
-                    <th style={thStyle}>Customer</th>
-                    <th style={thStyle}>Vehicle</th>
-                    <th style={thStyle}>Services</th>
-                    <th style={thStyle}>Preferred</th>
-                    <th style={thStyle}>Status</th>
-                    <th style={thStyle}>Payment</th>
-                    <th style={thStyle}>Total</th>
-                    <th style={thStyle}>Created</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((b) => {
-                    const expanded = expandedId === b.id;
-                    const pref = formatPreferred(b.preferred_date);
-                    return (
-                      <React.Fragment key={b.id}>
-                        <tr
-                          className="booking-row"
-                          onClick={() => setExpandedId(expanded ? null : b.id)}
-                          style={{ cursor: "pointer", transition: "background 0.15s" }}
-                        >
-                          <td style={{ ...tdStyle, padding: "12px 0 12px 12px" }} onClick={(e) => { e.stopPropagation(); toggleSelect(b.id); }}>
-                            <input
-                              type="checkbox"
-                              checked={selected.has(b.id)}
-                              onChange={() => toggleSelect(b.id)}
-                              onClick={(e) => e.stopPropagation()}
-                              style={{ accentColor: "#F6BE00", cursor: "pointer" }}
-                              aria-label={`Select booking ${b.customer_name}`}
-                            />
-                          </td>
-                          <td style={tdStyle}>
-                            {b.confirmation_number ? (
-                              <span
-                                onClick={(e) => { e.stopPropagation(); navigator.clipboard?.writeText(b.confirmation_number!); }}
-                                title="Click to copy"
-                                style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#F6BE00", fontWeight: 700, fontSize: 12, letterSpacing: "0.04em", cursor: "copy" }}
-                              >
-                                {b.confirmation_number}
-                              </span>
-                            ) : (
-                              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.2)" }}>—</span>
-                            )}
-                          </td>
-                          <td style={tdStyle}>
-                            <span style={{ color: "#f5f5f5", fontWeight: 600, fontSize: 13 }}>{b.customer_name}</span>
-                            <br />
-                            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{b.customer_phone}</span>
-                          </td>
-                          <td style={tdStyle}>
-                            <span style={{ color: "#f5f5f5", fontSize: 12 }}>{b.car_make || "—"}</span>
-                            {(b.car_year || b.car_color) && (
-                              <><br /><span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{[b.car_year, b.car_color].filter(Boolean).join(" · ")}</span></>
-                            )}
-                            <br /><span style={{ fontSize: 10, color: "rgba(246,190,0,0.5)", textTransform: "capitalize" }}>{b.car_size}</span>
-                          </td>
-                          <td style={tdStyle}>
-                            {b.service_ids?.length || 0} service{(b.service_ids?.length || 0) !== 1 ? "s" : ""}
-                            {b.addon_ids && Object.keys(typeof b.addon_ids === "object" ? b.addon_ids : {}).length > 0 && (
-                              <><br /><span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>+ add-ons</span></>
-                            )}
-                          </td>
-                          <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
-                            <span style={{ color: "#f5f5f5", fontSize: 12 }}>{pref.date}</span>
-                            {pref.time && <><br /><span style={{ fontSize: 10, color: "#F6BE00" }}>{pref.time}</span></>}
-                          </td>
-                          <td style={tdStyle}>
-                            <span style={badgeStyle(b.status)}>{b.status.replace("_", " ")}</span>
-                          </td>
-                          <td style={tdStyle}>
-                            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)" }}>{PAYMENT_LABELS[b.payment_method] || b.payment_method}</span>
-                          </td>
-                          <td style={tdStyle}>
-                            <span style={{ fontWeight: 600, color: "#f5f5f5" }}>
-                              {(b.total || 0).toLocaleString()} SAR
-                            </span>
-                          </td>
-                          <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>{formatDate(b.created_at)}</td>
-                        </tr>
-                        {expanded && (
-                          <tr>
-                            <td colSpan={10} style={{ padding: 0 }}>
-                              <ExpandedDetails b={b} />
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile cards */}
-            <div className="admin-booking-cards" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {filtered.map((b) => {
-                const expanded = expandedId === b.id;
-                const pref = formatPreferred(b.preferred_date);
-                return (
-                  <div
-                    key={b.id}
+          <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+            {groups.map(group => {
+              const collapsed = collapsedBuckets.has(group.key);
+              const sectionRevenue = group.items.filter(b => b.status !== "cancelled").reduce((s, b) => s + (b.total || 0), 0);
+              const accentColor = group.key === "today" ? "#F6BE00"
+                : group.key === "overdue" ? "#FCA5A5"
+                : group.key === "tomorrow" ? "#60A5FA"
+                : "rgba(255,255,255,0.3)";
+              return (
+                <section key={group.key}>
+                  {/* Group header */}
+                  <button
+                    onClick={() => toggleBucket(group.key)}
                     style={{
-                      background: "#111111",
+                      display: "flex", alignItems: "center", gap: 10, width: "100%",
+                      padding: "10px 14px", marginBottom: 8,
+                      background: "rgba(255,255,255,0.02)",
                       border: "1px solid rgba(255,255,255,0.06)",
-                      borderRadius: 14,
-                      overflow: "hidden",
+                      borderLeft: `3px solid ${accentColor}`,
+                      borderRadius: 10, cursor: "pointer",
+                      color: "#f5f5f5", fontSize: 13, fontWeight: 700, textAlign: "left",
                     }}
                   >
-                    <div
-                      onClick={() => setExpandedId(expanded ? null : b.id)}
-                      style={{ padding: "14px 16px", cursor: "pointer" }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                        {b.confirmation_number ? (
-                          <span style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#F6BE00", fontWeight: 700, fontSize: 12, letterSpacing: "0.04em" }}>
-                            {b.confirmation_number}
-                          </span>
-                        ) : <span />}
-                        <span style={{ ...badgeStyle(b.status), flexShrink: 0 }}>{b.status.replace("_", " ")}</span>
-                      </div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "#f5f5f5", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {b.customer_name}
-                      </div>
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 3 }}>
-                        {b.customer_phone} · {b.car_make || b.car_size}
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
-                        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
-                          {pref.date}{pref.time ? ` · ${pref.time}` : ""}
-                        </span>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#f5f5f5" }}>
-                          {(b.total || 0).toLocaleString()} SAR
-                        </span>
-                      </div>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: collapsed ? "rotate(-90deg)" : "rotate(0)", transition: "transform 0.15s" }}>
+                      <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                    <span>{group.label}</span>
+                    <span style={{ color: "rgba(255,255,255,0.4)", fontWeight: 500, fontSize: 12 }}>
+                      ({group.items.length} · {sectionRevenue.toLocaleString()} SAR)
+                    </span>
+                  </button>
+
+                  {!collapsed && (viewMode === "table" ? (
+                    <BookingTable
+                      items={group.items}
+                      selected={selected}
+                      expandedId={expandedId}
+                      onToggleSelect={toggleSelect}
+                      onToggleSelectAll={toggleSelectAll}
+                      onToggleExpand={(id) => setExpandedId(expandedId === id ? null : id)}
+                      onUpdateStatus={updateStatus}
+                      updatingId={updatingId}
+                      ExpandedDetails={ExpandedDetails}
+                    />
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 10 }}>
+                      {group.items.map(b => (
+                        <BookingCard
+                          key={b.id}
+                          b={b}
+                          selected={selected.has(b.id)}
+                          expanded={expandedId === b.id}
+                          onToggleSelect={() => toggleSelect(b.id)}
+                          onToggleExpand={() => setExpandedId(expandedId === b.id ? null : b.id)}
+                          onUpdateStatus={updateStatus}
+                          updating={updatingId === b.id}
+                          ExpandedDetails={ExpandedDetails}
+                        />
+                      ))}
                     </div>
-                    {expanded && <ExpandedDetails b={b} />}
-                  </div>
-                );
-              })}
-            </div>
-          </>
+                  ))}
+                </section>
+              );
+            })}
+          </div>
         )}
       </div>
     </>
