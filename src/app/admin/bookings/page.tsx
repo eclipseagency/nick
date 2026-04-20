@@ -1122,7 +1122,7 @@ export default function BookingsPage() {
             }}
           >
             {STATUSES.filter((s) => s !== "all").map((s) => (
-              <option key={s} value={s}>{s.replace("_", " ")}</option>
+              <option key={s} value={s} style={{ background: "#0a0a0a", color: "#f5f5f5" }}>{s.replace("_", " ")}</option>
             ))}
           </select>
           {updatingId === b.id && (
@@ -1225,11 +1225,11 @@ export default function BookingsPage() {
                 color: "#f5f5f5", fontSize: 12, fontWeight: 600, cursor: "pointer",
               }}
             >
-              <option value="preferred-soonest">Soonest preferred date</option>
-              <option value="newest">Newest created</option>
-              <option value="oldest">Oldest created</option>
-              <option value="total-desc">Highest revenue</option>
-              <option value="total-asc">Lowest revenue</option>
+              <option value="preferred-soonest" style={{ background: "#0a0a0a", color: "#f5f5f5" }}>Soonest preferred date</option>
+              <option value="newest" style={{ background: "#0a0a0a", color: "#f5f5f5" }}>Newest created</option>
+              <option value="oldest" style={{ background: "#0a0a0a", color: "#f5f5f5" }}>Oldest created</option>
+              <option value="total-desc" style={{ background: "#0a0a0a", color: "#f5f5f5" }}>Highest revenue</option>
+              <option value="total-asc" style={{ background: "#0a0a0a", color: "#f5f5f5" }}>Lowest revenue</option>
             </select>
             <button
               onClick={exportCSV}
@@ -1432,9 +1432,9 @@ export default function BookingsPage() {
                 color: "#f5f5f5", fontSize: 13, cursor: "pointer",
               }}
             >
-              <option value="" disabled>Set status…</option>
+              <option value="" disabled style={{ background: "#0a0a0a", color: "#888" }}>Set status…</option>
               {STATUSES.filter(s => s !== "all").map(s => (
-                <option key={s} value={s}>{s.replace("_", " ")}</option>
+                <option key={s} value={s} style={{ background: "#0a0a0a", color: "#f5f5f5" }}>{s.replace("_", " ")}</option>
               ))}
             </select>
             <button
