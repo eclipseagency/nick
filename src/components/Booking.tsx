@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import Image from "next/image";
 import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
-import DatePicker from "./DatePicker";
+import BookingForm, { type BookingFormData, type PaymentMethod } from "./BookingForm";
 
 interface ApiService {
   id: string; category: string; name_en: string; name_ar: string;
@@ -39,12 +39,13 @@ export default function Booking() {
   const [detailsOpenId, setDetailsOpenId] = useState<string | null>(null);
   const [windshieldSheetId, setWindshieldSheetId] = useState<string | null>(null);
   const [selAddons, setSelAddons] = useState<Record<string, string[]>>({});
-  const [form, setForm] = useState({ name: "", phone: "", notes: "", preferredDate: "" });
   const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
   const [orderSent, setOrderSent] = useState(false);
   const [bookingError, setBookingError] = useState("");
   const [confirmationNumber, setConfirmationNumber] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [submittedForm, setSubmittedForm] = useState<BookingFormData>({ name: "", phone: "", notes: "", preferredDate: "" });
+  const [formKey, setFormKey] = useState(0);
   const [displayTotal, setDisplayTotal] = useState(0);
   const [apiServices, setApiServices] = useState<ApiService[]>([]);
   const detailRef = useRef<HTMLDivElement>(null);
@@ -269,8 +270,8 @@ export default function Booking() {
     setTimeout(() => scrollToSection(step2Ref), 600);
   };
 
-  // Save booking to database
-  const saveBooking = async (paymentMethod: "online" | "tabby" | "tamara" | "cash") => {
+  // Save booking to database (cash/tabby/tamara — non-redirect flows)
+  const saveBookingCashOrBnpl = async (formData: BookingFormData, paymentMethod: PaymentMethod) => {
     if (submitting) return;
     setSubmitting(true);
     setBookingError("");
@@ -279,11 +280,11 @@ export default function Booking() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customer_name: form.name,
-          customer_phone: form.phone,
-          customer_notes: form.notes || null,
+          customer_name: formData.name,
+          customer_phone: formData.phone,
+          customer_notes: formData.notes || null,
           car_make: null,
-          preferred_date: form.preferredDate,
+          preferred_date: formData.preferredDate,
           car_size: size,
           package_id: null,
           service_ids: sel,
@@ -309,6 +310,7 @@ export default function Booking() {
         (window as any).fbq("track", "Lead", { content_name: "Booking", currency: "SAR", value: total });
         (window as any).fbq("track", "Schedule");
       }
+      setSubmittedForm(formData);
       setOrderSent(true);
     } catch (e) {
       console.error("Failed to save booking:", e);
@@ -319,26 +321,20 @@ export default function Booking() {
   };
 
   // Save booking and redirect to Neoleap online payment
-  const saveBookingOnline = async () => {
+  const saveBookingOnline = async (formData: BookingFormData) => {
     if (submitting) return;
     setSubmitting(true);
     setBookingError("");
-    // Validate form (same as saveBooking)
-    if (!formValid) {
-      setBookingError(isAr ? "يرجى تعبئة جميع الحقول المطلوبة" : "Please fill in all required fields");
-      setSubmitting(false);
-      return;
-    }
     try {
       const res = await fetch("/api/payment/initiate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customer_name: form.name,
-          customer_phone: form.phone,
-          customer_notes: form.notes || null,
+          customer_name: formData.name,
+          customer_phone: formData.phone,
+          customer_notes: formData.notes || null,
           car_make: null,
-          preferred_date: form.preferredDate,
+          preferred_date: formData.preferredDate,
           car_size: size,
           package_id: null,
           service_ids: sel,
@@ -369,23 +365,11 @@ export default function Booking() {
     }
   };
 
-  const bnplBase: React.CSSProperties = {
-    display: "flex", alignItems: "center", justifyContent: "space-between",
-    width: "100%", padding: "16px 20px", borderRadius: 12,
-    textDecoration: "none", transition: "all 0.3s", border: "none",
-  };
-
-  // Basic phone validation — accepts Saudi mobile formats
-  const isValidPhone = (phone: string) => {
-    const cleaned = phone.replace(/[\s\-()]/g, "");
-    return /^(\+966|966|05|5)\d{8}$/.test(cleaned);
-  };
-  const formValid = form.name.trim().length >= 2 && isValidPhone(form.phone) && form.preferredDate.length > 0;
-  const formMissing = !formValid ? [
-    ...(form.name.trim().length < 2 ? [isAr ? "الاسم" : "Name"] : []),
-    ...(!isValidPhone(form.phone) ? [isAr ? "رقم الجوال (مثال: 05xxxxxxxx)" : "Phone (e.g. 05xxxxxxxx)"] : []),
-    ...(form.preferredDate.length === 0 ? [isAr ? "التاريخ" : "Date"] : []),
-  ] : [];
+  const handleFormSubmit = useCallback((formData: BookingFormData, method: PaymentMethod) => {
+    if (method === "online") saveBookingOnline(formData);
+    else saveBookingCashOrBnpl(formData, method);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submitting, sel, selAddons, size, svcTotal, addonTotal, total, locale]);
 
   const selCount = (cat: Category) => {
     return sel.filter(id => svcs.find(s => s.id === id)?.cat === cat).length;
@@ -1163,162 +1147,21 @@ export default function Booking() {
             </div>
           </div>
 
-          {/* Form section header */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#F6BE00" }} />
-            <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, fontWeight: 600, letterSpacing: isAr ? "0" : "0.08em", textTransform: isAr ? "none" : "uppercase" as const }}>{isAr ? "بيانات الحجز" : "Booking Details"}</span>
-            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column" as const, gap: 14, marginBottom: 32 }}>
-            <input id="booking-name" type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})}
-              placeholder={t.booking.namePh} aria-label={t.booking.namePh} autoComplete="name"
-              onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
-              onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
-              style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s" }} />
-            <div>
-              <input id="booking-phone" type="tel" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})}
-                placeholder={isAr ? "05xxxxxxxx :رقم الجوال" : "Phone: 05xxxxxxxx"} aria-label={t.booking.phonePh} autoComplete="tel" dir="ltr"
-                onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
-                onBlur={e => { e.currentTarget.style.borderColor = form.phone && !isValidPhone(form.phone) ? "#f44336" : "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
-                style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: `1px solid ${form.phone && !isValidPhone(form.phone) ? "rgba(244,67,54,0.5)" : "rgba(255,255,255,0.08)"}`, color: "#fff", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s", textAlign: "left" as const }} />
-              {form.phone && !isValidPhone(form.phone) && (
-                <p style={{ fontSize: 11, color: "#f44336", marginTop: 4 }}>
-                  {isAr ? "صيغة مقبولة: 05xxxxxxxx أو +966xxxxxxxxx" : "Accepted: 05xxxxxxxx or +966xxxxxxxxx"}
-                </p>
-              )}
-            </div>
-            {/* Preferred date picker */}
-            <div>
-              <label style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 6 }}>{t.booking.preferredDateLabel}</label>
-              <DatePicker
-                value={form.preferredDate}
-                onChange={(d) => setForm({...form, preferredDate: d})}
-                unavailableDates={unavailableDates}
-                minDate={minDate}
-                isAr={isAr}
-                placeholder={t.booking.preferredDatePh}
-              />
-              {unavailableDates.length > 0 && (
-                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 4 }}>
-                  {isAr ? "التواريخ المحجوزة معلّمة باللون الأحمر" : "Booked dates are marked in red"}
-                </p>
-              )}
-            </div>
-            <textarea id="booking-notes" aria-label={t.booking.notesPh} value={form.notes} onChange={e => setForm({...form, notes: e.target.value})}
-              placeholder={t.booking.notesPh} rows={3}
-              onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
-              onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
-              style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", fontSize: 15, outline: "none", resize: "none" as const, transition: "border-color 0.2s, box-shadow 0.2s" }} />
-          </div>
-
-          <div style={{ marginBottom: 24 }}>
-            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em", marginBottom: 16 }}>{t.booking.paymentMethod}</div>
-
-            {/* Missing fields hint */}
-            {formMissing.length > 0 && (
-              <div style={{
-                marginBottom: 14, padding: "10px 16px", borderRadius: 12,
-                background: "rgba(246,190,0,0.06)", border: "1px solid rgba(246,190,0,0.15)",
-                color: "rgba(246,190,0,0.8)", fontSize: 12, lineHeight: 1.5,
-                display: "flex", alignItems: "center", gap: 8,
-              }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <span>{isAr ? "يرجى إكمال:" : "Please complete:"} {formMissing.join(", ")}</span>
-              </div>
-            )}
-
-            {/* Error banner */}
-            {bookingError && (
-              <div style={{
-                marginBottom: 14, padding: "12px 16px", borderRadius: 12,
-                background: "rgba(244,67,54,0.1)", border: "1px solid rgba(244,67,54,0.3)",
-                color: "#f44336", fontSize: 13, lineHeight: 1.5,
-                display: "flex", alignItems: "center", gap: 10,
-              }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                <span>{bookingError}</span>
-              </div>
-            )}
-
-            <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
-              {/* Pay at Shop — primary CTA */}
-              <button
-                onClick={() => { saveBooking("cash"); }}
-                disabled={!formValid || submitting}
-                style={{
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                  width: "100%", padding: isMobile ? "14px 14px" : "16px 20px", borderRadius: 12, cursor: "pointer",
-                  background: (!formValid || submitting) ? "rgba(246,190,0,0.3)" : "#F6BE00",
-                  border: "none", color: "#000", fontSize: isMobile ? 13 : 15, fontWeight: 700,
-                  textAlign: "center" as const,
-                  transition: "all 0.3s",
-                  opacity: (!formValid || submitting) ? 0.4 : 1,
-                }}
-              >
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-                </svg>
-                {submitting && <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ animation: "spin 1s linear infinite" }}><path d="M12 2a10 10 0 0 1 10 10" /></svg>}
-                {submitting ? (isAr ? "جاري المعالجة..." : "Processing...") : (isAr ? `احجز الان ، وسيارتك فى عهدتنا — ${displayTotal.toLocaleString()} ${cur}` : `Book Now — ${displayTotal.toLocaleString()} ${cur}`)}
-              </button>
-
-              {/* Pay Online — Neoleap */}
-              <button
-                onClick={() => { saveBookingOnline(); }}
-                disabled={!formValid || submitting}
-                style={{
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                  width: "100%", padding: isMobile ? "14px 14px" : "16px 20px", borderRadius: 12, cursor: "pointer",
-                  background: (!formValid || submitting) ? "rgba(26,115,232,0.3)" : "linear-gradient(135deg, #1a73e8, #0d47a1)",
-                  border: "none", color: "#fff", fontSize: isMobile ? 13 : 15, fontWeight: 700,
-                  textAlign: "center" as const,
-                  transition: "all 0.3s",
-                  opacity: (!formValid || submitting) ? 0.4 : 1,
-                }}
-              >
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
-                </svg>
-                {submitting ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ animation: "spin 1s linear infinite" }}><path d="M12 2a10 10 0 0 1 10 10" /></svg> : null}
-                {submitting ? (isAr ? t.booking.redirectingToPayment : t.booking.redirectingToPayment) : (isAr ? `${t.booking.payOnline} — ${displayTotal.toLocaleString()} ${cur}` : `${t.booking.payOnline} — ${displayTotal.toLocaleString()} ${cur}`)}
-              </button>
-
-              <div style={{ display: "flex", alignItems: "center", gap: 14, margin: "6px 0" }}>
-                <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
-                <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 11 }}>{isAr ? "أو قسّط" : "or split payments"}</span>
-                <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
-              </div>
-
-              {/* Tabby */}
-              <button
-                onClick={() => { saveBooking("tabby"); }}
-                disabled={!formValid || submitting}
-                style={(!formValid || submitting) ? { ...bnplBase, background: "#003227", opacity: 0.3, cursor: "not-allowed" } : { ...bnplBase, background: "#003227", cursor: "pointer" }}>
-                <span><svg width="60" height="20" viewBox="0 0 60 20" fill="none"><text x="0" y="16" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="18" letterSpacing="-0.5" fill="#3bff9d">tabby</text></svg></span>
-                <span style={{ display: "flex", flexDirection: "column" as const, alignItems: dir === "rtl" ? "flex-start" : "flex-end" }}>
-                  {submitting ? <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>{isAr ? "جاري المعالجة..." : "Processing..."}</span> : <>
-                  <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>{Math.ceil(total / 4).toLocaleString()} {cur}<span style={{ fontWeight: 400, opacity: 0.6 }}>{t.booking.perMonth}</span></span>
-                  <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{t.booking.splitIn4}</span>
-                  </>}
-                </span>
-              </button>
-
-              {/* Tamara */}
-              <button
-                onClick={() => { saveBooking("tamara"); }}
-                disabled={!formValid || submitting}
-                style={(!formValid || submitting) ? { ...bnplBase, background: "#250155", opacity: 0.3, cursor: "not-allowed" } : { ...bnplBase, background: "#250155", cursor: "pointer" }}>
-                <span><svg width="72" height="20" viewBox="0 0 72 20" fill="none"><text x="0" y="16" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="18" letterSpacing="-0.5" fill="#c77dff">tamara</text></svg></span>
-                <span style={{ display: "flex", flexDirection: "column" as const, alignItems: dir === "rtl" ? "flex-start" : "flex-end" }}>
-                  {submitting ? <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>{isAr ? "جاري المعالجة..." : "Processing..."}</span> : <>
-                  <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>{Math.ceil(total / 3).toLocaleString()} {cur}<span style={{ fontWeight: 400, opacity: 0.6 }}>{t.booking.perMonth}</span></span>
-                  <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{t.booking.splitIn3}</span>
-                  </>}
-                </span>
-              </button>
-            </div>
-          </div>
+          <BookingForm
+            key={formKey}
+            t={t}
+            isAr={isAr}
+            isMobile={isMobile}
+            dir={dir}
+            cur={cur}
+            total={total}
+            displayTotal={displayTotal}
+            unavailableDates={unavailableDates}
+            minDate={minDate}
+            bookingError={bookingError}
+            submitting={submitting}
+            onSubmit={handleFormSubmit}
+          />
 
           {/* Success overlay with confetti */}
           {orderSent && (
@@ -1414,10 +1257,10 @@ export default function Booking() {
                   </div>
 
                   {/* Customer */}
-                  {form.name && (
+                  {submittedForm.name && (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                       <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{isAr ? "العميل" : "Customer"}</span>
-                      <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{form.name}</span>
+                      <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{submittedForm.name}</span>
                     </div>
                   )}
 
@@ -1459,7 +1302,7 @@ export default function Booking() {
                 </div>
 
                 {/* Preferred date */}
-                {form.preferredDate && (
+                {submittedForm.preferredDate && (
                   <div style={{ animation: "fadeUp 0.5s ease-out 0.38s both", marginBottom: 20 }}>
                     <div style={{
                       display: "inline-flex", alignItems: "center", gap: 8,
@@ -1468,7 +1311,7 @@ export default function Booking() {
                       color: "rgba(255,255,255,0.5)", fontSize: 13,
                     }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F6BE00" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
-                      {form.preferredDate}
+                      {submittedForm.preferredDate}
                     </div>
                   </div>
                 )}
@@ -1476,7 +1319,7 @@ export default function Booking() {
                 {/* Follow-up channels — WhatsApp + Call */}
                 {(() => {
                   const waMsg = encodeURIComponent(
-                    `${isAr ? "مرحبًا NICK، حجزت رقم" : "Hello NICK, I just booked"} #${confirmationNumber || ""} — ${form.name}`
+                    `${isAr ? "مرحبًا NICK، حجزت رقم" : "Hello NICK, I just booked"} #${confirmationNumber || ""} — ${submittedForm.name}`
                   );
                   return (
                     <div style={{
@@ -1512,7 +1355,7 @@ export default function Booking() {
                   );
                 })()}
 
-                <button onClick={() => { setOrderSent(false); setConfirmationNumber(""); setBookingError(""); setSel([]); setSelAddons({}); setForm({ name: "", phone: "", notes: "", preferredDate: "" }); setSize(null); scrollToSection(step1Ref); }} className="btn-gold" style={{ marginTop: 8, animation: "fadeUp 0.5s ease-out 0.45s both", padding: "14px 40px" }}>
+                <button onClick={() => { setOrderSent(false); setConfirmationNumber(""); setBookingError(""); setSel([]); setSelAddons({}); setSubmittedForm({ name: "", phone: "", notes: "", preferredDate: "" }); setFormKey(k => k + 1); setSize(null); scrollToSection(step1Ref); }} className="btn-gold" style={{ marginTop: 8, animation: "fadeUp 0.5s ease-out 0.45s both", padding: "14px 40px" }}>
                   {isAr ? "حجز جديد" : "New Booking"}
                 </button>
               </div>
