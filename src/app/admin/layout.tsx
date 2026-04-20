@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   CalendarCheck,
   Wrench,
-  Package,
   Settings,
   LogOut,
   Menu,
@@ -34,7 +33,6 @@ const NAV_ITEMS = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Bookings", href: "/admin/bookings", icon: CalendarCheck },
   { label: "Services", href: "/admin/services", icon: Wrench },
-  { label: "Packages", href: "/admin/packages", icon: Package },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 

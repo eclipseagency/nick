@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     const {
       customer_name, customer_phone, customer_notes,
       car_make, car_year, car_color, preferred_date,
-      car_size, package_id, service_ids, addon_ids,
+      car_size, service_ids, addon_ids,
       subtotal, discount, total, locale,
     } = body;
 
@@ -43,7 +43,6 @@ export async function POST(req: NextRequest) {
         car_color: car_color || null,
         preferred_date: preferred_date || null,
         car_size,
-        package_id: package_id || null,
         service_ids: service_ids || [],
         addon_ids: addon_ids || {},
         subtotal,

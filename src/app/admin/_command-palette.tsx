@@ -24,7 +24,6 @@ const NAV_ACTIONS = (router: ReturnType<typeof useRouter>): Action[] => [
   { id: "nav-dash", label: "Go to Dashboard", hint: "/admin", perform: () => router.push("/admin") },
   { id: "nav-book", label: "Go to Bookings", hint: "/admin/bookings", perform: () => router.push("/admin/bookings") },
   { id: "nav-svc", label: "Go to Services", hint: "/admin/services", perform: () => router.push("/admin/services") },
-  { id: "nav-pkg", label: "Go to Packages", hint: "/admin/packages", perform: () => router.push("/admin/packages") },
   { id: "nav-set", label: "Go to Settings", hint: "/admin/settings", perform: () => router.push("/admin/settings") },
 ];
 

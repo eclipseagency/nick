@@ -33,7 +33,6 @@ interface Booking {
   car_color: string | null;
   preferred_date: string | null;
   car_size: string;
-  package_id: string | null;
   service_ids: string[];
   addon_ids: Record<string, unknown> | null;
   subtotal: number;
@@ -51,13 +50,6 @@ interface Service {
   name_en: string;
   name_ar: string;
   category: string;
-}
-
-interface Package {
-  id: string;
-  name_en: string;
-  name_ar: string;
-  tier: string;
 }
 
 const STATUSES = ["all", "pending", "confirmed", "in_progress", "completed", "cancelled"];
@@ -494,7 +486,6 @@ function BookingCard({ b, selected, expanded, onToggleSelect, onToggleExpand, on
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [services, setServices] = useState<Service[]>([]);
-  const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
@@ -550,10 +541,6 @@ export default function BookingsPage() {
     fetch("/api/services?all=true")
       .then((r) => r.json())
       .then((d) => { if (Array.isArray(d)) setServices(d); })
-      .catch(() => {});
-    fetch("/api/packages?all=true")
-      .then((r) => r.json())
-      .then((d) => { if (Array.isArray(d)) setPackages(d); })
       .catch(() => {});
   }, [fetchBookings]);
 
@@ -612,11 +599,6 @@ export default function BookingsPage() {
   function getServiceName(id: string) {
     const s = services.find((sv) => sv.id === id);
     return s ? s.name_en : id;
-  }
-
-  function getPackageName(id: string) {
-    const p = packages.find((pk) => pk.id === id);
-    return p ? `${p.name_en} (${p.tier})` : id;
   }
 
   const filtered = useMemo(() => bookings.filter((b) => {
@@ -742,7 +724,6 @@ export default function BookingsPage() {
     setPrintingId(b.id);
     const pref = formatPreferred(b.preferred_date);
     const svcList = (b.service_ids || []).map(id => getServiceName(id));
-    const pkgName = b.package_id ? getPackageName(b.package_id) : null;
     const addonsBlock = (() => {
       const raw = b.addon_ids;
       const parsed: Record<string, unknown> | null = typeof raw === "string" ? (() => { try { return JSON.parse(raw); } catch { return null; } })() : raw;
@@ -782,7 +763,6 @@ export default function BookingsPage() {
     <div><div class="label">Preferred Date</div><div class="val">${pref.date}${pref.time ? " · " + pref.time : ""}</div></div>
     <div><div class="label">Payment</div><div class="val">${PAYMENT_LABELS[b.payment_method] || b.payment_method}</div></div>
   </div>
-  ${pkgName ? `<div class="section"><h3>Package</h3>${pkgName}</div>` : ""}
   ${svcList.length ? `<div class="section"><h3>Services (${svcList.length})</h3><ul>${svcList.map(s => `<li>${s}</li>`).join("")}</ul></div>` : ""}
   ${addonsBlock ? `<div class="section"><h3>Add-ons</h3>${addonsBlock}</div>` : ""}
   ${b.customer_notes ? `<div class="section"><h3>Customer Notes</h3>${b.customer_notes}</div>` : ""}
@@ -867,7 +847,7 @@ export default function BookingsPage() {
     const headers = [
       "Confirmation#", "Booking ID", "Customer Name", "Phone", "Car Make/Model", "Year", "Color",
       "Car Size", "Status", "Preferred Date",
-      "Package", "Services", "Subtotal", "Discount", "Total",
+      "Services", "Subtotal", "Discount", "Total",
       "Payment Method", "Locale", "Created", "Updated",
     ];
     const rows = sorted.map((b) => [
@@ -881,7 +861,6 @@ export default function BookingsPage() {
       b.car_size,
       b.status.replace("_", " "),
       b.preferred_date || "",
-      b.package_id ? getPackageName(b.package_id) : "",
       (b.service_ids || []).map((sid) => getServiceName(sid)).join("; "),
       String(b.subtotal || 0),
       String(b.discount || 0),
@@ -952,14 +931,6 @@ export default function BookingsPage() {
             ) : (
               <span style={{ fontSize: 13, color: "rgba(255,255,255,0.3)" }}>None</span>
             )}
-          </div>
-
-          {/* Package */}
-          <div>
-            <div style={sectionLabel}>Package</div>
-            <span style={{ fontSize: 13, color: b.package_id ? "#f5f5f5" : "rgba(255,255,255,0.3)" }}>
-              {b.package_id ? getPackageName(b.package_id) : "None"}
-            </span>
           </div>
 
           {/* Car Details */}
