@@ -142,6 +142,53 @@ function getDateBucket(b: { preferred_date: string | null; status: string; creat
 
 const BUCKET_ORDER: Bucket[] = ["overdue", "today", "tomorrow", "thisWeek", "later", "noDate", "past"];
 
+const DAILY_CAPACITY = 5;
+
+type WaTemplate = "confirm" | "remind" | "ready";
+
+interface BookingForWa {
+  customer_name: string;
+  customer_phone: string;
+  preferred_date: string | null;
+  confirmation_number: string | null;
+}
+
+function buildWhatsAppLink(b: BookingForWa, template: WaTemplate): string {
+  const pref = formatPreferred(b.preferred_date);
+  const dateStr = pref.date !== "—" ? pref.date : "";
+  const timeStr = pref.time;
+  const conf = b.confirmation_number || "";
+  const name = b.customer_name.split(/\s+/)[0]; // first name
+  let msg = "";
+  switch (template) {
+    case "confirm":
+      msg = `مرحباً ${name} 👋\n\nتم تأكيد حجزك في NICK Automotive Films ✅\n\n📋 رقم الحجز: ${conf}\n📅 التاريخ: ${dateStr}${timeStr ? `\n⏰ الوقت: ${timeStr}` : ""}\n📍 العنوان: حي النرجس، طريق أنس بن مالك، الرياض\n\nنشوفك قريب 🚗✨`;
+      break;
+    case "remind":
+      msg = `مرحباً ${name} 👋\n\nتذكير ودي: عندك موعد بكرة في NICK ⏰${timeStr ? `\nالوقت: ${timeStr}` : ""}\n📋 رقم الحجز: ${conf}\n\nلو في أي تغيير، تواصل معنا على نفس الرقم 🙏`;
+      break;
+    case "ready":
+      msg = `أهلاً ${name} 🎉\n\nسيارتك جاهزة للاستلام من NICK 🚗✨\n📋 رقم الحجز: ${conf}\n📍 حي النرجس، طريق أنس بن مالك، الرياض\n\nبانتظارك في أي وقت خلال ساعات العمل 🙏`;
+      break;
+  }
+  const cleanedPhone = b.customer_phone.replace(/[^0-9]/g, "");
+  return `https://wa.me/${cleanedPhone}?text=${encodeURIComponent(msg)}`;
+}
+
+function getCapacityForDate(bookings: { preferred_date: string | null; status: string }[], dateKey: string): number {
+  return bookings.filter(b => b.preferred_date?.startsWith(dateKey) && b.status !== "cancelled").length;
+}
+
+function formatRelativeTime(ts: number): string {
+  const diffSec = Math.floor((Date.now() - ts) / 1000);
+  if (diffSec < 5) return "just now";
+  if (diffSec < 60) return `${diffSec}s ago`;
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffH = Math.floor(diffMin / 60);
+  return `${diffH}h ago`;
+}
+
 function badgeStyle(status: string): React.CSSProperties {
   const colors: Record<string, [string, string]> = {
     pending: ["rgba(246,190,0,0.15)", "#FBBF24"],
@@ -428,15 +475,23 @@ export default function BookingsPage() {
   const [sortBy, setSortBy] = useState<SortKey>("preferred-soonest");
   const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [collapsedBuckets, setCollapsedBuckets] = useState<Set<Bucket>>(new Set(["past"]));
+  const [profilePhone, setProfilePhone] = useState<string | null>(null);
+  const [printingId, setPrintingId] = useState<string | null>(null);
+  const [lastRefreshed, setLastRefreshed] = useState<number>(Date.now());
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
-  const fetchBookings = useCallback(() => {
+  const fetchBookings = useCallback((silent = false) => {
+    if (!silent) setLoading(true);
     fetch("/api/bookings")
       .then((r) => r.json())
       .then((d) => {
-        if (Array.isArray(d)) setBookings(d);
+        if (Array.isArray(d)) {
+          setBookings(d);
+          setLastRefreshed(Date.now());
+        }
       })
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => { if (!silent) setLoading(false); });
   }, []);
 
   useEffect(() => {
@@ -450,6 +505,22 @@ export default function BookingsPage() {
       .then((d) => { if (Array.isArray(d)) setPackages(d); })
       .catch(() => {});
   }, [fetchBookings]);
+
+  // Auto-refresh every 60s while tab is visible
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const id = setInterval(() => {
+      if (document.visibilityState === "visible") fetchBookings(true);
+    }, 60_000);
+    return () => clearInterval(id);
+  }, [autoRefresh, fetchBookings]);
+
+  // Tick to refresh "X seconds ago" label every 10s
+  const [, forceTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => forceTick(t => t + 1), 10_000);
+    return () => clearInterval(id);
+  }, []);
 
   async function deleteBooking(id: string) {
     if (!confirm("Delete this booking permanently?")) return;
@@ -570,6 +641,118 @@ export default function BookingsPage() {
       if (next.has(k)) next.delete(k); else next.add(k);
       return next;
     });
+  }
+
+  // Saved view presets — sets multiple filters at once
+  function applyPreset(name: "todayOnly" | "weekPending" | "completedRecent" | "reset") {
+    const today = new Date().toISOString().slice(0, 10);
+    switch (name) {
+      case "todayOnly":
+        setFilter("all"); setSearch(""); setDateFrom(""); setDateTo("");
+        setSortBy("preferred-soonest");
+        setCollapsedBuckets(new Set(["overdue", "tomorrow", "thisWeek", "later", "noDate", "past"]));
+        break;
+      case "weekPending":
+        setFilter("pending"); setSearch(""); setDateFrom(""); setDateTo("");
+        setSortBy("preferred-soonest");
+        setCollapsedBuckets(new Set(["past"]));
+        break;
+      case "completedRecent":
+        setFilter("completed"); setSearch(""); setDateFrom(today); setDateTo("");
+        setSortBy("newest");
+        setCollapsedBuckets(new Set());
+        break;
+      case "reset":
+        setFilter("all"); setSearch(""); setDateFrom(""); setDateTo("");
+        setSortBy("preferred-soonest");
+        setCollapsedBuckets(new Set(["past"]));
+        break;
+    }
+  }
+
+  // Customer profile — all bookings by phone
+  const profileData = useMemo(() => {
+    if (!profilePhone) return null;
+    const list = bookings.filter(b => b.customer_phone === profilePhone)
+      .sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at));
+    const totalSpent = list.filter(b => b.status !== "cancelled").reduce((s, b) => s + (b.total || 0), 0);
+    return {
+      phone: profilePhone,
+      name: list[0]?.customer_name || "—",
+      bookings: list,
+      totalSpent,
+      isReturning: list.length > 1,
+      firstBooking: list[list.length - 1]?.created_at,
+      lastBooking: list[0]?.created_at,
+    };
+  }, [profilePhone, bookings]);
+
+  function printWorkOrder(b: Booking) {
+    setPrintingId(b.id);
+    const pref = formatPreferred(b.preferred_date);
+    const svcList = (b.service_ids || []).map(id => getServiceName(id));
+    const pkgName = b.package_id ? getPackageName(b.package_id) : null;
+    const addonsBlock = (() => {
+      const raw = b.addon_ids;
+      const parsed: Record<string, unknown> | null = typeof raw === "string" ? (() => { try { return JSON.parse(raw); } catch { return null; } })() : raw;
+      if (!parsed || typeof parsed !== "object" || Object.keys(parsed).length === 0) return "";
+      return Object.entries(parsed).map(([svcId, addonIds]) => {
+        const addons = Array.isArray(addonIds) ? (addonIds as string[]).join(", ") : String(addonIds);
+        return `<div><strong>${getServiceName(svcId)}:</strong> ${addons}</div>`;
+      }).join("");
+    })();
+    const html = `<!doctype html>
+<html><head><meta charset="utf-8"><title>Work Order ${b.confirmation_number || b.id.slice(0, 8)}</title>
+<style>
+  *{box-sizing:border-box} body{font-family:Arial,sans-serif;max-width:720px;margin:30px auto;padding:0 20px;color:#000}
+  h1{font-size:24px;margin:0 0 6px;color:#000}
+  .brand{font-size:14px;color:#888;margin-bottom:24px}
+  .conf{display:inline-block;padding:8px 16px;background:#F6BE00;color:#000;border-radius:8px;font-weight:bold;font-size:18px;letter-spacing:.04em;margin-bottom:18px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;border:1px solid #eee;padding:14px;border-radius:8px}
+  .label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+  .val{font-size:14px;font-weight:600}
+  .section{border-top:1px solid #eee;padding-top:14px;margin-top:14px}
+  .section h3{font-size:12px;text-transform:uppercase;color:#888;margin:0 0 8px;letter-spacing:.06em}
+  ul{margin:0;padding-left:20px}li{margin-bottom:4px;font-size:14px}
+  .total{font-size:24px;font-weight:bold;text-align:right;margin-top:14px;padding-top:14px;border-top:2px solid #000}
+  .signbox{margin-top:30px;display:flex;gap:30px}
+  .sigline{flex:1;border-top:1px solid #000;padding-top:6px;font-size:11px;color:#888}
+  @media print { body{margin:0} .noprint{display:none} }
+</style>
+</head><body>
+  <h1>NICK Automotive Films</h1>
+  <div class="brand">Work Order · nick.sa · +966 54 300 0055</div>
+  <div class="conf">${b.confirmation_number || b.id.slice(0, 8).toUpperCase()}</div>
+  <div class="grid">
+    <div><div class="label">Customer</div><div class="val">${b.customer_name}</div></div>
+    <div><div class="label">Phone</div><div class="val">${b.customer_phone}</div></div>
+    <div><div class="label">Vehicle</div><div class="val">${b.car_make || "—"}${b.car_year ? " · " + b.car_year : ""}${b.car_color ? " · " + b.car_color : ""}</div></div>
+    <div><div class="label">Size</div><div class="val" style="text-transform:capitalize">${b.car_size}</div></div>
+    <div><div class="label">Preferred Date</div><div class="val">${pref.date}${pref.time ? " · " + pref.time : ""}</div></div>
+    <div><div class="label">Payment</div><div class="val">${PAYMENT_LABELS[b.payment_method] || b.payment_method}</div></div>
+  </div>
+  ${pkgName ? `<div class="section"><h3>Package</h3>${pkgName}</div>` : ""}
+  ${svcList.length ? `<div class="section"><h3>Services (${svcList.length})</h3><ul>${svcList.map(s => `<li>${s}</li>`).join("")}</ul></div>` : ""}
+  ${addonsBlock ? `<div class="section"><h3>Add-ons</h3>${addonsBlock}</div>` : ""}
+  ${b.customer_notes ? `<div class="section"><h3>Customer Notes</h3>${b.customer_notes}</div>` : ""}
+  <div class="section"><h3>Pricing</h3>
+    <div>Subtotal: ${(b.subtotal || 0).toLocaleString()} SAR</div>
+    ${b.discount > 0 ? `<div>Discount: -${(b.discount).toLocaleString()} SAR</div>` : ""}
+    <div class="total">Total: ${(b.total || 0).toLocaleString()} SAR</div>
+  </div>
+  <div class="signbox">
+    <div class="sigline">Customer Signature</div>
+    <div class="sigline">Technician</div>
+  </div>
+  <script>window.onload=function(){window.print();}</script>
+</body></html>`;
+    const w = window.open("", "_blank", "width=800,height=900");
+    if (w) {
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+    }
+    setTimeout(() => setPrintingId(null), 1000);
   }
 
   function toggleSelect(id: string) {
@@ -829,8 +1012,58 @@ export default function BookingsPage() {
           </div>
         </div>
 
+        {/* WhatsApp templates row */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", paddingTop: 14, borderTop: "1px solid rgba(255,255,255,0.06)", marginBottom: 10 }}>
+          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>Send WhatsApp:</span>
+          {([
+            { key: "confirm" as const, label: "✓ Confirmation", color: "#34D399" },
+            { key: "remind" as const, label: "⏰ Reminder", color: "#FBBF24" },
+            { key: "ready" as const, label: "🚗 Ready to pickup", color: "#60A5FA" },
+          ]).map(tpl => (
+            <a
+              key={tpl.key}
+              href={buildWhatsAppLink(b, tpl.key)}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 6,
+                padding: "6px 12px", borderRadius: 8,
+                background: `${tpl.color}15`, border: `1px solid ${tpl.color}40`,
+                color: tpl.color, fontSize: 12, fontWeight: 600, textDecoration: "none",
+              }}
+            >
+              {tpl.label}
+            </a>
+          ))}
+          <button
+            onClick={() => printWorkOrder(b)}
+            disabled={printingId === b.id}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "6px 12px", borderRadius: 8,
+              background: "rgba(246,190,0,0.1)", border: "1px solid rgba(246,190,0,0.3)",
+              color: "#F6BE00", fontSize: 12, fontWeight: 600, cursor: "pointer",
+              opacity: printingId === b.id ? 0.5 : 1,
+            }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print Work Order
+          </button>
+          <button
+            onClick={() => setProfilePhone(b.customer_phone)}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "6px 12px", borderRadius: 8,
+              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              color: "rgba(255,255,255,0.7)", fontSize: 12, fontWeight: 600, cursor: "pointer",
+            }}
+          >
+            👤 Customer profile
+          </button>
+        </div>
+
         {/* Actions */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", paddingTop: 14, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           <a
             href={`tel:${b.customer_phone}`}
             style={{
@@ -937,7 +1170,26 @@ export default function BookingsPage() {
       <div style={{ position: "relative", zIndex: 1 }}>
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, gap: 16, flexWrap: "wrap" }}>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#f5f5f5" }}>Bookings</div>
+          <div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#f5f5f5" }}>Bookings</div>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4, display: "inline-flex", alignItems: "center", gap: 8 }}>
+              <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: autoRefresh ? "#34D399" : "rgba(255,255,255,0.2)", animation: autoRefresh ? "pulse 2s infinite" : undefined }} />
+              <span>Updated {formatRelativeTime(lastRefreshed)}</span>
+              <button
+                onClick={() => fetchBookings(true)}
+                title="Refresh now"
+                style={{ background: "transparent", border: "none", color: "#F6BE00", cursor: "pointer", fontSize: 11, padding: 0 }}
+              >
+                ↻ refresh
+              </button>
+              <button
+                onClick={() => setAutoRefresh(a => !a)}
+                style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 10, padding: "2px 8px", borderRadius: 6 }}
+              >
+                Auto: {autoRefresh ? "on" : "off"}
+              </button>
+            </div>
+          </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
             {/* View toggle */}
             <div style={{ display: "inline-flex", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, overflow: "hidden" }}>
@@ -1023,6 +1275,30 @@ export default function BookingsPage() {
               <div style={{ fontSize: 22, fontWeight: 700, color: "#f5f5f5", marginTop: 4, fontFamily: "'Space Grotesk', sans-serif" }}>{card.count}</div>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{card.sub}</div>
             </div>
+          ))}
+        </div>
+
+        {/* Saved view presets */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", alignSelf: "center", marginRight: 4, fontWeight: 600 }}>QUICK VIEWS:</span>
+          {[
+            { key: "todayOnly", label: "📅 Today only" },
+            { key: "weekPending", label: "⏳ Pending (soonest)" },
+            { key: "completedRecent", label: "✓ Completed today+" },
+            { key: "reset", label: "↻ Reset" },
+          ].map(p => (
+            <button
+              key={p.key}
+              onClick={() => applyPreset(p.key as Parameters<typeof applyPreset>[0])}
+              style={{
+                padding: "5px 11px", borderRadius: 100, fontSize: 11, fontWeight: 600,
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "rgba(255,255,255,0.65)", cursor: "pointer",
+              }}
+            >
+              {p.label}
+            </button>
           ))}
         </div>
 
@@ -1204,6 +1480,10 @@ export default function BookingsPage() {
                 : group.key === "overdue" ? "#FCA5A5"
                 : group.key === "tomorrow" ? "#60A5FA"
                 : "rgba(255,255,255,0.3)";
+              // Capacity warning for today/tomorrow
+              const activeCount = group.items.filter(b => b.status !== "cancelled").length;
+              const overCapacity = (group.key === "today" || group.key === "tomorrow") && activeCount > DAILY_CAPACITY;
+              const nearCapacity = (group.key === "today" || group.key === "tomorrow") && activeCount === DAILY_CAPACITY;
               return (
                 <section key={group.key}>
                   {/* Group header */}
@@ -1212,8 +1492,8 @@ export default function BookingsPage() {
                     style={{
                       display: "flex", alignItems: "center", gap: 10, width: "100%",
                       padding: "10px 14px", marginBottom: 8,
-                      background: "rgba(255,255,255,0.02)",
-                      border: "1px solid rgba(255,255,255,0.06)",
+                      background: overCapacity ? "rgba(244,67,54,0.06)" : "rgba(255,255,255,0.02)",
+                      border: `1px solid ${overCapacity ? "rgba(244,67,54,0.3)" : "rgba(255,255,255,0.06)"}`,
                       borderLeft: `3px solid ${accentColor}`,
                       borderRadius: 10, cursor: "pointer",
                       color: "#f5f5f5", fontSize: 13, fontWeight: 700, textAlign: "left",
@@ -1226,6 +1506,17 @@ export default function BookingsPage() {
                     <span style={{ color: "rgba(255,255,255,0.4)", fontWeight: 500, fontSize: 12 }}>
                       ({group.items.length} · {sectionRevenue.toLocaleString()} SAR)
                     </span>
+                    {(group.key === "today" || group.key === "tomorrow") && (
+                      <span style={{
+                        marginLeft: "auto",
+                        padding: "3px 9px", borderRadius: 100, fontSize: 10, fontWeight: 700,
+                        background: overCapacity ? "rgba(244,67,54,0.15)" : nearCapacity ? "rgba(246,190,0,0.15)" : "rgba(52,211,153,0.12)",
+                        color: overCapacity ? "#FCA5A5" : nearCapacity ? "#FBBF24" : "#34D399",
+                        textTransform: "uppercase", letterSpacing: "0.05em",
+                      }}>
+                        {overCapacity ? `OVER CAPACITY · ${activeCount}/${DAILY_CAPACITY}` : nearCapacity ? `FULL · ${activeCount}/${DAILY_CAPACITY}` : `${activeCount}/${DAILY_CAPACITY} slots`}
+                      </span>
+                    )}
                   </button>
 
                   {!collapsed && (viewMode === "table" ? (
@@ -1263,6 +1554,118 @@ export default function BookingsPage() {
           </div>
         )}
       </div>
+
+      {/* Customer profile modal */}
+      {profileData && (
+        <div
+          onClick={() => setProfilePhone(null)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 100,
+            background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: 16,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 16, maxWidth: 600, width: "100%",
+              maxHeight: "85vh", overflowY: "auto",
+              padding: 24,
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+              <div>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                  <h2 style={{ fontSize: 18, fontWeight: 700, color: "#f5f5f5", margin: 0 }}>{profileData.name}</h2>
+                  {profileData.isReturning && (
+                    <span style={{ padding: "3px 9px", borderRadius: 100, background: "rgba(246,190,0,0.15)", color: "#F6BE00", fontSize: 10, fontWeight: 700, textTransform: "uppercase" }}>Returning</span>
+                  )}
+                </div>
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{profileData.phone}</div>
+              </div>
+              <button
+                onClick={() => setProfilePhone(null)}
+                style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", fontSize: 22, cursor: "pointer" }}
+              >
+                ×
+              </button>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 20 }}>
+              <div style={{ background: "rgba(255,255,255,0.04)", padding: "10px 12px", borderRadius: 10 }}>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Bookings</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#f5f5f5", marginTop: 2 }}>{profileData.bookings.length}</div>
+              </div>
+              <div style={{ background: "rgba(255,255,255,0.04)", padding: "10px 12px", borderRadius: 10 }}>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Lifetime</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#34D399", marginTop: 2 }}>{profileData.totalSpent.toLocaleString()}</div>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>SAR</div>
+              </div>
+              <div style={{ background: "rgba(255,255,255,0.04)", padding: "10px 12px", borderRadius: 10 }}>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>First Visit</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#f5f5f5", marginTop: 4 }}>
+                  {profileData.firstBooking ? new Date(profileData.firstBooking).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+              <a
+                href={`tel:${profileData.phone}`}
+                style={{ flex: 1, textAlign: "center", padding: "10px", background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.25)", borderRadius: 10, color: "#60A5FA", fontSize: 13, fontWeight: 600, textDecoration: "none" }}
+              >
+                📞 Call
+              </a>
+              <a
+                href={`https://wa.me/${profileData.phone.replace(/[^0-9]/g, "")}`}
+                target="_blank" rel="noopener noreferrer"
+                style={{ flex: 1, textAlign: "center", padding: "10px", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 10, color: "#34D399", fontSize: 13, fontWeight: 600, textDecoration: "none" }}
+              >
+                💬 WhatsApp
+              </a>
+            </div>
+
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8, fontWeight: 600 }}>Booking History</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {profileData.bookings.map(bk => {
+                const p = formatPreferred(bk.preferred_date);
+                const stripe = STATUS_STRIPE[bk.status] || "#9CA3AF";
+                return (
+                  <div
+                    key={bk.id}
+                    style={{
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.06)",
+                      borderLeft: `3px solid ${stripe}`,
+                      borderRadius: 10, padding: "10px 14px",
+                      display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap",
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                        {bk.confirmation_number && (
+                          <span style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#F6BE00", fontWeight: 700, fontSize: 11, letterSpacing: "0.04em" }}>{bk.confirmation_number}</span>
+                        )}
+                        <span style={badgeStyle(bk.status)}>{bk.status.replace("_", " ")}</span>
+                      </div>
+                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>
+                        {p.date}{p.time ? ` · ${p.time}` : ""} · {bk.car_make || bk.car_size}
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#f5f5f5" }}>{(bk.total || 0).toLocaleString()} SAR</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+      `}</style>
     </>
   );
 }
