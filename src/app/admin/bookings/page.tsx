@@ -179,6 +179,39 @@ function getCapacityForDate(bookings: { preferred_date: string | null; status: s
   return bookings.filter(b => b.preferred_date?.startsWith(dateKey) && b.status !== "cancelled").length;
 }
 
+// Notify on new bookings — sound chime + desktop notification
+function notifyNewBookings(newBookings: { customer_name: string; confirmation_number: string | null; total: number }[]) {
+  // Sound: short beep using Web Audio (no asset to ship)
+  try {
+    const Ctx = (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext);
+    const ctx = new Ctx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = "sine"; osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.65);
+    setTimeout(() => ctx.close().catch(() => {}), 1000);
+  } catch { /* ignore */ }
+
+  // Desktop notification
+  if ("Notification" in window && Notification.permission === "granted") {
+    const first = newBookings[0];
+    const title = newBookings.length === 1
+      ? `New booking · ${first.confirmation_number || ""}`
+      : `${newBookings.length} new bookings`;
+    const body = newBookings.length === 1
+      ? `${first.customer_name} · ${(first.total || 0).toLocaleString()} SAR`
+      : newBookings.map(b => `${b.customer_name} · ${(b.total || 0).toLocaleString()} SAR`).slice(0, 3).join("\n");
+    try {
+      new Notification(title, { body, icon: "/images/nick-logo.png", tag: "nick-new-booking" });
+    } catch { /* ignore */ }
+  }
+}
+
 function formatRelativeTime(ts: number): string {
   const diffSec = Math.floor((Date.now() - ts) / 1000);
   if (diffSec < 5) return "just now";
@@ -486,12 +519,30 @@ export default function BookingsPage() {
       .then((r) => r.json())
       .then((d) => {
         if (Array.isArray(d)) {
-          setBookings(d);
+          setBookings(prev => {
+            // Detect newly arrived bookings (silent refresh only)
+            if (silent && prev.length > 0) {
+              const prevIds = new Set(prev.map(b => b.id));
+              const newOnes = (d as Booking[]).filter(b => !prevIds.has(b.id));
+              if (newOnes.length > 0) notifyNewBookings(newOnes);
+            }
+            return d;
+          });
           setLastRefreshed(Date.now());
         }
       })
       .catch(() => {})
       .finally(() => { if (!silent) setLoading(false); });
+  }, []);
+
+  // Notification permission prompt — once
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      // Defer prompt to first user interaction to avoid being intrusive
+      const ask = () => { Notification.requestPermission().catch(() => {}); window.removeEventListener("click", ask); };
+      window.addEventListener("click", ask, { once: true });
+      return () => window.removeEventListener("click", ask);
+    }
   }, []);
 
   useEffect(() => {

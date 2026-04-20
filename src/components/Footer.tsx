@@ -19,6 +19,7 @@ export default function Footer() {
     { l: t.footer.about, h: "/about" },
     { l: t.footer.galleryLink, h: "/gallery" },
     { l: t.footer.bookNow, h: "/#booking" },
+    { l: isAr ? "تتبع حجزك" : "Track Booking", h: "/track" },
     { l: t.footer.store, h: "/contact" },
   ];
 

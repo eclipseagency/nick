@@ -1355,6 +1355,14 @@ export default function Booking() {
                   );
                 })()}
 
+                {/* Track booking link */}
+                {confirmationNumber && (
+                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginBottom: 14, animation: "fadeUp 0.5s ease-out 0.42s both" }}>
+                    {isAr ? "يمكنك تتبع أو تعديل حجزك أي وقت من " : "Track or change your booking anytime at "}
+                    <a href="/track" style={{ color: "#F6BE00", textDecoration: "underline" }}>nick.sa/track</a>
+                  </p>
+                )}
+
                 <button onClick={() => { setOrderSent(false); setConfirmationNumber(""); setBookingError(""); setSel([]); setSelAddons({}); setSubmittedForm({ name: "", phone: "", notes: "", preferredDate: "" }); setFormKey(k => k + 1); setSize(null); scrollToSection(step1Ref); }} className="btn-gold" style={{ marginTop: 8, animation: "fadeUp 0.5s ease-out 0.45s both", padding: "14px 40px" }}>
                   {isAr ? "حجز جديد" : "New Booking"}
                 </button>

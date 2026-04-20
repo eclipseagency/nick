@@ -58,5 +58,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
         languages: { en: `${siteUrl}/contact`, ar: `${siteUrl}/contact?lang=ar` },
       },
     },
+    {
+      url: `${siteUrl}/track`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
   ];
 }

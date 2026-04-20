@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { ToastProvider } from "./_ui";
+import CommandPalette from "./_command-palette";
 
 type Role = "super_admin" | "manager" | "reception" | "technician";
 
@@ -193,6 +194,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {/* Page content */}
           <main className="px-5 lg:px-10 pt-2 lg:pt-4 pb-16 max-w-[1400px] mx-auto">{children}</main>
         </div>
+        <CommandPalette />
       </div>
     </ToastProvider>
   );
