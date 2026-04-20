@@ -24,6 +24,7 @@ const SERVICE_NAMES: Record<string, string> = {
 
 interface Booking {
   id: string;
+  confirmation_number: string | null;
   customer_name: string;
   customer_phone: string;
   customer_notes: string | null;
@@ -70,6 +71,34 @@ function formatDate(d: string) {
     minute: "2-digit",
   });
 }
+
+// preferred_date may be "YYYY-MM-DD" (legacy) or "YYYY-MM-DD HH:MM" (with time slot)
+function formatPreferred(raw: string | null) {
+  if (!raw) return { date: "—", time: "" };
+  const [datePart, timePart] = raw.trim().split(/\s+/);
+  let dateStr = "—";
+  try {
+    dateStr = new Date(datePart + "T00:00:00").toLocaleDateString("en-GB", {
+      weekday: "short", day: "numeric", month: "short", year: "numeric",
+    });
+  } catch { /* fallback */ }
+  let timeStr = "";
+  if (timePart) {
+    const [h, m] = timePart.split(":");
+    const hr = parseInt(h, 10);
+    const ampm = hr >= 12 ? "PM" : "AM";
+    const display = hr === 0 ? 12 : hr > 12 ? hr - 12 : hr;
+    timeStr = `${display}:${m} ${ampm}`;
+  }
+  return { date: dateStr, time: timeStr };
+}
+
+const PAYMENT_LABELS: Record<string, string> = {
+  cash: "Cash at Shop",
+  online: "Card (Neoleap)",
+  tabby: "Tabby (4×)",
+  tamara: "Tamara (3×)",
+};
 
 function badgeStyle(status: string): React.CSSProperties {
   const colors: Record<string, [string, string]> = {
@@ -199,7 +228,9 @@ export default function BookingsPage() {
       const q = search.toLowerCase();
       if (
         !b.customer_name.toLowerCase().includes(q) &&
-        !b.customer_phone.includes(q)
+        !b.customer_phone.includes(q) &&
+        !(b.confirmation_number || "").toLowerCase().includes(q) &&
+        !(b.car_make || "").toLowerCase().includes(q)
       )
         return false;
     }
@@ -273,12 +304,13 @@ export default function BookingsPage() {
       return val;
     };
     const headers = [
-      "Confirmation#", "Customer Name", "Phone", "Car Make/Model", "Year", "Color",
+      "Confirmation#", "Booking ID", "Customer Name", "Phone", "Car Make/Model", "Year", "Color",
       "Car Size", "Status", "Preferred Date",
       "Package", "Services", "Subtotal", "Discount", "Total",
-      "Payment Method", "Date",
+      "Payment Method", "Locale", "Created", "Updated",
     ];
     const rows = filtered.map((b) => [
+      b.confirmation_number || "",
       b.id,
       b.customer_name,
       b.customer_phone,
@@ -294,7 +326,9 @@ export default function BookingsPage() {
       String(b.discount || 0),
       String(b.total || 0),
       b.payment_method,
-      new Date(b.created_at).toISOString().slice(0, 10),
+      b.locale || "",
+      new Date(b.created_at).toISOString(),
+      new Date(b.updated_at).toISOString(),
     ]);
     const csv = [headers, ...rows].map((row) => row.map(escapeCSV).join(",")).join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
@@ -375,12 +409,20 @@ export default function BookingsPage() {
               {b.car_year && <span> · {b.car_year}</span>}
               {b.car_color && <span> · {b.car_color}</span>}
             </div>
-            {b.preferred_date && (
-              <div style={{ fontSize: 12, color: "#F6BE00", marginTop: 4 }}>
-                Preferred: {new Date(b.preferred_date + "T00:00:00").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
-              </div>
-            )}
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4, textTransform: "capitalize" }}>Size: {b.car_size}</div>
           </div>
+
+          {/* Preferred date+time */}
+          {b.preferred_date && (() => {
+            const p = formatPreferred(b.preferred_date);
+            return (
+              <div>
+                <div style={sectionLabel}>Preferred Slot</div>
+                <div style={{ fontSize: 13, color: "#F6BE00", fontWeight: 600 }}>{p.date}</div>
+                {p.time && <div style={{ fontSize: 12, color: "#F6BE00", marginTop: 2 }}>{p.time}</div>}
+              </div>
+            );
+          })()}
 
           {/* Addons */}
           <div>
@@ -421,8 +463,42 @@ export default function BookingsPage() {
           {/* Payment */}
           <div>
             <div style={sectionLabel}>Payment</div>
-            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", textTransform: "capitalize" }}>{b.payment_method}</span>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>Locale: {b.locale?.toUpperCase()}</div>
+            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>{PAYMENT_LABELS[b.payment_method] || b.payment_method}</span>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>Locale: {b.locale?.toUpperCase() || "—"}</div>
+          </div>
+
+          {/* Confirmation + Booking ID */}
+          <div>
+            <div style={sectionLabel}>Reference</div>
+            {b.confirmation_number && (
+              <div
+                onClick={() => navigator.clipboard?.writeText(b.confirmation_number!)}
+                title="Click to copy"
+                style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 13, color: "#F6BE00", fontWeight: 700, letterSpacing: "0.04em", cursor: "copy", marginBottom: 4 }}
+              >
+                {b.confirmation_number}
+              </div>
+            )}
+            <div
+              onClick={() => navigator.clipboard?.writeText(b.id)}
+              title="Click to copy full booking ID"
+              style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "monospace", cursor: "copy" }}
+            >
+              {b.id.slice(0, 8)}…{b.id.slice(-4)}
+            </div>
+          </div>
+
+          {/* Timestamps */}
+          <div>
+            <div style={sectionLabel}>Timestamps</div>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
+              Created: <span style={{ color: "rgba(255,255,255,0.7)" }}>{formatDate(b.created_at)}</span>
+            </div>
+            {b.updated_at && b.updated_at !== b.created_at && (
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>
+                Updated: <span style={{ color: "rgba(255,255,255,0.7)" }}>{formatDate(b.updated_at)}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -604,7 +680,7 @@ export default function BookingsPage() {
             <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 14 }}>🔍</span>
             <input
               type="text"
-              placeholder="Search by name or phone..."
+              placeholder="Search by name, phone, confirmation #, car..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
@@ -743,17 +819,21 @@ export default function BookingsPage() {
                         aria-label="Select all"
                       />
                     </th>
+                    <th style={thStyle}>Confirmation</th>
                     <th style={thStyle}>Customer</th>
                     <th style={thStyle}>Vehicle</th>
                     <th style={thStyle}>Services</th>
+                    <th style={thStyle}>Preferred</th>
                     <th style={thStyle}>Status</th>
+                    <th style={thStyle}>Payment</th>
                     <th style={thStyle}>Total</th>
-                    <th style={thStyle}>Date</th>
+                    <th style={thStyle}>Created</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.map((b) => {
                     const expanded = expandedId === b.id;
+                    const pref = formatPreferred(b.preferred_date);
                     return (
                       <React.Fragment key={b.id}>
                         <tr
@@ -772,16 +852,45 @@ export default function BookingsPage() {
                             />
                           </td>
                           <td style={tdStyle}>
+                            {b.confirmation_number ? (
+                              <span
+                                onClick={(e) => { e.stopPropagation(); navigator.clipboard?.writeText(b.confirmation_number!); }}
+                                title="Click to copy"
+                                style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#F6BE00", fontWeight: 700, fontSize: 12, letterSpacing: "0.04em", cursor: "copy" }}
+                              >
+                                {b.confirmation_number}
+                              </span>
+                            ) : (
+                              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.2)" }}>—</span>
+                            )}
+                          </td>
+                          <td style={tdStyle}>
                             <span style={{ color: "#f5f5f5", fontWeight: 600, fontSize: 13 }}>{b.customer_name}</span>
                             <br />
                             <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{b.customer_phone}</span>
                           </td>
-                          <td style={tdStyle}>{b.car_size}</td>
+                          <td style={tdStyle}>
+                            <span style={{ color: "#f5f5f5", fontSize: 12 }}>{b.car_make || "—"}</span>
+                            {(b.car_year || b.car_color) && (
+                              <><br /><span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{[b.car_year, b.car_color].filter(Boolean).join(" · ")}</span></>
+                            )}
+                            <br /><span style={{ fontSize: 10, color: "rgba(246,190,0,0.5)", textTransform: "capitalize" }}>{b.car_size}</span>
+                          </td>
                           <td style={tdStyle}>
                             {b.service_ids?.length || 0} service{(b.service_ids?.length || 0) !== 1 ? "s" : ""}
+                            {b.addon_ids && Object.keys(typeof b.addon_ids === "object" ? b.addon_ids : {}).length > 0 && (
+                              <><br /><span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>+ add-ons</span></>
+                            )}
+                          </td>
+                          <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
+                            <span style={{ color: "#f5f5f5", fontSize: 12 }}>{pref.date}</span>
+                            {pref.time && <><br /><span style={{ fontSize: 10, color: "#F6BE00" }}>{pref.time}</span></>}
                           </td>
                           <td style={tdStyle}>
                             <span style={badgeStyle(b.status)}>{b.status.replace("_", " ")}</span>
+                          </td>
+                          <td style={tdStyle}>
+                            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)" }}>{PAYMENT_LABELS[b.payment_method] || b.payment_method}</span>
                           </td>
                           <td style={tdStyle}>
                             <span style={{ fontWeight: 600, color: "#f5f5f5" }}>
@@ -792,7 +901,7 @@ export default function BookingsPage() {
                         </tr>
                         {expanded && (
                           <tr>
-                            <td colSpan={7} style={{ padding: 0 }}>
+                            <td colSpan={10} style={{ padding: 0 }}>
                               <ExpandedDetails b={b} />
                             </td>
                           </tr>
@@ -808,6 +917,7 @@ export default function BookingsPage() {
             <div className="admin-booking-cards" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {filtered.map((b) => {
                 const expanded = expandedId === b.id;
+                const pref = formatPreferred(b.preferred_date);
                 return (
                   <div
                     key={b.id}
@@ -820,22 +930,30 @@ export default function BookingsPage() {
                   >
                     <div
                       onClick={() => setExpandedId(expanded ? null : b.id)}
-                      style={{
-                        display: "flex", alignItems: "center", justifyContent: "space-between",
-                        padding: "14px 16px", cursor: "pointer",
-                      }}
+                      style={{ padding: "14px 16px", cursor: "pointer" }}
                     >
-                      <div style={{ minWidth: 0, flex: 1 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: "#f5f5f5", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {b.customer_name}
-                        </div>
-                        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 3 }}>
-                          {b.customer_phone} · {(b.total || 0).toLocaleString()} SAR
-                        </div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                        {b.confirmation_number ? (
+                          <span style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#F6BE00", fontWeight: 700, fontSize: 12, letterSpacing: "0.04em" }}>
+                            {b.confirmation_number}
+                          </span>
+                        ) : <span />}
+                        <span style={{ ...badgeStyle(b.status), flexShrink: 0 }}>{b.status.replace("_", " ")}</span>
                       </div>
-                      <span style={{ ...badgeStyle(b.status), flexShrink: 0, marginLeft: 10 }}>
-                        {b.status.replace("_", " ")}
-                      </span>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#f5f5f5", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {b.customer_name}
+                      </div>
+                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 3 }}>
+                        {b.customer_phone} · {b.car_make || b.car_size}
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
+                        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
+                          {pref.date}{pref.time ? ` · ${pref.time}` : ""}
+                        </span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#f5f5f5" }}>
+                          {(b.total || 0).toLocaleString()} SAR
+                        </span>
+                      </div>
                     </div>
                     {expanded && <ExpandedDetails b={b} />}
                   </div>
