@@ -46,18 +46,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    fetch("/api/auth")
-      .then(async (r) => {
-        if (!r.ok) {
-          router.replace("/login");
-          return;
-        }
-        const data = await r.json();
-        setMe(data);
-        setAuthed(true);
-      })
-      .catch(() => router.replace("/login"))
-      .finally(() => setChecking(false));
+    const verify = (initial: boolean) =>
+      fetch("/api/auth")
+        .then(async (r) => {
+          if (!r.ok) {
+            router.replace("/login");
+            return;
+          }
+          const data = await r.json();
+          setMe(data);
+          setAuthed(true);
+        })
+        .catch(() => { if (initial) router.replace("/login"); })
+        .finally(() => { if (initial) setChecking(false); });
+
+    verify(true);
+    const id = setInterval(() => verify(false), 5 * 60 * 1000);
+    return () => clearInterval(id);
   }, [router]);
 
   async function handleLogout() {

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     "Contact NICK for automotive protection services. Visit our showroom in Al-Nargis District, Riyadh. Call +966 54 300 0055. Open Sun-Thu 9AM-9PM, Fri-Sat 2PM-9PM.",
   alternates: {
     canonical: `${siteUrl}/contact`,
-    languages: { en: `${siteUrl}/contact`, ar: `${siteUrl}/contact?lang=ar` },
+    languages: { en: `${siteUrl}/contact`, ar: `${siteUrl}/contact?lang=ar`, "x-default": `${siteUrl}/contact` },
   },
   openGraph: {
     title: "Contact NICK — Riyadh Showroom",

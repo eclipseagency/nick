@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useReveal } from "@/hooks/useReveal";
 import { useLanguage } from "@/i18n/LanguageContext";
+import DatePicker from "./DatePicker";
 
 interface ApiService {
   id: string; category: string; name_en: string; name_ar: string;
@@ -1018,7 +1019,7 @@ export default function Booking() {
             <div style={{ borderRadius: 14, background: "#111", border: "1px solid rgba(255,255,255,0.08)", overflow: "hidden", marginBottom: 20 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 14, padding: 16 }}>
                 <div style={{ position: "relative", width: 56, height: 56, borderRadius: 12, overflow: "hidden", flexShrink: 0, background: "#0a0a0a" }}>
-                  <Image src={cars.find(c => c.id === size)?.img || ""} alt="" fill className="object-cover" />
+                  <Image src={cars.find(c => c.id === size)?.img || ""} alt={cars.find(c => c.id === size)?.label || "Vehicle"} fill className="object-cover" />
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: isAr ? "none" : "uppercase" as const, letterSpacing: isAr ? "0" : "0.08em" }}>{t.booking.vehicleLabel}</div>
@@ -1190,19 +1191,17 @@ export default function Booking() {
             {/* Preferred date picker */}
             <div>
               <label style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 6 }}>{t.booking.preferredDateLabel}</label>
-              <input type="date" id="booking-date" aria-label={t.booking.preferredDateLabel} value={form.preferredDate}
-                min={minDate}
-                onChange={e => {
-                  const val = e.target.value;
-                  if (unavailableDates.includes(val)) return;
-                  setForm({...form, preferredDate: val});
-                }}
-                onFocus={e => { e.currentTarget.style.borderColor = "#F6BE00"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(246,190,0,0.1)"; }}
-                onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
-                style={{ width: "100%", padding: "14px 18px", borderRadius: 12, background: "#111", border: "1px solid rgba(255,255,255,0.08)", color: form.preferredDate ? "#fff" : "rgba(255,255,255,0.35)", fontSize: 15, outline: "none", transition: "border-color 0.2s, box-shadow 0.2s", colorScheme: "dark" }} />
+              <DatePicker
+                value={form.preferredDate}
+                onChange={(d) => setForm({...form, preferredDate: d})}
+                unavailableDates={unavailableDates}
+                minDate={minDate}
+                isAr={isAr}
+                placeholder={t.booking.preferredDatePh}
+              />
               {unavailableDates.length > 0 && (
                 <p style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 4 }}>
-                  {isAr ? "بعض التواريخ محجوزة بالكامل" : "Some dates are fully booked"}
+                  {isAr ? "التواريخ المحجوزة معلّمة باللون الأحمر" : "Booked dates are marked in red"}
                 </p>
               )}
             </div>
@@ -1474,7 +1473,46 @@ export default function Booking() {
                   </div>
                 )}
 
-                <button onClick={() => { setOrderSent(false); setConfirmationNumber(""); setBookingError(""); setSel([]); setSelAddons({}); setForm({ name: "", phone: "", notes: "", preferredDate: "" }); setSize(null); scrollToSection(step1Ref); }} className="btn-gold" style={{ marginTop: 8, animation: "fadeUp 0.5s ease-out 0.4s both", padding: "14px 40px" }}>
+                {/* Follow-up channels — WhatsApp + Call */}
+                {(() => {
+                  const waMsg = encodeURIComponent(
+                    `${isAr ? "مرحبًا NICK، حجزت رقم" : "Hello NICK, I just booked"} #${confirmationNumber || ""} — ${form.name}`
+                  );
+                  return (
+                    <div style={{
+                      display: "flex", flexDirection: isMobile ? "column" : "row", gap: 10, justifyContent: "center",
+                      animation: "fadeUp 0.5s ease-out 0.4s both", marginBottom: 14,
+                    }}>
+                      <a
+                        href={`https://wa.me/966543000055?text=${waMsg}`}
+                        target="_blank" rel="noopener noreferrer"
+                        style={{
+                          display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
+                          padding: "12px 22px", borderRadius: 12,
+                          background: "#25D366", color: "#fff", fontSize: 14, fontWeight: 700,
+                          textDecoration: "none",
+                        }}
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.607z"/></svg>
+                        {isAr ? "تواصل واتساب" : "Message on WhatsApp"}
+                      </a>
+                      <a
+                        href="tel:+966543000055"
+                        style={{
+                          display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
+                          padding: "12px 22px", borderRadius: 12,
+                          background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)",
+                          color: "#fff", fontSize: 14, fontWeight: 700, textDecoration: "none",
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>
+                        {isAr ? "اتصل بنا" : "Call Us"}
+                      </a>
+                    </div>
+                  );
+                })()}
+
+                <button onClick={() => { setOrderSent(false); setConfirmationNumber(""); setBookingError(""); setSel([]); setSelAddons({}); setForm({ name: "", phone: "", notes: "", preferredDate: "" }); setSize(null); scrollToSection(step1Ref); }} className="btn-gold" style={{ marginTop: 8, animation: "fadeUp 0.5s ease-out 0.45s both", padding: "14px 40px" }}>
                   {isAr ? "حجز جديد" : "New Booking"}
                 </button>
               </div>

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     "Browse NICK's portfolio of automotive protection work. PPF installations, ceramic coatings, window tinting, and our manufacturing facility in Riyadh.",
   alternates: {
     canonical: `${siteUrl}/gallery`,
-    languages: { en: `${siteUrl}/gallery`, ar: `${siteUrl}/gallery?lang=ar` },
+    languages: { en: `${siteUrl}/gallery`, ar: `${siteUrl}/gallery?lang=ar`, "x-default": `${siteUrl}/gallery` },
   },
   openGraph: {
     title: "NICK Gallery — From Factory to Finish",

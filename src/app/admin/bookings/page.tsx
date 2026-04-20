@@ -122,6 +122,8 @@ export default function BookingsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   const fetchBookings = useCallback(() => {
     fetch("/api/bookings")
@@ -211,6 +213,57 @@ export default function BookingsPage() {
     }
     return true;
   });
+
+  function toggleSelect(id: string) {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll(ids: string[]) {
+    setSelected(prev => {
+      const allSelected = ids.every(id => prev.has(id));
+      const next = new Set(prev);
+      if (allSelected) ids.forEach(id => next.delete(id));
+      else ids.forEach(id => next.add(id));
+      return next;
+    });
+  }
+
+  async function bulkStatus(status: string) {
+    if (selected.size === 0 || bulkBusy) return;
+    setBulkBusy(true);
+    const ids = Array.from(selected);
+    await Promise.all(ids.map(id =>
+      fetch("/api/bookings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status }),
+      }).catch(() => null)
+    ));
+    setBookings(prev => prev.map(b => selected.has(b.id) ? { ...b, status } : b));
+    setSelected(new Set());
+    setBulkBusy(false);
+  }
+
+  async function bulkDelete() {
+    if (selected.size === 0 || bulkBusy) return;
+    if (!confirm(`Delete ${selected.size} booking${selected.size > 1 ? "s" : ""} permanently?`)) return;
+    setBulkBusy(true);
+    const ids = Array.from(selected);
+    await Promise.all(ids.map(id =>
+      fetch("/api/bookings", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      }).catch(() => null)
+    ));
+    setBookings(prev => prev.filter(b => !selected.has(b.id)));
+    setSelected(new Set());
+    setBulkBusy(false);
+  }
 
   function exportCSV() {
     const escapeCSV = (val: string) => {
@@ -612,6 +665,62 @@ export default function BookingsPage() {
           )}
         </div>
 
+        {/* Bulk action bar */}
+        {selected.size > 0 && (
+          <div style={{
+            display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10,
+            padding: "10px 14px", marginBottom: 14,
+            background: "rgba(246,190,0,0.08)",
+            border: "1px solid rgba(246,190,0,0.25)",
+            borderRadius: 12,
+          }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#F6BE00" }}>
+              {selected.size} selected
+            </span>
+            <div style={{ flex: 1 }} />
+            <select
+              disabled={bulkBusy}
+              defaultValue=""
+              onChange={(e) => { if (e.target.value) { bulkStatus(e.target.value); e.target.value = ""; } }}
+              style={{
+                padding: "7px 12px", background: "#0a0a0a",
+                border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8,
+                color: "#f5f5f5", fontSize: 13, cursor: "pointer",
+              }}
+            >
+              <option value="" disabled>Set status…</option>
+              {STATUSES.filter(s => s !== "all").map(s => (
+                <option key={s} value={s}>{s.replace("_", " ")}</option>
+              ))}
+            </select>
+            <button
+              onClick={bulkDelete}
+              disabled={bulkBusy}
+              style={{
+                padding: "7px 14px",
+                background: "rgba(239,68,68,0.1)",
+                border: "1px solid rgba(239,68,68,0.25)",
+                borderRadius: 8, color: "#FCA5A5",
+                fontSize: 12, fontWeight: 600, cursor: bulkBusy ? "not-allowed" : "pointer",
+                opacity: bulkBusy ? 0.5 : 1,
+              }}
+            >
+              Delete
+            </button>
+            <button
+              onClick={() => setSelected(new Set())}
+              disabled={bulkBusy}
+              style={{
+                padding: "7px 12px", background: "transparent",
+                border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8,
+                color: "rgba(255,255,255,0.5)", fontSize: 12, cursor: "pointer",
+              }}
+            >
+              Clear
+            </button>
+          </div>
+        )}
+
         {/* Empty state */}
         {filtered.length === 0 ? (
           <div style={{ background: "#111111", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: "60px 20px", textAlign: "center" }}>
@@ -625,6 +734,15 @@ export default function BookingsPage() {
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr>
+                    <th style={{ ...thStyle, width: 36, padding: "10px 0 10px 12px" }}>
+                      <input
+                        type="checkbox"
+                        checked={filtered.length > 0 && filtered.every(b => selected.has(b.id))}
+                        onChange={() => toggleSelectAll(filtered.map(b => b.id))}
+                        style={{ accentColor: "#F6BE00", cursor: "pointer" }}
+                        aria-label="Select all"
+                      />
+                    </th>
                     <th style={thStyle}>Customer</th>
                     <th style={thStyle}>Vehicle</th>
                     <th style={thStyle}>Services</th>
@@ -643,6 +761,16 @@ export default function BookingsPage() {
                           onClick={() => setExpandedId(expanded ? null : b.id)}
                           style={{ cursor: "pointer", transition: "background 0.15s" }}
                         >
+                          <td style={{ ...tdStyle, padding: "12px 0 12px 12px" }} onClick={(e) => { e.stopPropagation(); toggleSelect(b.id); }}>
+                            <input
+                              type="checkbox"
+                              checked={selected.has(b.id)}
+                              onChange={() => toggleSelect(b.id)}
+                              onClick={(e) => e.stopPropagation()}
+                              style={{ accentColor: "#F6BE00", cursor: "pointer" }}
+                              aria-label={`Select booking ${b.customer_name}`}
+                            />
+                          </td>
                           <td style={tdStyle}>
                             <span style={{ color: "#f5f5f5", fontWeight: 600, fontSize: 13 }}>{b.customer_name}</span>
                             <br />
@@ -664,7 +792,7 @@ export default function BookingsPage() {
                         </tr>
                         {expanded && (
                           <tr>
-                            <td colSpan={6} style={{ padding: 0 }}>
+                            <td colSpan={7} style={{ padding: 0 }}>
                               <ExpandedDetails b={b} />
                             </td>
                           </tr>

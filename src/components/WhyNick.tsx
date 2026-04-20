@@ -49,7 +49,7 @@ export default function WhyNick() {
 
           <div className="hidden lg:block reveal reveal-delay-2" style={{ position: "relative" }}>
             <div className="gallery-item" style={{ position: "relative", aspectRatio: "3/4", borderRadius: 16, overflow: "hidden", boxShadow: "0 0 30px rgba(246,190,0,0.08)" }}>
-              <Image src="/images/IMG_9536.PNG" alt="NICK store" fill className="object-cover" />
+              <Image src="/images/IMG_9536.webp" alt="NICK store" fill className="object-cover" />
             </div>
             <div className="gallery-item" style={{
               position: "absolute", bottom: -20,

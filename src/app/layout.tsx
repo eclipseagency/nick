@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     "PPF, paint protection film, ceramic coating, thermal insulation, car wrapping, Saudi Arabia, automotive protection, Riyadh, نيك, حماية السيارات, أفلام حماية, سيراميك, عزل حراري",
   alternates: {
     canonical: siteUrl,
-    languages: { "en": siteUrl, "ar": `${siteUrl}?lang=ar` },
+    languages: { "en": siteUrl, "ar": `${siteUrl}?lang=ar`, "x-default": siteUrl },
   },
   openGraph: {
     title: "NICK | High Performance Automotive Film",
