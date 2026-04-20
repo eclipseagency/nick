@@ -39,22 +39,34 @@ const bnplBase: React.CSSProperties = {
   textDecoration: "none", transition: "all 0.3s", border: "none",
 };
 
+const TIME_SLOTS = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
+
+const formatTimeLabel = (slot: string, isAr: boolean) => {
+  const [h] = slot.split(":");
+  const hour = parseInt(h, 10);
+  const ampm = hour >= 12 ? (isAr ? "م" : "PM") : (isAr ? "ص" : "AM");
+  const display = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+  return `${display}:00 ${ampm}`;
+};
+
 export default function BookingForm({
   t, isAr, isMobile, dir, cur, total, displayTotal,
   unavailableDates, minDate, bookingError, submitting, onSubmit,
 }: Props) {
   const [form, setForm] = useState<BookingFormData>({ name: "", phone: "", notes: "", preferredDate: "" });
+  const [preferredTime, setPreferredTime] = useState<string>("");
 
-  const formValid = form.name.trim().length >= 2 && isValidPhone(form.phone) && form.preferredDate.length > 0;
+  const formValid = form.name.trim().length >= 2 && isValidPhone(form.phone) && form.preferredDate.length > 0 && preferredTime.length > 0;
   const formMissing = !formValid ? [
     ...(form.name.trim().length < 2 ? [isAr ? "الاسم" : "Name"] : []),
     ...(!isValidPhone(form.phone) ? [isAr ? "رقم الجوال (مثال: 05xxxxxxxx)" : "Phone (e.g. 05xxxxxxxx)"] : []),
     ...(form.preferredDate.length === 0 ? [isAr ? "التاريخ" : "Date"] : []),
+    ...(preferredTime.length === 0 ? [isAr ? "الوقت" : "Time"] : []),
   ] : [];
 
   const submit = (method: PaymentMethod) => {
     if (!formValid || submitting) return;
-    onSubmit(form, method);
+    onSubmit({ ...form, preferredDate: `${form.preferredDate} ${preferredTime}` }, method);
   };
 
   return (
@@ -100,6 +112,34 @@ export default function BookingForm({
               {isAr ? "التواريخ المحجوزة معلّمة باللون الأحمر" : "Booked dates are marked in red"}
             </p>
           )}
+        </div>
+        {/* Preferred time slot */}
+        <div>
+          <label style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 6 }}>
+            {isAr ? "الوقت المفضل *" : "Preferred Time *"}
+          </label>
+          <select
+            value={preferredTime}
+            onChange={(e) => setPreferredTime(e.target.value)}
+            aria-label={isAr ? "الوقت المفضل" : "Preferred time"}
+            style={{
+              width: "100%", padding: "14px 18px", borderRadius: 12,
+              background: "#111", border: "1px solid rgba(255,255,255,0.08)",
+              color: preferredTime ? "#fff" : "rgba(255,255,255,0.35)",
+              fontSize: 15, outline: "none", cursor: "pointer",
+              appearance: "none",
+              backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23F6BE00' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>")`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: isAr ? "left 18px center" : "right 18px center",
+              paddingRight: isAr ? 18 : 44,
+              paddingLeft: isAr ? 44 : 18,
+            }}
+          >
+            <option value="" disabled>{isAr ? "اختر الوقت" : "Pick a time"}</option>
+            {TIME_SLOTS.map(slot => (
+              <option key={slot} value={slot}>{formatTimeLabel(slot, isAr)}</option>
+            ))}
+          </select>
         </div>
         <textarea id="booking-notes" aria-label={t.booking.notesPh} value={form.notes} onChange={e => setForm(f => ({...f, notes: e.target.value}))}
           placeholder={t.booking.notesPh} rows={3}
