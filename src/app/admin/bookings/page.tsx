@@ -544,13 +544,21 @@ export default function BookingsPage() {
       .catch(() => {});
   }, [fetchBookings]);
 
-  // Auto-refresh every 60s while tab is visible
+  // Faster polling — 15s when tab is visible (was 60s)
   useEffect(() => {
     if (!autoRefresh) return;
     const id = setInterval(() => {
       if (document.visibilityState === "visible") fetchBookings(true);
-    }, 60_000);
-    return () => clearInterval(id);
+    }, 15_000);
+    // Refresh immediately on tab regaining focus
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") fetchBookings(true);
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, [autoRefresh, fetchBookings]);
 
   // Tick to refresh "X seconds ago" label every 10s
@@ -733,47 +741,63 @@ export default function BookingsPage() {
         return `<div><strong>${getServiceName(svcId)}:</strong> ${addons}</div>`;
       }).join("");
     })();
+    const ar = b.locale === "ar";
+    const L = ar ? {
+      title: "أمر تشغيل", brand: "أمر تشغيل · nick.sa · +٩٦٦ ٥٤ ٣٠٠ ٠٠٥٥",
+      customer: "العميل", phone: "الهاتف", vehicle: "المركبة", size: "الفئة",
+      preferred: "الموعد المفضل", payment: "الدفع", services: "الخدمات",
+      addons: "الإضافات", notes: "ملاحظات العميل", pricing: "التسعير",
+      subtotal: "المجموع الفرعي", discount: "الخصم", total: "الإجمالي", sar: "ر.س",
+      customerSig: "توقيع العميل", techSig: "الفني",
+    } : {
+      title: "Work Order", brand: "Work Order · nick.sa · +966 54 300 0055",
+      customer: "Customer", phone: "Phone", vehicle: "Vehicle", size: "Size",
+      preferred: "Preferred Date", payment: "Payment", services: "Services",
+      addons: "Add-ons", notes: "Customer Notes", pricing: "Pricing",
+      subtotal: "Subtotal", discount: "Discount", total: "Total", sar: "SAR",
+      customerSig: "Customer Signature", techSig: "Technician",
+    };
     const html = `<!doctype html>
-<html><head><meta charset="utf-8"><title>Work Order ${b.confirmation_number || b.id.slice(0, 8)}</title>
+<html lang="${ar ? "ar" : "en"}" dir="${ar ? "rtl" : "ltr"}"><head><meta charset="utf-8"><title>${L.title} ${b.confirmation_number || b.id.slice(0, 8)}</title>
 <style>
-  *{box-sizing:border-box} body{font-family:Arial,sans-serif;max-width:720px;margin:30px auto;padding:0 20px;color:#000}
+  *{box-sizing:border-box} body{font-family:${ar ? "'Tajawal','Segoe UI'" : "Arial"},sans-serif;max-width:720px;margin:30px auto;padding:0 20px;color:#000}
   h1{font-size:24px;margin:0 0 6px;color:#000}
   .brand{font-size:14px;color:#888;margin-bottom:24px}
   .conf{display:inline-block;padding:8px 16px;background:#F6BE00;color:#000;border-radius:8px;font-weight:bold;font-size:18px;letter-spacing:.04em;margin-bottom:18px}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;border:1px solid #eee;padding:14px;border-radius:8px}
-  .label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+  .label{font-size:11px;color:#888;${ar ? "" : "text-transform:uppercase;"}letter-spacing:.06em;margin-bottom:3px}
   .val{font-size:14px;font-weight:600}
   .section{border-top:1px solid #eee;padding-top:14px;margin-top:14px}
-  .section h3{font-size:12px;text-transform:uppercase;color:#888;margin:0 0 8px;letter-spacing:.06em}
-  ul{margin:0;padding-left:20px}li{margin-bottom:4px;font-size:14px}
-  .total{font-size:24px;font-weight:bold;text-align:right;margin-top:14px;padding-top:14px;border-top:2px solid #000}
+  .section h3{font-size:12px;${ar ? "" : "text-transform:uppercase;"}color:#888;margin:0 0 8px;letter-spacing:.06em}
+  ul{margin:0;${ar ? "padding-right" : "padding-left"}:20px}li{margin-bottom:4px;font-size:14px}
+  .total{font-size:24px;font-weight:bold;text-align:${ar ? "left" : "right"};margin-top:14px;padding-top:14px;border-top:2px solid #000}
   .signbox{margin-top:30px;display:flex;gap:30px}
-  .sigline{flex:1;border-top:1px solid #000;padding-top:6px;font-size:11px;color:#888}
+  .sigline{flex:1;border-top:1px solid #000;padding-top:6px;font-size:11px;color:#888;text-align:center}
   @media print { body{margin:0} .noprint{display:none} }
 </style>
 </head><body>
   <h1>NICK Automotive Films</h1>
-  <div class="brand">Work Order · nick.sa · +966 54 300 0055</div>
+  <div class="brand">${L.brand}</div>
   <div class="conf">${b.confirmation_number || b.id.slice(0, 8).toUpperCase()}</div>
   <div class="grid">
-    <div><div class="label">Customer</div><div class="val">${b.customer_name}</div></div>
-    <div><div class="label">Phone</div><div class="val">${b.customer_phone}</div></div>
-    <div><div class="label">Vehicle</div><div class="val">${b.car_make || "—"}${b.car_year ? " · " + b.car_year : ""}${b.car_color ? " · " + b.car_color : ""}</div></div>
-    <div><div class="label">Size</div><div class="val" style="text-transform:capitalize">${b.car_size}</div></div>
-    <div><div class="label">Preferred Date</div><div class="val">${pref.date}${pref.time ? " · " + pref.time : ""}</div></div>
-    <div><div class="label">Payment</div><div class="val">${PAYMENT_LABELS[b.payment_method] || b.payment_method}</div></div>
+    <div><div class="label">${L.customer}</div><div class="val">${b.customer_name}</div></div>
+    <div><div class="label">${L.phone}</div><div class="val" dir="ltr">${b.customer_phone}</div></div>
+    <div><div class="label">${L.vehicle}</div><div class="val">${b.car_make || "—"}${b.car_year ? " · " + b.car_year : ""}${b.car_color ? " · " + b.car_color : ""}</div></div>
+    <div><div class="label">${L.size}</div><div class="val" style="text-transform:capitalize">${b.car_size}</div></div>
+    <div><div class="label">${L.preferred}</div><div class="val">${pref.date}${pref.time ? " · " + pref.time : ""}</div></div>
+    <div><div class="label">${L.payment}</div><div class="val">${PAYMENT_LABELS[b.payment_method] || b.payment_method}</div></div>
   </div>
-  ${svcList.length ? `<div class="section"><h3>Services (${svcList.length})</h3><ul>${svcList.map(s => `<li>${s}</li>`).join("")}</ul></div>` : ""}
-  ${addonsBlock ? `<div class="section"><h3>Add-ons</h3>${addonsBlock}</div>` : ""}
-  ${b.customer_notes ? `<div class="section"><h3>Customer Notes</h3>${b.customer_notes}</div>` : ""}
-  <div class="section"><h3>Pricing</h3>
-    <div>Subtotal: ${(b.subtotal || 0).toLocaleString()} SAR</div>
-    ${b.discount > 0 ? `<div>Discount: -${(b.discount).toLocaleString()} SAR</div>` : ""}
-    <div class="total">Total: ${(b.total || 0).toLocaleString()} SAR</div>
+  ${svcList.length ? `<div class="section"><h3>${L.services} (${svcList.length})</h3><ul>${svcList.map(s => `<li>${s}</li>`).join("")}</ul></div>` : ""}
+  ${addonsBlock ? `<div class="section"><h3>${L.addons}</h3>${addonsBlock}</div>` : ""}
+  ${b.customer_notes ? `<div class="section"><h3>${L.notes}</h3>${b.customer_notes}</div>` : ""}
+  <div class="section"><h3>${L.pricing}</h3>
+    <div>${L.subtotal}: ${(b.subtotal || 0).toLocaleString()} ${L.sar}</div>
+    ${b.discount > 0 ? `<div>${L.discount}: -${(b.discount).toLocaleString()} ${L.sar}</div>` : ""}
+    <div class="total">${L.total}: ${(b.total || 0).toLocaleString()} ${L.sar}</div>
   </div>
   <div class="signbox">
-    <div class="sigline">Customer Signature</div>
-    <div class="sigline">Technician</div>
+    <div class="sigline">${L.customerSig}</div>
+    <div class="sigline">${L.techSig}</div>
   </div>
   <script>window.onload=function(){window.print();}</script>
 </body></html>`;

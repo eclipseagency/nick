@@ -65,9 +65,17 @@ export default function Footer() {
         </div>
         <div style={{ marginTop: 40, paddingTop: 20, borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" as const, gap: 8 }}>
           <p style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }} suppressHydrationWarning>&copy; {year ?? ""} NICK. {t.footer.rights}</p>
-          <a href="https://eclipseagency.net" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.18)", fontSize: 11, textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e => (e.currentTarget.style.color = "rgba(246,190,0,0.5)")} onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.18)")}>
-            {isAr ? "تطوير Eclipse Agency" : "Built by Eclipse Agency"}
-          </a>
+          <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" as const }}>
+            <Link href="/privacy" style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, textDecoration: "none" }}>
+              {isAr ? "الخصوصية" : "Privacy"}
+            </Link>
+            <Link href="/terms" style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, textDecoration: "none" }}>
+              {isAr ? "الشروط" : "Terms"}
+            </Link>
+            <a href="https://eclipseagency.net" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.18)", fontSize: 11, textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e => (e.currentTarget.style.color = "rgba(246,190,0,0.5)")} onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.18)")}>
+              {isAr ? "تطوير Eclipse Agency" : "Built by Eclipse Agency"}
+            </a>
+          </div>
         </div>
       </div>
     </footer>

@@ -64,5 +64,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "yearly",
       priority: 0.3,
     },
+    {
+      url: `${siteUrl}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+      alternates: {
+        languages: { en: `${siteUrl}/privacy`, ar: `${siteUrl}/privacy?lang=ar` },
+      },
+    },
+    {
+      url: `${siteUrl}/terms`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+      alternates: {
+        languages: { en: `${siteUrl}/terms`, ar: `${siteUrl}/terms?lang=ar` },
+      },
+    },
   ];
 }
