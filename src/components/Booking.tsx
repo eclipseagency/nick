@@ -595,8 +595,34 @@ export default function Booking() {
                   >
                     {/* Image */}
                     <div style={{ position: "relative", height: hasCoverageImg(s) ? "auto" : 140, aspectRatio: hasCoverageImg(s) ? "1" : undefined, background: "#0a0a0a" }}>
-                      {hasAnyImg(s) && <Image src={svcImg(s)} alt={s.name} fill className={hasCoverageImg(s) ? "object-contain" : "object-cover"} />}
-                      <div style={{ position: "absolute", inset: 0, background: hasCoverageImg(s) ? "linear-gradient(to top, #111 0%, transparent 40%)" : "linear-gradient(to top, #111 0%, rgba(17,17,17,0.3) 50%, transparent 100%)" }} />
+                      {s.id === "tint-plus" && size === "small" ? (
+                        <div style={{
+                          position: "absolute", inset: 0,
+                          display: "flex", flexDirection: "column", justifyContent: "center",
+                          padding: "22px 26px", gap: 10,
+                          background: "#0a0a0a",
+                          direction: "rtl",
+                        }}>
+                          {[
+                            d("التخفيف الفعال للحرارة", "Effective heat reduction"),
+                            d("تقليص وهج الشمس ومصادر الضوء الضارة", "Reduces sun glare and harmful light"),
+                            d("تحسين المظهر العام للمركبة", "Enhances vehicle appearance"),
+                            d("حماية من تناثر الزجاج في حال حدوث كسر", "Protection from glass shattering"),
+                            d("يتوفر بدرجات وألوان مختلفة", "Available in various shades and colors"),
+                            d("ضمان ١٠ سنوات", "10-year warranty"),
+                          ].map((feat, i) => (
+                            <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                              <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#F6BE00", flexShrink: 0, boxShadow: "0 0 8px rgba(246,190,0,0.5)" }} />
+                              <span style={{ color: "rgba(255,255,255,0.92)", fontSize: 13, lineHeight: 1.35, fontWeight: 500 }}>{feat}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <>
+                          {hasAnyImg(s) && <Image src={svcImg(s)} alt={s.name} fill className={hasCoverageImg(s) ? "object-contain" : "object-cover"} />}
+                          <div style={{ position: "absolute", inset: 0, background: hasCoverageImg(s) ? "linear-gradient(to top, #111 0%, transparent 40%)" : "linear-gradient(to top, #111 0%, rgba(17,17,17,0.3) 50%, transparent 100%)" }} />
+                        </>
+                      )}
                       {/* Popular badge */}
                       {s.popular && (
                         <span style={{
