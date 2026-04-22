@@ -31,7 +31,7 @@ export default function WarrantyPage() {
         "Every 6 months based on the consumer invoice"
       ),
       conditions: [
-        d("على التلف الناتج عن الحوادث أو سوء الاستخدام.", "Damage caused by accidents or misuse."),
+        d("التلف الناتج عن الحوادث أو سوء الاستخدام.", "Damage caused by accidents or misuse."),
         d("تلف الغسيل الذي يسبب الخدوش بسبب عدم استخدام فوط المايكروفايبر أو عدم نظافتها.", "Wash damage causing scratches due to not using microfiber towels or using dirty ones."),
         d("أضرار الغبار أثناء السفر (السافي) أو أثار الأحجار المتطايرة في الطريق.", "Dust damage during travel (sandstorms) or flying stone impacts on the road."),
         d("استخدام مواد كيميائية تسبب تلف المنتج وعدم الإلتزام بالصيانة الدورية.", "Using chemicals that damage the product and not adhering to periodic maintenance."),
@@ -56,8 +56,8 @@ export default function WarrantyPage() {
         "The protection film is manufactured with self-healing technology, so it does not require periodic maintenance. Maintenance is available upon request, with semi-annual servicing being preferred."
       ),
       conditions: [
-        d("لا يسري هذا الضمان على التلف الناتج عن حطام الطريق أو الرمال المتطايرة أو المركبات الأخرى.", "This warranty does not cover damage from road debris, other vehicles, or flying sand."),
-        d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام و انفصال الطبقات أو الفقاعات الناتجة عن الغسيل.", "This warranty does not cover damage from accidents, misuse, layer separation, or bubbles resulting from washing."),
+        d("التلف الناتج عن حطام الطريق أو الرمال المتطايرة أو المركبات الأخرى.", "Damage from road debris, other vehicles, or flying sand."),
+        d("التلف الناتج عن الحوادث أو سوء الاستخدام أو انفصال الطبقات أو الفقاعات الناتجة عن الغسيل.", "Damage from accidents, misuse, layer separation, or bubbles resulting from washing."),
         d("تضمن NICK عدم حدوث أي ضرر للطلاء عند تركيب أو إزالة أفلام حماية NICK، ويستثنى من ذلك الأجزاء المعاد طلائها.", "NICK guarantees no damage to the paint upon installation or removal of NICK protection films, excluding repainted parts."),
         d("يسري الضمان حصراً في حال التركيب في مراكز NICK المعتمدة للعناية بالسيارات وفقاً لإجراءات التركيب الموصي بها . ويمكن التنازل عن هذا الضمان. شريطة أن يمتلك المالك مستندات الضمان الأصلية.", "The warranty applies exclusively when installation is performed at NICK authorized care centers following recommended installation procedures. The warranty is transferable, provided the owner possesses the original warranty documents."),
         d("ضمان أفلام الحماية لمدة 10 سنوات أو حتى 300,000 كم أيهما أسبق.", "Protection film warranty for 10 years or up to 300,000 km, whichever comes first."),
