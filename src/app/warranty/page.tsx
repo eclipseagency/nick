@@ -31,7 +31,7 @@ export default function WarrantyPage() {
         "Every 6 months based on the consumer invoice"
       ),
       conditions: [
-        d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام.", "This warranty does not cover damage caused by accidents or misuse."),
+        d("على التلف الناتج عن الحوادث أو سوء الاستخدام.", "Damage caused by accidents or misuse."),
         d("تلف الغسيل الذي يسبب الخدوش بسبب عدم استخدام فوط المايكروفايبر أو عدم نظافتها.", "Wash damage causing scratches due to not using microfiber towels or using dirty ones."),
         d("أضرار الغبار أثناء السفر (السافي) أو أثار الأحجار المتطايرة في الطريق.", "Dust damage during travel (sandstorms) or flying stone impacts on the road."),
         d("استخدام مواد كيميائية تسبب تلف المنتج وعدم الإلتزام بالصيانة الدورية.", "Using chemicals that damage the product and not adhering to periodic maintenance."),
