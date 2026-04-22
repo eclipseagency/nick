@@ -10,6 +10,7 @@ export default function WarrantyPage() {
   const { t, locale } = useLanguage();
   const ref = useReveal([locale]);
   const isAr = locale === "ar";
+  const dir = isAr ? "rtl" : "ltr";
   const fontDisplay = isAr ? "var(--font-ar)" : "var(--font-display)";
   const d = (ar: string, en: string) => (isAr ? ar : en);
 
