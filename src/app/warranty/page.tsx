@@ -75,6 +75,8 @@ export default function WarrantyPage() {
         { name: d("عازل حراري N", "Thermal Tint N"), warranty: d("١٠ سنوات", "10 years") },
         { name: d("عازل حراري K", "Thermal Tint K"), warranty: d("٨ سنوات", "8 years") },
         { name: d("عازل حراري MK", "Thermal Tint MK"), warranty: d("٥ سنوات", "5 years") },
+        { name: d("عازل حراري أمامي Max", "Front Thermal Tint Max"), warranty: d("١٠ سنوات", "10 years") },
+        { name: d("عازل حراري أمامي Pro", "Front Thermal Tint Pro"), warranty: d("١٠ سنوات", "10 years") },
       ],
       maintenance: d(
         "لا يتطلب صيانة دورية\nويمكن طلب الصيانة عند الحاجة",
