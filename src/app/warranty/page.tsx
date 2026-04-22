@@ -26,8 +26,8 @@ export default function WarrantyPage() {
         { name: d("نانو سيراميك زجاج كامل", "Full Glass Nano Ceramic"), warranty: d("سنة واحدة", "1 year") },
       ],
       maintenance: d(
-        "على حسب فاتورة المستهلك يتم تحديد مدة الضمان",
-        "Warranty duration determined based on the consumer invoice"
+        "كل 6 شهور على حسب فاتورة المستهلك",
+        "Every 6 months based on the consumer invoice"
       ),
       conditions: [
         d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام.", "This warranty does not cover damage caused by accidents or misuse."),
