@@ -55,17 +55,18 @@ export default function WarrantyPage() {
         "The protection film is manufactured with self-healing technology, so it does not require periodic maintenance. Maintenance is available upon request, with semi-annual servicing being preferred."
       ),
       conditions: [
-        d("لا يسري هذا الضمان على التلف الناتج عن حطام الطريق والمركبات الأخرى و في حالة حدوث الضرر البيئي أو العضوي أو التلوث أو فضلات الطيور أو المواد الكيميائية.", "This warranty does not cover damage from road debris, other vehicles, environmental or organic damage, pollution, bird droppings, or chemical substances."),
+        d("لا يسري هذا الضمان على التلف الناتج عن حطام الطريق أو الرمال المتطايرة أو المركبات الأخرى.", "This warranty does not cover damage from road debris, other vehicles, or flying sand."),
         d("لا يسري هذا الضمان على التلف الناتج عن الحوادث أو سوء الاستخدام و انفصال الطبقات أو الفقاعات الناتجة عن الغسيل.", "This warranty does not cover damage from accidents, misuse, layer separation, or bubbles resulting from washing."),
         d("تضمن NICK عدم حدوث أي ضرر للطلاء عند تركيب أو إزالة أفلام حماية NICK، ويستثنى من ذلك الأجزاء المعاد طلائها.", "NICK guarantees no damage to the paint upon installation or removal of NICK protection films, excluding repainted parts."),
         d("يسري الضمان حصراً في حال التركيب في مراكز NICK المعتمدة للعناية بالسيارات وفقاً لإجراءات التركيب الموصي بها . ويمكن التنازل عن هذا الضمان. شريطة أن يمتلك المالك مستندات الضمان الأصلية.", "The warranty applies exclusively when installation is performed at NICK authorized care centers following recommended installation procedures. The warranty is transferable, provided the owner possesses the original warranty documents."),
-        d("ضمان أفلام الحماية لمدة 10 سنوات أو حتى 400,000 كم أيهما أسبق.", "Protection film warranty for 10 years or up to 400,000 km, whichever comes first."),
+        d("ضمان أفلام الحماية لمدة 10 سنوات أو حتى 300,000 كم أيهما أسبق.", "Protection film warranty for 10 years or up to 300,000 km, whichever comes first."),
         d("عدم غسيل السيارة بعد التركيب لمدة لا تقل عن 7 أيام من التركيب.", "Do not wash the car for at least 7 days after installation."),
         d("الفلم يخضع للمعالجة الذاتية في فترة 15 يوم على الأقل.", "The film undergoes self-healing within a period of at least 15 days."),
       ],
       qualityTips: [
         d("يرجى عدم السفر بالسيارة مباشرة بعد التركيب.", "Please do not travel with the car immediately after installation."),
         d("عدم غسيل السيارة لمدة لا تقل عن 7 أيام من التركيب.", "Do not wash the car for at least 7 days after installation."),
+        d("الابتعاد أثناء الغسيل بالضغط العالي عن أطراف فيلم الحماية المحيطة بالأربع كفرات (عجلات المركبة).", "Keep distance during high-pressure washing from the edges of the protection film surrounding the four wheel arches."),
       ],
     },
     {
