@@ -245,7 +245,14 @@ export default function WarrantyPage() {
                     <p style={{ color: gold, fontWeight: 700, fontSize: 13, marginBottom: 10, fontFamily: fontDisplay }}>
                       {d("الشروط والأحكام", "Terms & Conditions")}
                     </p>
-                    {group.conditions.map((c, i) => (
+                    {/* First condition as standalone line */}
+                    {group.conditions.length > 0 && (
+                      <p style={{ color: "rgba(255,255,255,0.65)", fontSize: 13, lineHeight: 1.7, marginBottom: 8 }}>
+                        {group.conditions[0]}
+                      </p>
+                    )}
+                    {/* Remaining conditions as bullet points */}
+                    {group.conditions.slice(1).map((c, i) => (
                       <p key={i} style={{ color: "rgba(255,255,255,0.65)", fontSize: 13, lineHeight: 1.7, margin: i > 0 ? "8px 0 0" : 0, display: "flex", gap: 8 }}>
                         <span style={{ color: gold, flexShrink: 0 }}>&#x2022;</span>
                         <span>{c}</span>
