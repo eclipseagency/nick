@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NICK — عرض سعر — النظام الرقمي المتكامل</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+/* ====== RESET & BASE ====== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: #020202;
+  color: #f5f5f5;
+  font-family: 'Tajawal', sans-serif;
+  direction: rtl;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(rgba(246,190,0,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(246,190,0,0.015) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ====== VARIABLES ====== */
+:root {
+  --gold: #F6BE00;
+  --gold-dark: #D4A300;
+  --gold-light: #FFD54F;
+  --bg: #050505;
+  --bg-alt: #0a0a0a;
+  --bg-card: #111111;
+  --bg-elevated: #161616;
+  --text: #f5f5f5;
+  --text-dim: rgba(255,255,255,0.55);
+  --text-muted: rgba(255,255,255,0.3);
+  --border: rgba(255,255,255,0.06);
+  --border-gold: rgba(246,190,0,0.2);
+  --glow: rgba(246,190,0,0.08);
+  --r-sm: 8px;
+  --r: 12px;
+  --r-lg: 16px;
+  --ppf: #F6BE00;
+  --tint: #4A9EFF;
+  --ceramic: #34D399;
+  --wrap: #A855F7;
+  --s-wait: #6B7280;
+  --s-work: #F59E0B;
+  --s-check: #3B82F6;
+  --s-ready: #10B981;
+  --s-done: #8B5CF6;
+}
+
+/* ====== PROPOSAL STYLES ====== */
+
+/* Cover */
+.cover {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+}
+.cover::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 900px;
+  background: radial-gradient(ellipse at center, rgba(246,190,0,0.07) 0%, transparent 55%);
+  pointer-events: none;
+}
+.cover-tag {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  border: 1px solid var(--border-gold);
+  background: var(--glow);
+  padding: 8px 24px;
+  border-radius: 100px;
+  margin-bottom: 48px;
+}
+.cover-logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(100px, 14vw, 160px);
+  font-weight: 700;
+  background: linear-gradient(135deg, #F6BE00 0%, #FFD54F 40%, #D4A300 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 24px;
+  direction: ltr;
+}
+.cover-title {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 12px;
+  max-width: 600px;
+}
+.cover-desc {
+  font-size: 15px;
+  color: var(--text-dim);
+  max-width: 440px;
+  line-height: 1.8;
+  margin-bottom: 56px;
+}
+.cover-agency {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  direction: ltr;
+}
+.gold-line {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 32px auto 0;
+}
+
+/* Sections */
+.ps {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 80px 32px;
+  position: relative;
+  z-index: 1;
+}
+.ps-wide {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 32px;
+  position: relative;
+  z-index: 1;
+}
+.ps-full {
+  position: relative;
+  z-index: 1;
+  padding: 80px 32px;
+  background: rgba(246,190,0,0.015);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.ps-full-inner {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+/* Section Headers */
+.sh {
+  margin-bottom: 36px;
+}
+.sh-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sh-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-gold);
+}
+.sh h2 {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+.sh p {
+  font-size: 16px;
+  color: var(--text-dim);
+  line-height: 1.8;
+  max-width: 700px;
+}
+
+/* Text */
+.pt { font-size: 16px; color: var(--text-dim); line-height: 1.9; margin-bottom: 20px; }
+.pt strong { color: var(--text); font-weight: 700; }
+.pt-highlight {
+  color: var(--gold);
+  font-weight: 800;
+  font-size: 17px;
+}
+
+/* Quote Block */
+.quote {
+  padding: 20px 28px;
+  border-right: 3px solid var(--gold);
+  background: var(--glow);
+  border-radius: 0 var(--r) var(--r) 0;
+  margin: 24px 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+/* Pipeline Flow */
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  direction: ltr;
+  padding: 28px 0;
+}
+.flow-item {
+  padding: 8px 16px;
+  border-radius: 100px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+.flow-arrow {
+  color: var(--gold);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Scope Cards */
+.scope-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.scope-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 28px;
+  transition: border-color 0.3s;
+}
+.scope-card:hover { border-color: var(--border-gold); }
+.scope-card.highlighted {
+  border-color: var(--border-gold);
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(246,190,0,0.03) 100%);
+}
+.scope-card.full-width {
+  grid-column: 1 / -1;
+}
+.sc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.sc-title { font-size: 17px; font-weight: 800; color: var(--text); }
+.sc-tag {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  border: 1px solid var(--border-gold);
+  background: var(--glow);
+  padding: 4px 10px;
+  border-radius: 100px;
+  direction: ltr;
+}
+.sc-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sc-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.sc-list li::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+.sc-list li strong { color: var(--text); }
+.sc-sub {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--gold);
+  margin: 14px 0 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* Expansion Section */
+.expansion-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* Pricing */
+.pricing-hero {
+  text-align: center;
+  padding: 48px 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.pricing-hero::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(246,190,0,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.pricing-hero.option2 {
+  border-color: var(--border-gold);
+  background: linear-gradient(180deg, var(--bg-card) 0%, rgba(246,190,0,0.03) 100%);
+}
+.price-amount {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(48px, 8vw, 72px);
+  font-weight: 700;
+  color: var(--gold);
+  direction: ltr;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.price-amount span { font-size: 0.45em; color: var(--text-muted); vertical-align: super; }
+.price-label {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.price-detail {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* Phases */
+.phase {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 32px;
+  margin-bottom: 16px;
+}
+.phase-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+.phase-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--gold);
+  opacity: 0.25;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.phase-info { flex: 1; }
+.phase-name { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.phase-dur {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold);
+  background: var(--glow);
+  border: 1px solid var(--border-gold);
+  padding: 3px 12px;
+  border-radius: 100px;
+  display: inline-block;
+}
+.phase-desc {
+  font-size: 14px;
+  color: var(--text-dim);
+  font-style: italic;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.phase-features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px 20px;
+}
+.phase-feat {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+.phase-feat::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+
+/* Pros / Cons */
+.pros-cons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 24px;
+}
+.pc-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px;
+}
+.pc-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pc-title.pro { color: var(--s-ready); }
+.pc-title.con { color: var(--text-muted); }
+.pc-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pc-list li {
+  font-size: 13.5px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+.pc-list.pro li::before { content: '\2713'; color: var(--s-ready); font-weight: 800; flex-shrink: 0; }
+.pc-list.con li::before { content: '\2022'; color: var(--text-muted); flex-shrink: 0; }
+
+/* Option 2 Features */
+.o2-features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.o2-feat {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+.o2-feat::before {
+  content: '\2713';
+  color: var(--gold);
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* Comparison Table */
+.cmp-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.cmp-table th {
+  background: var(--glow);
+  border-bottom: 1px solid var(--border-gold);
+  padding: 16px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+  text-align: center;
+}
+.cmp-table th:first-child { text-align: right; color: var(--text-muted); }
+.cmp-table td {
+  padding: 14px 20px;
+  font-size: 14px;
+  color: var(--text-dim);
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.cmp-table td:first-child {
+  text-align: right;
+  font-weight: 600;
+  color: var(--text);
+}
+.cmp-table tr:last-child td { border-bottom: none; }
+.cmp-table tbody tr:hover { background: rgba(255,255,255,0.015); }
+
+/* External Costs */
+.costs-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+.cost-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 13.5px;
+}
+.cost-item .cost-label { color: var(--text-dim); }
+.cost-item .cost-val { color: var(--text-muted); font-family: 'Inter', sans-serif; direction: ltr; }
+
+/* Decision */
+.decision-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.decision-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 28px;
+}
+.decision-card.recommended { border-color: var(--border-gold); }
+.dc-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+.dc-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.dc-list li {
+  font-size: 13.5px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+.dc-list li::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+.dc-result {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--gold);
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* Closing */
+.closing {
+  text-align: center;
+  padding: 100px 32px;
+  position: relative;
+  z-index: 1;
+}
+.closing-check {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 48px;
+}
+.closing-item {
+  padding: 10px 20px;
+  border-radius: 100px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text-dim);
+}
+.closing-statement {
+  font-size: 17px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  line-height: 1.7;
+}
+.closing-bold {
+  font-size: clamp(22px, 3.5vw, 30px);
+  font-weight: 800;
+  background: linear-gradient(135deg, #F6BE00 0%, #FFD54F 50%, #D4A300 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 48px;
+  line-height: 1.4;
+}
+.closing-brand {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-dim);
+  direction: ltr;
+  margin-bottom: 4px;
+}
+.closing-url {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--gold);
+  direction: ltr;
+  text-decoration: none;
+}
+
+/* Section Separator */
+.sep {
+  text-align: center;
+  padding: 80px 32px;
+  position: relative;
+  z-index: 1;
+}
+.sep h2 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.sep p {
+  font-size: 15px;
+  color: var(--text-dim);
+}
+
+/* Horizontal Divider */
+.hr {
+  max-width: 880px;
+  margin: 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-gold), transparent);
+  position: relative;
+  z-index: 1;
+}
+
+/* ====== SCREEN MOCKUP STYLES ====== */
+.screen-section {
+  position: relative;
+  z-index: 1;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+.screen-label {
+  text-align: center;
+  padding: 60px 0 32px;
+}
+.screen-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  direction: ltr;
+}
+.screen-label h2 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+.screen-label p { font-size: 15px; color: var(--text-dim); }
+
+/* Browser Frame */
+.browser {
+  background: #0d0d0d;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(246,190,0,0.04);
+}
+.browser-bar {
+  background: #1a1a1a;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  direction: ltr;
+}
+.dots { display: flex; gap: 7px; }
+.dot { width: 11px; height: 11px; border-radius: 50%; }
+.dot-r { background: #ff5f57; }
+.dot-y { background: #ffbd2e; }
+.dot-g { background: #28c840; }
+.url-bar {
+  flex: 1;
+  margin: 0 12px;
+  background: rgba(255,255,255,0.05);
+  padding: 7px 16px;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.35);
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* App Layout */
+.app { display: flex; direction: rtl; min-height: 700px; }
+
+/* Sidebar */
+.sb {
+  width: 220px;
+  min-width: 220px;
+  background: var(--bg-alt);
+  border-left: 1px solid var(--border);
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+}
+.sb-logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold);
+  padding: 8px 24px 28px;
+  letter-spacing: -0.02em;
+  direction: ltr;
+  text-align: right;
+}
+.sb nav { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-right: 3px solid transparent;
+  transition: all 0.2s;
+}
+.sb-item:hover { color: var(--text); background: rgba(255,255,255,0.02); }
+.sb-item.active {
+  color: var(--gold);
+  background: var(--glow);
+  border-right-color: var(--gold);
+  font-weight: 700;
+}
+.sb-dot {
+  width: 8px; height: 8px; border-radius: 3px;
+  background: rgba(255,255,255,0.1); flex-shrink: 0;
+}
+.sb-item.active .sb-dot { background: var(--gold); }
+.sb-branch {
+  margin-top: auto;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sb-branch-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--s-ready); }
+
+/* Main */
+.main { flex: 1; background: var(--bg); padding: 24px 28px; min-width: 0; }
+
+/* Topbar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 16px;
+}
+.topbar-title { font-size: 22px; font-weight: 800; }
+.topbar-right { display: flex; align-items: center; gap: 16px; direction: ltr; }
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px 14px;
+  min-width: 200px;
+}
+.search-box span { color: var(--text-muted); font-size: 13px; }
+.notif {
+  position: relative;
+  width: 36px; height: 36px;
+  border-radius: var(--r-sm);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 16px;
+}
+.notif-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 7px; height: 7px; border-radius: 50%; background: #ef4444;
+}
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 6px 12px 6px 8px;
+}
+.user-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px; font-weight: 700; color: #000;
+  font-family: 'Tajawal', sans-serif;
+}
+.user-pill span { font-size: 13px; color: var(--text-dim); }
+
+/* ====== COMMON COMPONENTS ====== */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.kpi {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.kpi::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 80px; height: 80px;
+  background: radial-gradient(circle at top right, rgba(246,190,0,0.06) 0%, transparent 70%);
+}
+.kpi-label { font-size: 12.5px; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
+.kpi-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px; font-weight: 700; color: var(--text);
+  direction: ltr; text-align: right; margin-bottom: 6px;
+}
+.kpi-trend { font-size: 12px; font-weight: 600; direction: ltr; display: inline-block; }
+.kpi-trend.up { color: var(--s-ready); }
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+}
+.card-title {
+  font-size: 14px; font-weight: 700; margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title .more { font-size: 12px; color: var(--gold); font-weight: 600; cursor: pointer; }
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th {
+  font-size: 11.5px; font-weight: 600; color: var(--text-muted);
+  text-align: right; padding: 10px 12px;
+  border-bottom: 1px solid var(--border); letter-spacing: 0.02em;
+}
+.tbl td {
+  font-size: 13px; padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  color: var(--text-dim);
+}
+.tbl tr:last-child td { border-bottom: none; }
+.tbl .car-name { color: var(--text); font-weight: 600; font-size: 13px; }
+.tbl .car-plate { font-family: 'Inter', sans-serif; font-size: 11px; color: var(--text-muted); direction: ltr; display: inline-block; }
+.badge { display: inline-flex; padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; }
+.badge-wait { background: rgba(107,114,128,0.15); color: #9CA3AF; }
+.badge-work { background: rgba(245,158,11,0.15); color: #FBBF24; }
+.badge-check { background: rgba(59,130,246,0.15); color: #60A5FA; }
+.badge-ready { background: rgba(16,185,129,0.15); color: #34D399; }
+.badge-ppf { background: rgba(246,190,0,0.12); color: var(--gold); }
+.badge-tint { background: rgba(74,158,255,0.12); color: var(--tint); }
+.badge-ceramic { background: rgba(52,211,153,0.12); color: var(--ceramic); }
+.btn-gold {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 24px;
+  background: var(--gold); color: #000; border: none;
+  border-radius: 10px; font-size: 13px; font-weight: 700;
+  font-family: 'Tajawal', sans-serif; cursor: pointer;
+}
+.btn-outline {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 24px;
+  background: transparent; color: var(--text);
+  border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 10px; font-size: 13px; font-weight: 600;
+  font-family: 'Tajawal', sans-serif; cursor: pointer;
+}
+
+/* Dashboard */
+.dash-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; }
+.bar-chart {
+  display: flex; align-items: flex-end; gap: 10px;
+  height: 150px; padding-bottom: 28px; position: relative;
+}
+.bar-chart::before {
+  content: ''; position: absolute; bottom: 28px; left: 0; right: 0;
+  height: 1px; background: var(--border);
+}
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; }
+.bar-fill {
+  width: 100%; max-width: 40px;
+  border-radius: 5px 5px 0 0;
+  background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+  position: relative;
+}
+.bar-fill::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+}
+.bar-val { font-family: 'Inter', sans-serif; font-size: 10px; color: var(--text-muted); direction: ltr; }
+.bar-day { position: absolute; bottom: -24px; font-size: 10.5px; color: var(--text-muted); white-space: nowrap; }
+.donut-wrap { display: flex; align-items: center; gap: 24px; }
+.donut {
+  width: 130px; height: 130px; border-radius: 50%;
+  background: conic-gradient(var(--ppf) 0deg 162deg, var(--tint) 162deg 252deg, var(--ceramic) 252deg 316.8deg, var(--wrap) 316.8deg 360deg);
+  position: relative; flex-shrink: 0;
+}
+.donut::after { content: ''; position: absolute; inset: 32px; background: var(--bg-card); border-radius: 50%; }
+.donut-legend { display: flex; flex-direction: column; gap: 10px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-dim); }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+/* Calendar */
+.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.cal-nav { display: flex; align-items: center; gap: 12px; }
+.cal-arrow {
+  width: 32px; height: 32px; border-radius: var(--r-sm);
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-dim); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 14px;
+}
+.cal-week { font-size: 15px; font-weight: 700; }
+.cal-grid {
+  display: grid; grid-template-columns: 55px repeat(6, 1fr);
+  border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
+}
+.cal-cell {
+  border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  min-height: 56px; padding: 4px; position: relative;
+}
+.cal-cell:first-child { border-left: none; }
+.cal-day-head {
+  background: rgba(255,255,255,0.02); padding: 10px 8px;
+  text-align: center; font-size: 12px; font-weight: 700;
+  color: var(--text-dim); border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.cal-day-head:first-child { border-left: none; }
+.cal-time {
+  font-family: 'Inter', sans-serif; font-size: 10.5px;
+  color: var(--text-muted); padding: 4px 6px; text-align: center;
+  direction: ltr; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+}
+.cal-booking {
+  border-radius: 6px; padding: 6px 8px; font-size: 11px;
+  font-weight: 600; line-height: 1.35; height: 100%;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.cal-booking.ppf { background: rgba(246,190,0,0.12); color: var(--gold); border-right: 3px solid var(--gold); }
+.cal-booking.tint { background: rgba(74,158,255,0.12); color: var(--tint); border-right: 3px solid var(--tint); }
+.cal-booking.ceramic { background: rgba(52,211,153,0.12); color: var(--ceramic); border-right: 3px solid var(--ceramic); }
+.cal-booking.wrap { background: rgba(168,85,247,0.12); color: var(--wrap); border-right: 3px solid var(--wrap); }
+.cal-booking small { font-weight: 400; opacity: 0.75; font-size: 10px; }
+
+/* Reception */
+.rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: block; }
+.form-input {
+  width: 100%; padding: 10px 14px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: var(--r-sm); color: var(--text);
+  font-size: 14px; font-family: 'Tajawal', sans-serif;
+}
+.form-input.filled { color: var(--text); }
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.photo-slot {
+  aspect-ratio: 4/3;
+  background: rgba(255,255,255,0.03); border: 1.5px dashed rgba(255,255,255,0.1);
+  border-radius: var(--r); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px; cursor: pointer;
+}
+.photo-slot:hover { border-color: var(--border-gold); background: var(--glow); }
+.photo-slot .cam { font-size: 22px; opacity: 0.25; }
+.photo-slot span { font-size: 10.5px; color: var(--text-muted); }
+.check-list { display: flex; flex-direction: column; gap: 8px; }
+.check-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(255,255,255,0.02); border-radius: var(--r-sm); font-size: 13px; color: var(--text-dim); }
+.check-box { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid rgba(255,255,255,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.check-box.checked { background: var(--gold); border-color: var(--gold); color: #000; font-size: 11px; font-weight: 800; }
+.sig-area { height: 100px; background: rgba(255,255,255,0.02); border: 1.5px dashed rgba(255,255,255,0.1); border-radius: var(--r); display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-muted); }
+
+/* Kanban */
+.kanban { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.kanban-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px; margin-bottom: 10px; border-radius: var(--r-sm); background: rgba(255,255,255,0.02); border: 1px solid var(--border); }
+.kanban-head-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.kanban-head span { font-size: 12.5px; font-weight: 700; flex: 1; }
+.kanban-head .count { font-family: 'Inter', sans-serif; font-size: 11px; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 2px 7px; border-radius: 100px; }
+.kanban-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 8px; }
+.kanban-card:hover { border-color: var(--border-gold); }
+.kc-plate { font-family: 'Inter', sans-serif; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; direction: ltr; text-align: right; }
+.kc-car { font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.kc-service { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
+.kc-meta { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
+.kc-tech { display: flex; align-items: center; gap: 6px; }
+.kc-tech-dot { width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,0.08); font-size: 9px; display: flex; align-items: center; justify-content: center; color: var(--text-dim); font-weight: 700; }
+.kc-time { font-family: 'Inter', sans-serif; direction: ltr; font-size: 11px; }
+.kc-progress { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+.kc-progress-fill { height: 100%; border-radius: 2px; background: var(--gold); }
+
+/* Invoice */
+.inv-doc { max-width: 680px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 40px; }
+.inv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+.inv-logo { font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700; color: var(--gold); direction: ltr; }
+.inv-info { text-align: left; direction: ltr; }
+.inv-info .inv-num { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); }
+.inv-info .inv-date { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.inv-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+.inv-party-label { font-size: 11px; font-weight: 600; color: var(--gold); margin-bottom: 8px; letter-spacing: 0.05em; }
+.inv-party-name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.inv-party-detail { font-size: 12.5px; color: var(--text-dim); line-height: 1.6; }
+.inv-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+.inv-table th { font-size: 11px; font-weight: 600; color: var(--text-muted); padding: 10px 12px; text-align: right; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border); }
+.inv-table th:last-child { text-align: left; direction: ltr; }
+.inv-table td { font-size: 13px; padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); color: var(--text-dim); }
+.inv-table td:last-child { text-align: left; direction: ltr; font-family: 'Inter', sans-serif; font-weight: 600; color: var(--text); }
+.inv-total-row { display: flex; justify-content: space-between; padding: 8px 12px; font-size: 13px; color: var(--text-dim); }
+.inv-total-row.final { background: var(--glow); border: 1px solid var(--border-gold); border-radius: var(--r-sm); margin-top: 8px; padding: 14px 16px; font-size: 16px; font-weight: 800; color: var(--gold); }
+.inv-total-row .val { font-family: 'Inter', sans-serif; direction: ltr; }
+.inv-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border); }
+.inv-qr { width: 90px; height: 90px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); text-align: center; line-height: 1.4; direction: ltr; }
+.inv-pay-method { font-size: 12px; color: var(--text-dim); margin-bottom: 4px; text-align: left; direction: ltr; }
+.inv-pay-status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 100px; background: rgba(16,185,129,0.12); color: var(--s-ready); font-size: 12px; font-weight: 700; }
+
+/* Barcode */
+.bc-layout { display: grid; grid-template-columns: 1fr 1.3fr; gap: 20px; }
+.bc-material { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 24px; }
+.bc-barcode-visual { height: 56px; margin-bottom: 16px; display: flex; align-items: center; gap: 2px; direction: ltr; }
+.bc-bar { height: 100%; background: var(--gold); border-radius: 1px; }
+.bc-roll { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; direction: ltr; text-align: right; }
+.bc-brand { font-size: 18px; font-weight: 800; color: var(--gold); margin-bottom: 12px; }
+.bc-details { display: flex; flex-direction: column; gap: 8px; }
+.bc-detail-row { display: flex; justify-content: space-between; font-size: 12.5px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.bc-detail-row .label { color: var(--text-muted); }
+.bc-detail-row .val { color: var(--text-dim); font-weight: 500; }
+.bc-status-badge { margin-top: 16px; padding: 12px 16px; border-radius: var(--r-sm); background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--s-ready); }
+.timeline { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 24px; }
+.timeline-title { font-size: 14px; font-weight: 700; margin-bottom: 20px; }
+.tl-items { position: relative; padding-right: 28px; }
+.tl-items::before { content: ''; position: absolute; right: 8px; top: 6px; bottom: 6px; width: 2px; background: rgba(246,190,0,0.15); border-radius: 1px; }
+.tl-item { position: relative; padding: 0 0 24px; }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-dot { position: absolute; right: -24px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: var(--gold); border: 3px solid var(--bg-card); z-index: 1; }
+.tl-location { font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.tl-detail { font-size: 12px; color: var(--text-dim); }
+.tl-date { font-size: 11px; color: var(--text-muted); margin-top: 2px; direction: ltr; display: inline-block; }
+.bc-warranty { margin-top: 16px; padding: 14px 16px; background: var(--glow); border: 1px solid var(--border-gold); border-radius: var(--r-sm); }
+.bc-warranty-label { font-size: 11px; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
+.bc-warranty-val { font-size: 15px; font-weight: 700; color: var(--text); }
+.bc-warranty-dates { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+
+/* Mobile */
+.phone {
+  width: 340px; background: #111; border-radius: 40px;
+  border: 3px solid rgba(255,255,255,0.12); padding: 14px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+}
+.phone-notch { width: 100px; height: 5px; background: rgba(255,255,255,0.15); border-radius: 3px; margin: 0 auto 12px; }
+.phone-screen { background: var(--bg); border-radius: 28px; overflow: hidden; min-height: 560px; }
+.wa-header { background: #111; padding: 16px 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+.wa-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 700; color: #000; }
+.wa-name { font-size: 14px; font-weight: 700; }
+.wa-subtitle { font-size: 11px; color: var(--text-muted); }
+.wa-body { padding: 18px; }
+.wa-bubble { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px 14px 4px 14px; padding: 14px 16px; margin-bottom: 12px; max-width: 92%; }
+.wa-bubble p { font-size: 13px; color: var(--text-dim); line-height: 1.6; margin-bottom: 6px; }
+.wa-bubble p:last-child { margin-bottom: 0; }
+.wa-bubble .order-id { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--gold); font-weight: 600; direction: ltr; display: inline-block; }
+.wa-time { font-size: 10px; color: var(--text-muted); text-align: left; direction: ltr; margin-top: 4px; }
+.wa-status-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.wa-status-item { display: flex; align-items: center; gap: 10px; font-size: 12.5px; padding: 4px 0; }
+.wa-status-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; flex-shrink: 0; }
+.wa-status-dot.done { background: rgba(16,185,129,0.15); color: var(--s-ready); }
+.wa-status-dot.current { background: rgba(246,190,0,0.15); color: var(--gold); animation: pulse-ring 2s infinite; }
+.wa-status-dot.pending { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+.wa-status-label.done { color: var(--s-ready); }
+.wa-status-label.current { color: var(--gold); font-weight: 700; }
+.wa-status-label.pending { color: var(--text-muted); }
+.wa-status-time { font-size: 10.5px; color: var(--text-muted); font-family: 'Inter', sans-serif; direction: ltr; }
+.wa-track-btn { display: block; width: 100%; padding: 12px; background: var(--gold); color: #000; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; font-family: 'Tajawal', sans-serif; text-align: center; margin-top: 16px; cursor: pointer; }
+.wa-eta { text-align: center; font-size: 12px; color: var(--text-dim); margin-top: 12px; padding: 10px; background: rgba(255,255,255,0.02); border-radius: var(--r-sm); }
+.wa-eta strong { color: var(--text); }
+
+/* Footer */
+.page-footer { text-align: center; padding: 60px 24px; position: relative; z-index: 1; }
+.page-footer p { font-size: 13px; color: var(--text-muted); }
+.page-footer a { color: var(--gold); text-decoration: none; font-weight: 600; }
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(246,190,0,0.3); }
+  70% { box-shadow: 0 0 0 8px rgba(246,190,0,0); }
+  100% { box-shadow: 0 0 0 0 rgba(246,190,0,0); }
+}
+
+/* ====== LIVE VERSION — no zoom ====== */
+
+/* ====== PRINT / PDF ====== */
+@media print {
+  body { zoom: 1 !important; overflow: hidden; }
+  * { max-width: 100% !important; box-sizing: border-box !important; }
+  .cover { min-height: auto; }
+  .ps, .ps-wide, .ps-full-inner { max-width: 100% !important; }
+  .screen-section { max-width: 100% !important; padding: 0 0 40px !important; }
+  .browser { max-width: 100% !important; }
+  .app { overflow: hidden; }
+  .kanban { grid-template-columns: repeat(5, 1fr); overflow: hidden; }
+  .scope-grid, .expansion-grid, .pros-cons, .decision-grid, .o2-features, .costs-list { grid-template-columns: 1fr 1fr; }
+  .phase-features { grid-template-columns: 1fr 1fr; }
+  img, svg { max-width: 100% !important; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============================= COVER ============================= -->
+<header class="cover">
+  <div class="cover-tag">عرض سعر</div>
+  <div class="cover-logo">NICK</div>
+  <h1 class="cover-title">تطوير نظام NICK الرقمي المتكامل</h1>
+  <p class="cover-desc">منصة تشغيل مركزية مخصصة بالكامل لعمليات حماية السيارات — من الحجز حتى التسليم والتوسع</p>
+  <div class="cover-agency">Eclipse Agency</div>
+  <div class="gold-line"></div>
+</header>
+
+<!-- ============================= نظرة استراتيجية ============================= -->
+<div class="hr"></div>
+<section class="ps">
+  <div class="sh">
+    <div class="sh-label">نظرة استراتيجية</div>
+    <h2>النظام الذي تستحقه NICK</h2>
+  </div>
+
+  <p class="pt">نقدّم لكم تطوير نظام رقمي متكامل مصمم خصيصاً لعمليات NICK، ليكون بديلاً فعلياً لأنظمة جاهزة مثل Odoo — لكن بدون قيود، وبتجربة مصممة بالكامل لطبيعة عملكم في <strong>حماية السيارات (PPF – Tint – Detailing)</strong>.</p>
+
+  <div class="quote">
+    هذا ليس نظام إدارة تقليدي…<br>
+    بل <span class="pt-highlight">منصة تشغيل مركزية + منصة توسّع</span> تربط بين كل عناصر التشغيل في نظام واحد سريع، واضح، وقابل للنمو.
+  </div>
+
+  <div class="flow">
+    <span class="flow-item">الحجز</span><span class="flow-arrow">&#8594;</span>
+    <span class="flow-item">التشغيل</span><span class="flow-arrow">&#8594;</span>
+    <span class="flow-item">الفنيين</span><span class="flow-arrow">&#8594;</span>
+    <span class="flow-item">المواد</span><span class="flow-arrow">&#8594;</span>
+    <span class="flow-item">الجودة</span><span class="flow-arrow">&#8594;</span>
+    <span class="flow-item">المبيعات</span><span class="flow-arrow">&#8594;</span>
+    <span class="flow-item">العملاء</span><span class="flow-arrow">&#8594;</span>
+    <span class="flow-item">الفروع</span><span class="flow-arrow">&#8594;</span>
+    <span class="flow-item">الشركاء</span>
+  </div>
+</section>
+
+<!-- ============================= نطاق النظام ============================= -->
+<div class="hr"></div>
+<section class="ps-wide">
+  <div class="sh">
+    <div class="sh-label">نطاق النظام</div>
+    <h2>ماذا يشمل النظام</h2>
+  </div>
+
+  <div class="scope-grid">
+    <!-- واجهة العميل -->
+    <div class="scope-card">
+      <div class="sc-header">
+        <span class="sc-title">واجهة العميل</span>
+        <span class="sc-tag">Frontend</span>
+      </div>
+      <ul class="sc-list">
+        <li>موقع احترافي بهوية NICK (أسود &times; أصفر)</li>
+        <li>نظام حجز أونلاين متكامل</li>
+        <li>دفع أونلاين مباشر + داخل الفرع</li>
+        <li>تتبع حالة السيارة عبر WhatsApp</li>
+        <li>تجربة استخدام سريعة ومهيئة للجوال</li>
+      </ul>
+    </div>
+
+    <!-- التشغيل الداخلي -->
+    <div class="scope-card">
+      <div class="sc-header">
+        <span class="sc-title">التشغيل الداخلي</span>
+        <span class="sc-tag">Operations</span>
+      </div>
+      <ul class="sc-list">
+        <li>لوحة تحكم لكل فرع (صلاحيات + إدارة كاملة)</li>
+        <li>جدول حجوزات تفاعلي أسبوعي (ملون + drag &amp; drop)</li>
+        <li>إشعارات فورية للفنيين</li>
+        <li>شاشة تشغيل للفني + شاشة استقبال</li>
+      </ul>
+      <div class="sc-sub">دورة استلام وتسليم السيارة</div>
+      <ul class="sc-list">
+        <li>فحص دخول + تصوير + ملاحظات + توقيع إلكتروني</li>
+      </ul>
+      <div class="sc-sub">حالات الخدمة</div>
+      <ul class="sc-list">
+        <li>قيد الانتظار &#8594; جاري العمل &#8594; جاهز &#8594; تم التسليم</li>
+      </ul>
+    </div>
+
+    <!-- المبيعات والمالية -->
+    <div class="scope-card">
+      <div class="sc-header">
+        <span class="sc-title">المبيعات والمالية</span>
+        <span class="sc-tag">Finance</span>
+      </div>
+      <ul class="sc-list">
+        <li>نظام فواتير مرتبط بالحجوزات</li>
+        <li>نظام مبيعات متكامل (Quote &#8594; Order &#8594; Invoice &#8594; Payment)</li>
+        <li>نقطة بيع (POS)</li>
+        <li>تقارير يومية (نقدي + بنوك + أداء الفروع)</li>
+      </ul>
+      <div class="sc-sub">طرق الدفع</div>
+      <ul class="sc-list">
+        <li>مدى &bull; تحويل بنكي &bull; STC Pay &bull; تمارا &bull; تابي</li>
+      </ul>
+    </div>
+
+    <!-- الأنظمة المتقدمة -->
+    <div class="scope-card">
+      <div class="sc-header">
+        <span class="sc-title">الأنظمة المتقدمة</span>
+        <span class="sc-tag">Advanced</span>
+      </div>
+      <ul class="sc-list">
+        <li>نظام ضمان إلكتروني</li>
+        <li>جدولة صيانة تلقائية</li>
+        <li>إدارة مخزون ومواد</li>
+        <li>متجر داخلي للفروع</li>
+      </ul>
+    </div>
+
+    <!-- نظام الباركود -->
+    <div class="scope-card highlighted full-width">
+      <div class="sc-header">
+        <span class="sc-title">نظام الباركود</span>
+        <span class="sc-tag">Core System</span>
+      </div>
+      <ul class="sc-list">
+        <li>تتبع مواد PPF من <strong>المصنع &#8594; الفرع &#8594; السيارة</strong></li>
+        <li>ربط كل مادة بالضمان</li>
+        <li>منع استخدام مواد غير معتمدة</li>
+        <li><strong>حوكمة كاملة على الجودة</strong></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= نظام التوسع ============================= -->
+<div class="ps-full">
+  <div class="ps-full-inner">
+    <div class="sh">
+      <div class="sh-label">نظام التوسع</div>
+      <h2>Franchise &amp; Distribution</h2>
+      <p>النظام مصمم لدعم نمو NICK إلى نموذج قابل للتوسع — فروع، فرانشايز، توزيع، وحوكمة.</p>
+    </div>
+
+    <div class="expansion-grid">
+      <div class="scope-card">
+        <div class="sc-header"><span class="sc-title">إدارة الفروع</span><span class="sc-tag">Multi-Branch</span></div>
+        <ul class="sc-list">
+          <li>عدد غير محدود من الفروع</li>
+          <li>لوحة مستقلة لكل فرع</li>
+          <li>تقارير منفصلة + مركزية</li>
+        </ul>
+      </div>
+
+      <div class="scope-card">
+        <div class="sc-header"><span class="sc-title">نظام الفرانشايز</span><span class="sc-tag">Franchise</span></div>
+        <ul class="sc-list">
+          <li>إضافة شركاء امتياز</li>
+          <li>تحديد صلاحيات لكل فرع</li>
+          <li>متابعة الأداء ومراقبة الجودة</li>
+          <li>فرض استخدام المواد المعتمدة</li>
+        </ul>
+      </div>
+
+      <div class="scope-card">
+        <div class="sc-header"><span class="sc-title">نظام توزيع المنتجات</span><span class="sc-tag">Distribution</span></div>
+        <ul class="sc-list">
+          <li>توزيع مواد PPF على الفروع</li>
+          <li>تتبع الشحنات ومراقبة الاستهلاك</li>
+          <li>طلب مواد داخلي</li>
+          <li>تقارير حركة المواد</li>
+        </ul>
+      </div>
+
+      <div class="scope-card">
+        <div class="sc-header"><span class="sc-title">الحوكمة والجودة</span><span class="sc-tag">Governance</span></div>
+        <ul class="sc-list">
+          <li>منع استخدام مواد خارجية</li>
+          <li>ربط كل خدمة بمادة حقيقية</li>
+          <li>تتبع كل عملية تركيب</li>
+          <li>تقارير جودة لكل فرع</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= الخيار الأول ============================= -->
+<section class="ps">
+  <div class="sh">
+    <div class="sh-label">الخيار الأول</div>
+    <h2>تنفيذ كامل (مرة واحدة)</h2>
+  </div>
+
+  <div class="pricing-hero">
+    <div class="price-amount">15,000<span>$</span></div>
+    <div class="price-label">تنفيذ كامل</div>
+    <div class="price-detail">المدة: 5 – 6 أشهر &nbsp;&bull;&nbsp; 3 مراحل &times; 5,000$</div>
+  </div>
+
+  <!-- Phase 1 -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-num">01</span>
+      <div class="phase-info">
+        <div class="phase-name">الإطلاق التشغيلي (MVP)</div>
+        <span class="phase-dur">شهرين</span>
+      </div>
+    </div>
+    <div class="phase-desc">تشغيل النظام واستقبال حجوزات مدفوعة</div>
+    <div class="phase-features">
+      <span class="phase-feat">الموقع + الهوية</span>
+      <span class="phase-feat">نظام الحجز</span>
+      <span class="phase-feat">ربط الدفع (أونلاين + داخل الفرع)</span>
+      <span class="phase-feat">لوحة تحكم الفروع</span>
+      <span class="phase-feat">جدول الحجوزات</span>
+      <span class="phase-feat">دورة استلام السيارة</span>
+      <span class="phase-feat">حالات التشغيل + إشعارات الفنيين</span>
+      <span class="phase-feat">شاشة الفني + الاستقبال</span>
+      <span class="phase-feat">تتبع WhatsApp</span>
+      <span class="phase-feat">نظام باركود أساسي</span>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-num">02</span>
+      <div class="phase-info">
+        <div class="phase-name">التحكم المالي والتشغيلي</div>
+        <span class="phase-dur">شهرين</span>
+      </div>
+    </div>
+    <div class="phase-desc">تحويل النظام لمركز إدارة كامل</div>
+    <div class="phase-features">
+      <span class="phase-feat">نظام الفواتير</span>
+      <span class="phase-feat">نظام المبيعات</span>
+      <span class="phase-feat">نقطة بيع (POS)</span>
+      <span class="phase-feat">إدارة المدفوعات</span>
+      <span class="phase-feat">تقارير متقدمة</span>
+      <span class="phase-feat">CRM</span>
+      <span class="phase-feat">دعم Multi-branch</span>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-num">03</span>
+      <div class="phase-info">
+        <div class="phase-name">التوسعة والحوكمة</div>
+        <span class="phase-dur">1 – 2 شهر</span>
+      </div>
+    </div>
+    <div class="phase-desc">رفع النظام إلى مستوى Enterprise</div>
+    <div class="phase-features">
+      <span class="phase-feat">الضمان الإلكتروني الكامل</span>
+      <span class="phase-feat">جدولة الصيانة</span>
+      <span class="phase-feat">إدارة المخزون</span>
+      <span class="phase-feat">متجر الفروع</span>
+      <span class="phase-feat">نظام الفرانشايز</span>
+      <span class="phase-feat">نظام التوزيع</span>
+      <span class="phase-feat">تقارير الجودة + Dashboard إداري</span>
+      <span class="phase-feat">اختبار وتسليم</span>
+    </div>
+  </div>
+
+  <div class="pros-cons">
+    <div class="pc-card">
+      <div class="pc-title pro">المميزات</div>
+      <ul class="pc-list pro">
+        <li>تكلفة أقل على المدى القصير</li>
+        <li>ملكية كاملة فور التسليم</li>
+        <li>تسليم واضح ومحدد المواصفات</li>
+      </ul>
+    </div>
+    <div class="pc-card">
+      <div class="pc-title con">يجب أخذها في الاعتبار</div>
+      <ul class="pc-list con">
+        <li>لا يوجد تطوير مستمر بعد التسليم</li>
+        <li>دعم فني محدود (30 يوم)</li>
+        <li>أي طلب تطوير إضافي يتم بتكلفة منفصلة</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= الخيار الثاني ============================= -->
+<div class="hr"></div>
+<section class="ps">
+  <div class="sh">
+    <div class="sh-label">الخيار الثاني</div>
+    <h2>شراكة تطوير وتشغيل مستمر</h2>
+  </div>
+
+  <div class="pricing-hero option2">
+    <div class="price-amount">1,500<span>$/شهر</span></div>
+    <div class="price-label">شراكة تطوير مستمر</div>
+    <div class="price-detail">الحد الأدنى: 12 شهر (سنة)</div>
+  </div>
+
+  <div class="o2-features">
+    <div class="o2-feat">تنفيذ النظام بالكامل</div>
+    <div class="o2-feat">تطوير مستمر للنظام</div>
+    <div class="o2-feat">صيانة وتحديثات دائمة</div>
+    <div class="o2-feat">دعم فني مباشر</div>
+    <div class="o2-feat">تحسين تجربة المستخدم</div>
+    <div class="o2-feat">إضافة ميزات حسب التشغيل</div>
+    <div class="o2-feat">طلبات تطوير إضافية بدون تكلفة</div>
+    <div class="o2-feat">إدارة السيرفرات والاستضافة</div>
+    <div class="o2-feat">تقارير أداء دورية</div>
+  </div>
+
+  <div class="quote" style="margin-top:28px">
+    هذا الخيار يقدّم استمرارية في التطوير ويجعل النظام يتكيّف مع التشغيل الفعلي ونمو الفروع — مع إمكانية طلب تعديلات وميزات إضافية في أي وقت بدون تكاليف إضافية
+  </div>
+
+  <div class="pros-cons">
+    <div class="pc-card">
+      <div class="pc-title pro">المميزات</div>
+      <ul class="pc-list pro">
+        <li>بدون دفعة كبيرة مقدمة</li>
+        <li>نظام قابل للتطوير المستمر</li>
+        <li>دعم تقني دائم</li>
+        <li>مرونة في إضافة الميزات بدون تكلفة إضافية</li>
+      </ul>
+    </div>
+    <div class="pc-card">
+      <div class="pc-title con">يجب أخذها في الاعتبار</div>
+      <ul class="pc-list con">
+        <li>تكلفة أعلى على المدى الطويل</li>
+        <li>التزام بمدة التعاقد (12 شهر)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= مقارنة ============================= -->
+<div class="hr"></div>
+<section class="ps">
+  <div class="sh">
+    <div class="sh-label">مقارنة</div>
+    <h2>مقارنة سريعة بين الخيارين</h2>
+  </div>
+
+  <table class="cmp-table">
+    <thead>
+      <tr>
+        <th>العنصر</th>
+        <th>تنفيذ كامل</th>
+        <th>شراكة شهرية</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>التكلفة</td>
+        <td style="direction:ltr">$15,000</td>
+        <td style="direction:ltr">$1,500/شهر</td>
+      </tr>
+      <tr>
+        <td>الصيانة</td>
+        <td>غير مشمولة</td>
+        <td style="color:var(--s-ready)">مشمولة</td>
+      </tr>
+      <tr>
+        <td>الدعم الفني</td>
+        <td>30 يوم فقط</td>
+        <td style="color:var(--s-ready)">مستمر</td>
+      </tr>
+      <tr>
+        <td>التطوير المستقبلي</td>
+        <td>منفصل ومدفوع</td>
+        <td style="color:var(--s-ready)">مستمر ومشمول بدون تكلفة</td>
+      </tr>
+      <tr>
+        <td>ملكية النظام</td>
+        <td style="color:var(--s-ready)">فورية</td>
+        <td>بعد انتهاء التعاقد</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="sh" style="margin-top:40px;margin-bottom:16px">
+    <div class="sh-label">التكاليف التشغيلية (خارجية)</div>
+  </div>
+  <div class="costs-list">
+    <div class="cost-item"><span class="cost-label">استضافة + قاعدة بيانات</span><span class="cost-val">200 – 400 SAR/mo</span></div>
+    <div class="cost-item"><span class="cost-label">بوابة دفع</span><span class="cost-val">200 – 500 SAR + commission</span></div>
+    <div class="cost-item"><span class="cost-label">تمارا / تابي / STC Pay</span><span class="cost-val">عمولات فقط</span></div>
+    <div class="cost-item"><span class="cost-label">الدومين</span><span class="cost-val">~100 SAR/year</span></div>
+  </div>
+</section>
+
+<!-- ============================= اختيار النموذج ============================= -->
+<div class="hr"></div>
+<section class="ps">
+  <div class="sh">
+    <div class="sh-label">اختيار النموذج المناسب</div>
+    <h2>أي نموذج يناسب NICK؟</h2>
+    <p>يعتمد اختيار النموذج على طريقة إدارة NICK للتقنية خلال المرحلة القادمة</p>
+  </div>
+
+  <div class="decision-grid">
+    <div class="decision-card">
+      <div class="dc-title">إذا كنتم تفضّلون:</div>
+      <ul class="dc-list">
+        <li>امتلاك النظام بالكامل من البداية</li>
+        <li>تنفيذ واضح بمواصفات محددة</li>
+        <li>عدم وجود التزام شهري طويل</li>
+      </ul>
+      <div class="dc-result">&#8592; الخيار الأول مناسب</div>
+    </div>
+
+    <div class="decision-card recommended">
+      <div class="dc-title">أما إذا كنتم تفضّلون:</div>
+      <ul class="dc-list">
+        <li>تطوير مستمر مع التشغيل</li>
+        <li>إضافة ميزات مع نمو الفروع</li>
+        <li>دعم تقني دائم</li>
+      </ul>
+      <div class="dc-result">&#8592; الخيار الثاني أكثر مرونة</div>
+    </div>
+  </div>
+
+  <div class="quote" style="text-align:center;border-right:none;border-radius:var(--r)">
+    كلا الخيارين يقدّم نفس الأساس التقني<br>
+    والفرق هو <strong>طريقة التطوير بعد الإطلاق</strong>
+  </div>
+</section>
+
+<!-- ============================= الخلاصة ============================= -->
+<div class="hr"></div>
+<div class="closing">
+  <div class="closing-check">
+    <span class="closing-item">نظام تشغيل متكامل</span>
+    <span class="closing-item">تحكم كامل في الجودة</span>
+    <span class="closing-item">منصة توسّع للفروع والفرانشايز</span>
+    <span class="closing-item">قابلية نمو مستقبلية</span>
+  </div>
+  <p class="closing-statement">نحن لا نبني نظام فقط…</p>
+  <p class="closing-bold">نحن نبني منصة تشغيل ونمو كاملة لـ NICK</p>
+  <div class="gold-line" style="margin-bottom:32px"></div>
+  <p class="closing-brand">Eclipse Agency</p>
+  <a class="closing-url" href="https://eclipseagency.net">eclipseagency.net</a>
+</div>
+
+<!-- ============================= PREVIEW DIVIDER ============================= -->
+<div class="hr" style="margin-top:40px"></div>
+<div class="sep">
+  <h2>معاينة واجهات النظام</h2>
+  <p>نماذج تفاعلية توضّح الشكل النهائي لأهم شاشات النظام</p>
+  <div class="gold-line"></div>
+</div>
+
+<!-- ==================== 01 DASHBOARD ==================== -->
+<section class="screen-section">
+  <div class="screen-label">
+    <div class="screen-num">01</div>
+    <h2>لوحة التحكم الرئيسية</h2>
+    <p>نظرة شاملة على أداء الفرع — الحجوزات، الإيرادات، وحالة الخدمات</p>
+  </div>
+  <div class="browser">
+    <div class="browser-bar">
+      <div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <div class="url-bar">nick.sa/dashboard</div>
+    </div>
+    <div class="app">
+      <aside class="sb">
+        <div class="sb-logo">NICK</div>
+        <nav>
+          <a class="sb-item active"><span class="sb-dot"></span>لوحة التحكم</a>
+          <a class="sb-item"><span class="sb-dot"></span>الحجوزات</a>
+          <a class="sb-item"><span class="sb-dot"></span>استلام المركبات</a>
+          <a class="sb-item"><span class="sb-dot"></span>حالة الخدمات</a>
+          <a class="sb-item"><span class="sb-dot"></span>الفواتير</a>
+          <a class="sb-item"><span class="sb-dot"></span>المبيعات</a>
+          <a class="sb-item"><span class="sb-dot"></span>العملاء</a>
+          <a class="sb-item"><span class="sb-dot"></span>المخزون</a>
+          <a class="sb-item"><span class="sb-dot"></span>تتبع المواد</a>
+          <a class="sb-item"><span class="sb-dot"></span>التقارير</a>
+        </nav>
+        <div class="sb-branch"><span class="sb-branch-dot"></span>فرع النرجس</div>
+      </aside>
+      <div class="main">
+        <div class="topbar">
+          <div class="topbar-title">لوحة التحكم</div>
+          <div class="topbar-right">
+            <div class="search-box"><span>&#9906;</span><span>بحث...</span></div>
+            <div class="notif">&#9883;<span class="notif-dot"></span></div>
+            <div class="user-pill"><div class="user-avatar">أح</div><span>أحمد</span></div>
+          </div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-label">حجوزات اليوم</div><div class="kpi-value">12</div><span class="kpi-trend up">&#9650; +3 عن أمس</span></div>
+          <div class="kpi"><div class="kpi-label">إيرادات اليوم</div><div class="kpi-value">34,750 <span style="font-size:14px;color:var(--text-muted)">ر.س</span></div><span class="kpi-trend up">&#9650; +12%</span></div>
+          <div class="kpi"><div class="kpi-label">خدمات جارية</div><div class="kpi-value">8</div><span class="kpi-trend" style="color:var(--tint)">3 PPF &middot; 3 تظليل &middot; 2 سيراميك</span></div>
+          <div class="kpi"><div class="kpi-label">بانتظار التسليم</div><div class="kpi-value">5</div><span class="kpi-trend" style="color:var(--s-ready)">2 جاهز الآن</span></div>
+        </div>
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card-title">إيرادات الأسبوع <span class="more" dir="ltr">SAR</span></div>
+            <div class="bar-chart">
+              <div class="bar-col"><span class="bar-val">28K</span><div class="bar-fill" style="height:62%"></div><span class="bar-day">السبت</span></div>
+              <div class="bar-col"><span class="bar-val">35K</span><div class="bar-fill" style="height:78%"></div><span class="bar-day">الأحد</span></div>
+              <div class="bar-col"><span class="bar-val">31K</span><div class="bar-fill" style="height:69%"></div><span class="bar-day">الإثنين</span></div>
+              <div class="bar-col"><span class="bar-val">42K</span><div class="bar-fill" style="height:93%"></div><span class="bar-day">الثلاثاء</span></div>
+              <div class="bar-col"><span class="bar-val">38K</span><div class="bar-fill" style="height:84%"></div><span class="bar-day">الأربعاء</span></div>
+              <div class="bar-col"><span class="bar-val">45K</span><div class="bar-fill" style="height:100%"></div><span class="bar-day">الخميس</span></div>
+              <div class="bar-col"><span class="bar-val">22K</span><div class="bar-fill" style="height:49%"></div><span class="bar-day">الجمعة</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">توزيع الخدمات</div>
+            <div class="donut-wrap">
+              <div class="donut"></div>
+              <div class="donut-legend">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--ppf)"></span>PPF حماية <span style="color:var(--text-muted);margin-right:auto;font-family:'Inter';direction:ltr">45%</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--tint)"></span>تظليل <span style="color:var(--text-muted);margin-right:auto;font-family:'Inter';direction:ltr">25%</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--ceramic)"></span>سيراميك <span style="color:var(--text-muted);margin-right:auto;font-family:'Inter';direction:ltr">18%</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--wrap)"></span>تغليف <span style="color:var(--text-muted);margin-right:auto;font-family:'Inter';direction:ltr">12%</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="card-title">آخر الحجوزات <span class="more">عرض الكل ←</span></div>
+          <table class="tbl">
+            <thead><tr><th>العميل</th><th>المركبة</th><th>الخدمة</th><th>الحالة</th><th>الموعد</th></tr></thead>
+            <tbody>
+              <tr><td><span class="car-name">محمد العتيبي</span></td><td><span class="car-name">GMC Yukon XL 2024</span><br><span class="car-plate">أ ب ح 1234</span></td><td><span class="badge badge-ppf">PPF كامل</span></td><td><span class="badge badge-work">جاري</span></td><td style="direction:ltr;text-align:right">10:00 AM</td></tr>
+              <tr><td><span class="car-name">خالد الشمري</span></td><td><span class="car-name">BMW X5 2023</span><br><span class="car-plate">ه و ن 5678</span></td><td><span class="badge badge-tint">تظليل نانو</span></td><td><span class="badge badge-wait">بالانتظار</span></td><td style="direction:ltr;text-align:right">11:30 AM</td></tr>
+              <tr><td><span class="car-name">فيصل الدوسري</span></td><td><span class="car-name">Lexus ES350 2024</span><br><span class="car-plate">د ع ك 9012</span></td><td><span class="badge badge-ceramic">سيراميك 9H</span></td><td><span class="badge badge-work">جاري</span></td><td style="direction:ltr;text-align:right">09:00 AM</td></tr>
+              <tr><td><span class="car-name">سلطان المطيري</span></td><td><span class="car-name">Range Rover Sport 2025</span><br><span class="car-plate">ر س ل 3456</span></td><td><span class="badge badge-ppf">PPF أمامي</span></td><td><span class="badge badge-ready">جاهز</span></td><td style="direction:ltr;text-align:right">08:00 AM</td></tr>
+              <tr><td><span class="car-name">نواف القحطاني</span></td><td><span class="car-name">Porsche Cayenne 2024</span><br><span class="car-plate">ط م ق 7890</span></td><td><span class="badge" style="background:rgba(168,85,247,0.12);color:var(--wrap)">تغيير لون</span></td><td><span class="badge badge-check">فحص</span></td><td style="direction:ltr;text-align:right">12:00 PM</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 02 CALENDAR ==================== -->
+<section class="screen-section">
+  <div class="screen-label"><div class="screen-num">02</div><h2>جدول الحجوزات الأسبوعي</h2><p>تنظيم وإدارة مواعيد العملاء بشكل تفاعلي مع تصنيف لوني حسب نوع الخدمة</p></div>
+  <div class="browser">
+    <div class="browser-bar"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-bar">nick.sa/dashboard/bookings</div></div>
+    <div class="app">
+      <aside class="sb"><div class="sb-logo">NICK</div><nav><a class="sb-item"><span class="sb-dot"></span>لوحة التحكم</a><a class="sb-item active"><span class="sb-dot"></span>الحجوزات</a><a class="sb-item"><span class="sb-dot"></span>استلام المركبات</a><a class="sb-item"><span class="sb-dot"></span>حالة الخدمات</a><a class="sb-item"><span class="sb-dot"></span>الفواتير</a><a class="sb-item"><span class="sb-dot"></span>المبيعات</a><a class="sb-item"><span class="sb-dot"></span>العملاء</a><a class="sb-item"><span class="sb-dot"></span>المخزون</a><a class="sb-item"><span class="sb-dot"></span>تتبع المواد</a><a class="sb-item"><span class="sb-dot"></span>التقارير</a></nav><div class="sb-branch"><span class="sb-branch-dot"></span>فرع النرجس</div></aside>
+      <div class="main">
+        <div class="topbar"><div class="topbar-title">الحجوزات</div><div class="topbar-right"><button class="btn-gold">+ حجز جديد</button><div class="user-pill"><div class="user-avatar">أح</div><span>أحمد</span></div></div></div>
+        <div class="cal-header"><div class="cal-nav"><button class="cal-arrow">&#8594;</button><span class="cal-week">١٢ – ١٧ أبريل ٢٠٢٦</span><button class="cal-arrow">&#8592;</button></div><div style="display:flex;gap:12px;align-items:center"><span class="badge badge-ppf" style="font-size:10px">PPF</span><span class="badge badge-tint" style="font-size:10px">تظليل</span><span class="badge badge-ceramic" style="font-size:10px">سيراميك</span><span class="badge" style="background:rgba(168,85,247,0.12);color:var(--wrap);font-size:10px">تغليف</span></div></div>
+        <div class="cal-grid">
+          <div class="cal-day-head" style="border-left:none"></div><div class="cal-day-head">السبت ١٢</div><div class="cal-day-head">الأحد ١٣</div><div class="cal-day-head">الإثنين ١٤</div><div class="cal-day-head">الثلاثاء ١٥</div><div class="cal-day-head">الأربعاء ١٦</div><div class="cal-day-head">الخميس ١٧</div>
+          <div class="cal-time">08:00</div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-booking ppf">سلطان المطيري<br><small>Range Rover — PPF أمامي</small></div></div><div class="cal-cell"></div><div class="cal-cell"></div>
+          <div class="cal-time">09:00</div><div class="cal-cell"><div class="cal-booking ppf">فيصل الدوسري<br><small>Lexus ES — PPF كامل</small></div></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-booking ceramic">عبدالله الحربي<br><small>Camry — سيراميك 9H</small></div></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-booking tint">بندر الرشيدي<br><small>Patrol — تظليل نانو</small></div></div><div class="cal-cell"></div>
+          <div class="cal-time">10:00</div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-booking ppf">محمد العتيبي<br><small>GMC Yukon — PPF كامل</small></div></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-booking wrap">ماجد السبيعي<br><small>Mustang — تغيير لون</small></div></div>
+          <div class="cal-time">11:00</div><div class="cal-cell"><div class="cal-booking tint">سعد العنزي<br><small>Accord — تظليل</small></div></div><div class="cal-cell"><div class="cal-booking tint">خالد الشمري<br><small>BMW X5 — تظليل نانو</small></div></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-booking ppf">سعود الغامدي<br><small>GLE 450 — PPF كامل</small></div></div><div class="cal-cell"></div><div class="cal-cell"></div>
+          <div class="cal-time">12:00</div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-booking wrap">نواف القحطاني<br><small>Cayenne — تغيير لون</small></div></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-booking ceramic">تركي المالكي<br><small>Tahoe — سيراميك</small></div></div><div class="cal-cell"><div class="cal-booking ppf">فهد الزهراني<br><small>Land Cruiser — PPF</small></div></div>
+          <div class="cal-time">01:00</div><div class="cal-cell"><div class="cal-booking ceramic">عمر البلوي<br><small>Elantra — سيراميك</small></div></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-booking tint">راشد الهاجري<br><small>Sonata — تظليل</small></div></div>
+          <div class="cal-time">02:00</div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-booking ppf">يزيد الشهري<br><small>Escalade — PPF أمامي</small></div></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-booking tint">حمد الخالدي<br><small>Civic — تظليل</small></div></div><div class="cal-cell"></div><div class="cal-cell"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 03 RECEPTION ==================== -->
+<section class="screen-section">
+  <div class="screen-label"><div class="screen-num">03</div><h2>استلام وتسليم المركبات</h2><p>دورة فحص وتوثيق كاملة مع تصوير وتوقيع إلكتروني عند الاستلام</p></div>
+  <div class="browser">
+    <div class="browser-bar"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-bar">nick.sa/dashboard/reception/NRJ-0847</div></div>
+    <div class="app">
+      <aside class="sb"><div class="sb-logo">NICK</div><nav><a class="sb-item"><span class="sb-dot"></span>لوحة التحكم</a><a class="sb-item"><span class="sb-dot"></span>الحجوزات</a><a class="sb-item active"><span class="sb-dot"></span>استلام المركبات</a><a class="sb-item"><span class="sb-dot"></span>حالة الخدمات</a><a class="sb-item"><span class="sb-dot"></span>الفواتير</a><a class="sb-item"><span class="sb-dot"></span>المبيعات</a><a class="sb-item"><span class="sb-dot"></span>العملاء</a><a class="sb-item"><span class="sb-dot"></span>المخزون</a><a class="sb-item"><span class="sb-dot"></span>تتبع المواد</a><a class="sb-item"><span class="sb-dot"></span>التقارير</a></nav><div class="sb-branch"><span class="sb-branch-dot"></span>فرع النرجس</div></aside>
+      <div class="main">
+        <div class="topbar"><div class="topbar-title">استلام مركبة — <span style="color:var(--gold)">#NRJ-0847</span></div><div class="topbar-right"><button class="btn-outline">حفظ مسودة</button><button class="btn-gold">بدء الخدمة &#8592;</button></div></div>
+        <div class="rec-grid">
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">بيانات المركبة</div>
+              <div class="form-group"><label class="form-label">رقم اللوحة</label><div class="form-input filled" style="direction:ltr;text-align:right;font-family:'Inter',sans-serif;font-weight:600">أ ب ح &nbsp; 1 2 3 4</div></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="form-group"><label class="form-label">الشركة والموديل</label><div class="form-input filled">Chevrolet Tahoe 2024</div></div><div class="form-group"><label class="form-label">اللون</label><div class="form-input filled">أسود</div></div></div>
+              <div class="form-group"><label class="form-label">رقم الهيكل (VIN)</label><div class="form-input filled" style="direction:ltr;text-align:right;font-family:'Inter',sans-serif;font-size:12px;letter-spacing:0.05em">1GNSKBKC7RR123456</div></div>
+            </div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">بيانات العميل</div>
+              <div class="form-group"><label class="form-label">الاسم</label><div class="form-input filled">سلطان المطيري</div></div>
+              <div class="form-group"><label class="form-label">رقم الجوال</label><div class="form-input filled" style="direction:ltr;text-align:right;font-family:'Inter',sans-serif">+966 55 123 4567</div></div>
+              <div class="form-group"><label class="form-label">الخدمة المطلوبة</label><div class="form-input filled" style="color:var(--gold);font-weight:700">PPF حماية كاملة — XPEL Ultimate Plus</div></div>
+            </div>
+            <div class="card">
+              <div class="card-title">فحص المركبة</div>
+              <div class="check-list">
+                <div class="check-item"><span class="check-box checked">&#10003;</span>الهيكل الخارجي سليم</div>
+                <div class="check-item"><span class="check-box checked">&#10003;</span>لا توجد خدوش ظاهرة</div>
+                <div class="check-item"><span class="check-box checked">&#10003;</span>حالة الطلاء جيدة</div>
+                <div class="check-item"><span class="check-box"></span>أضرار سابقة (تحتاج توثيق)</div>
+                <div class="check-item"><span class="check-box checked">&#10003;</span>المركبة نظيفة وجاهزة</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">تصوير المركبة <span class="more">6 صور مطلوبة</span></div>
+              <div class="photo-grid">
+                <div class="photo-slot"><span class="cam">&#9634;</span><span>الأمام</span></div>
+                <div class="photo-slot"><span class="cam">&#9634;</span><span>الخلف</span></div>
+                <div class="photo-slot"><span class="cam">&#9634;</span><span>الجانب الأيمن</span></div>
+                <div class="photo-slot"><span class="cam">&#9634;</span><span>الجانب الأيسر</span></div>
+                <div class="photo-slot"><span class="cam">&#9634;</span><span>الداخلية</span></div>
+                <div class="photo-slot"><span class="cam">&#9634;</span><span>ملاحظات / أضرار</span></div>
+              </div>
+            </div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">ملاحظات إضافية</div>
+              <div class="form-input" style="min-height:80px;color:var(--text-muted);font-size:13px">اكتب أي ملاحظات عن حالة المركبة...</div>
+            </div>
+            <div class="card">
+              <div class="card-title">توقيع العميل</div>
+              <div class="sig-area">&#9998; وقّع هنا</div>
+              <p style="font-size:11px;color:var(--text-muted);margin-top:8px;text-align:center">بالتوقيع، يوافق العميل على حالة الاستلام الموثقة أعلاه</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 04 KANBAN ==================== -->
+<section class="screen-section">
+  <div class="screen-label"><div class="screen-num">04</div><h2>إدارة حالة الخدمات</h2><p>تتبع كل مركبة من لحظة الاستلام حتى التسليم — عرض كانبان تفاعلي</p></div>
+  <div class="browser">
+    <div class="browser-bar"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-bar">nick.sa/dashboard/services</div></div>
+    <div class="app">
+      <aside class="sb"><div class="sb-logo">NICK</div><nav><a class="sb-item"><span class="sb-dot"></span>لوحة التحكم</a><a class="sb-item"><span class="sb-dot"></span>الحجوزات</a><a class="sb-item"><span class="sb-dot"></span>استلام المركبات</a><a class="sb-item active"><span class="sb-dot"></span>حالة الخدمات</a><a class="sb-item"><span class="sb-dot"></span>الفواتير</a><a class="sb-item"><span class="sb-dot"></span>المبيعات</a><a class="sb-item"><span class="sb-dot"></span>العملاء</a><a class="sb-item"><span class="sb-dot"></span>المخزون</a><a class="sb-item"><span class="sb-dot"></span>تتبع المواد</a><a class="sb-item"><span class="sb-dot"></span>التقارير</a></nav><div class="sb-branch"><span class="sb-branch-dot"></span>فرع النرجس</div></aside>
+      <div class="main">
+        <div class="topbar"><div class="topbar-title">حالة الخدمات</div><div class="topbar-right"><div class="search-box"><span>&#9906;</span><span>بحث بالمركبة أو العميل...</span></div><div class="user-pill"><div class="user-avatar">أح</div><span>أحمد</span></div></div></div>
+        <div class="kanban">
+          <div class="kanban-col">
+            <div class="kanban-head"><span class="kanban-head-dot" style="background:var(--s-wait)"></span><span>في الانتظار</span><span class="count">2</span></div>
+            <div class="kanban-card"><div class="kc-plate">ه و ن 5678</div><div class="kc-car">BMW X5 2023</div><div class="kc-service">تظليل نانو سيراميك</div><div class="kc-meta"><div class="kc-tech"><span class="kc-tech-dot">خ</span>خالد</div><span class="kc-time">11:30</span></div></div>
+            <div class="kanban-card"><div class="kc-plate">ط م ق 3344</div><div class="kc-car">Camry 2025</div><div class="kc-service">سيراميك 9H</div><div class="kc-meta"><div class="kc-tech"><span class="kc-tech-dot">ع</span>عبدالله</div><span class="kc-time">12:00</span></div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-head"><span class="kanban-head-dot" style="background:var(--s-work)"></span><span>جاري العمل</span><span class="count">3</span></div>
+            <div class="kanban-card"><div class="kc-plate">أ ب ح 1234</div><div class="kc-car">GMC Yukon XL 2024</div><div class="kc-service">PPF حماية كاملة</div><div class="kc-meta"><div class="kc-tech"><span class="kc-tech-dot">ي</span>يوسف</div><span class="kc-time">3:45:00</span></div><div class="kc-progress"><div class="kc-progress-fill" style="width:65%"></div></div></div>
+            <div class="kanban-card"><div class="kc-plate">د ع ك 9012</div><div class="kc-car">Lexus ES350 2024</div><div class="kc-service">سيراميك 9H</div><div class="kc-meta"><div class="kc-tech"><span class="kc-tech-dot">ع</span>عمر</div><span class="kc-time">2:15:00</span></div><div class="kc-progress"><div class="kc-progress-fill" style="width:45%"></div></div></div>
+            <div class="kanban-card"><div class="kc-plate">س ج ل 7788</div><div class="kc-car">Toyota Fortuner 2024</div><div class="kc-service">PPF أمامي</div><div class="kc-meta"><div class="kc-tech"><span class="kc-tech-dot">ف</span>فهد</div><span class="kc-time">1:30:00</span></div><div class="kc-progress"><div class="kc-progress-fill" style="width:30%"></div></div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-head"><span class="kanban-head-dot" style="background:var(--s-check)"></span><span>فحص الجودة</span><span class="count">1</span></div>
+            <div class="kanban-card"><div class="kc-plate">ط م ق 7890</div><div class="kc-car">Porsche Cayenne 2024</div><div class="kc-service">تغيير لون كامل</div><div class="kc-meta"><div class="kc-tech"><span class="kc-tech-dot">ن</span>نواف</div><span class="kc-time">5:20:00</span></div><div class="kc-progress"><div class="kc-progress-fill" style="width:90%;background:var(--s-check)"></div></div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-head"><span class="kanban-head-dot" style="background:var(--s-ready)"></span><span>جاهز للتسليم</span><span class="count">2</span></div>
+            <div class="kanban-card"><div class="kc-plate">ر س ل 3456</div><div class="kc-car">Range Rover Sport 2025</div><div class="kc-service">PPF أمامي</div><div class="kc-meta"><div class="kc-tech"><span class="kc-tech-dot">س</span>سلطان</div><span class="kc-time" style="color:var(--s-ready)">&#10003; مكتمل</span></div></div>
+            <div class="kanban-card"><div class="kc-plate">م ش ع 2211</div><div class="kc-car">Nissan Patrol 2024</div><div class="kc-service">تظليل + سيراميك</div><div class="kc-meta"><div class="kc-tech"><span class="kc-tech-dot">ب</span>بندر</div><span class="kc-time" style="color:var(--s-ready)">&#10003; مكتمل</span></div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-head"><span class="kanban-head-dot" style="background:var(--s-done)"></span><span>تم التسليم</span><span class="count">2</span></div>
+            <div class="kanban-card" style="opacity:0.6"><div class="kc-plate">ع ت ب 4455</div><div class="kc-car">Mercedes GLE 2024</div><div class="kc-service">PPF كامل + سيراميك</div><div class="kc-meta"><div class="kc-tech"><span class="kc-tech-dot">ي</span>يوسف</div><span class="kc-time">09:15 AM</span></div></div>
+            <div class="kanban-card" style="opacity:0.6"><div class="kc-plate">ف ج ر 6677</div><div class="kc-car">Hyundai Tucson 2024</div><div class="kc-service">تظليل نانو</div><div class="kc-meta"><div class="kc-tech"><span class="kc-tech-dot">ع</span>عمر</div><span class="kc-time">08:30 AM</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 05 INVOICE ==================== -->
+<section class="screen-section">
+  <div class="screen-label"><div class="screen-num">05</div><h2>نظام الفواتير</h2><p>فواتير إلكترونية احترافية متوافقة مع متطلبات هيئة الزكاة والضريبة والجمارك</p></div>
+  <div class="browser">
+    <div class="browser-bar"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-bar">nick.sa/dashboard/invoices/INV-2026-0847</div></div>
+    <div class="app">
+      <aside class="sb"><div class="sb-logo">NICK</div><nav><a class="sb-item"><span class="sb-dot"></span>لوحة التحكم</a><a class="sb-item"><span class="sb-dot"></span>الحجوزات</a><a class="sb-item"><span class="sb-dot"></span>استلام المركبات</a><a class="sb-item"><span class="sb-dot"></span>حالة الخدمات</a><a class="sb-item active"><span class="sb-dot"></span>الفواتير</a><a class="sb-item"><span class="sb-dot"></span>المبيعات</a><a class="sb-item"><span class="sb-dot"></span>العملاء</a><a class="sb-item"><span class="sb-dot"></span>المخزون</a><a class="sb-item"><span class="sb-dot"></span>تتبع المواد</a><a class="sb-item"><span class="sb-dot"></span>التقارير</a></nav><div class="sb-branch"><span class="sb-branch-dot"></span>فرع النرجس</div></aside>
+      <div class="main" style="display:flex;align-items:flex-start;justify-content:center;padding-top:32px">
+        <div style="width:100%;max-width:720px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><div class="topbar-title">فاتورة ضريبية مبسطة</div><div style="display:flex;gap:10px"><button class="btn-outline">&#9112; طباعة</button><button class="btn-gold">&#9993; إرسال للعميل</button></div></div>
+          <div class="inv-doc">
+            <div class="inv-header"><div><div class="inv-logo">NICK</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px">حماية السيارات — الرياض</div></div><div class="inv-info"><div class="inv-num">INV-2026-0847</div><div class="inv-date">13 April 2026</div></div></div>
+            <div class="inv-parties">
+              <div><div class="inv-party-label">العميل</div><div class="inv-party-name">محمد العتيبي</div><div class="inv-party-detail"><span style="direction:ltr;display:inline-block">+966 55 987 6543</span><br>الرياض — حي النرجس</div></div>
+              <div><div class="inv-party-label">المركبة</div><div class="inv-party-name">GMC Yukon XL 2024</div><div class="inv-party-detail"><span style="direction:ltr;display:inline-block">أ ب ح &nbsp;1234</span><br>أسود — PPF حماية كاملة</div></div>
+            </div>
+            <table class="inv-table">
+              <thead><tr><th>الخدمة</th><th>التفاصيل</th><th style="text-align:center">الكمية</th><th style="text-align:left;direction:ltr">المبلغ</th></tr></thead>
+              <tbody>
+                <tr><td style="color:var(--text);font-weight:600">PPF حماية كاملة</td><td>XPEL Ultimate Plus — جسم كامل</td><td style="text-align:center">1</td><td>12,000 SAR</td></tr>
+                <tr><td style="color:var(--text);font-weight:600">تظليل نانو سيراميك</td><td>3M Ceramic IR — كل النوافذ</td><td style="text-align:center">1</td><td>1,800 SAR</td></tr>
+                <tr><td style="color:var(--text);font-weight:600">طلاء سيراميك 9H</td><td>Ceramic Pro 9H — 3 طبقات</td><td style="text-align:center">1</td><td>2,500 SAR</td></tr>
+              </tbody>
+            </table>
+            <div style="max-width:300px;margin-right:auto;direction:rtl">
+              <div class="inv-total-row"><span>المجموع الفرعي</span><span class="val">16,300 SAR</span></div>
+              <div class="inv-total-row"><span>ضريبة القيمة المضافة (15%)</span><span class="val">2,445 SAR</span></div>
+              <div class="inv-total-row final"><span>الإجمالي</span><span class="val">18,745 SAR</span></div>
+            </div>
+            <div class="inv-footer"><div class="inv-qr">ZATCA<br>QR Code<br>E-Invoice</div><div><div class="inv-pay-method">Mada ****4523</div><div class="inv-pay-status">&#10003; مدفوعة</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 06 BARCODE ==================== -->
+<section class="screen-section">
+  <div class="screen-label"><div class="screen-num">06</div><h2>تتبع مواد الحماية — نظام الباركود</h2><p>ضبط جودة وحوكمة كاملة — تتبع كل مادة PPF من المصنع حتى المركبة</p></div>
+  <div class="browser">
+    <div class="browser-bar"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-bar">nick.sa/dashboard/tracking/XP-2026-0847</div></div>
+    <div class="app">
+      <aside class="sb"><div class="sb-logo">NICK</div><nav><a class="sb-item"><span class="sb-dot"></span>لوحة التحكم</a><a class="sb-item"><span class="sb-dot"></span>الحجوزات</a><a class="sb-item"><span class="sb-dot"></span>استلام المركبات</a><a class="sb-item"><span class="sb-dot"></span>حالة الخدمات</a><a class="sb-item"><span class="sb-dot"></span>الفواتير</a><a class="sb-item"><span class="sb-dot"></span>المبيعات</a><a class="sb-item"><span class="sb-dot"></span>العملاء</a><a class="sb-item"><span class="sb-dot"></span>المخزون</a><a class="sb-item active"><span class="sb-dot"></span>تتبع المواد</a><a class="sb-item"><span class="sb-dot"></span>التقارير</a></nav><div class="sb-branch"><span class="sb-branch-dot"></span>فرع النرجس</div></aside>
+      <div class="main">
+        <div class="topbar"><div class="topbar-title">تتبع المواد</div><div class="topbar-right"><button class="btn-gold">&#9634; مسح باركود</button><div class="user-pill"><div class="user-avatar">أح</div><span>أحمد</span></div></div></div>
+        <div class="bc-layout">
+          <div>
+            <div class="bc-material">
+              <div class="bc-barcode-visual">
+                <div class="bc-bar" style="width:3px"></div><div class="bc-bar" style="width:1px;opacity:0"></div><div class="bc-bar" style="width:2px"></div><div class="bc-bar" style="width:1px;opacity:0"></div><div class="bc-bar" style="width:4px"></div><div class="bc-bar" style="width:2px;opacity:0"></div><div class="bc-bar" style="width:1px"></div><div class="bc-bar" style="width:2px;opacity:0"></div><div class="bc-bar" style="width:3px"></div><div class="bc-bar" style="width:1px;opacity:0"></div><div class="bc-bar" style="width:2px"></div><div class="bc-bar" style="width:3px;opacity:0"></div><div class="bc-bar" style="width:4px"></div><div class="bc-bar" style="width:1px;opacity:0"></div><div class="bc-bar" style="width:1px"></div><div class="bc-bar" style="width:2px;opacity:0"></div><div class="bc-bar" style="width:3px"></div><div class="bc-bar" style="width:1px;opacity:0"></div><div class="bc-bar" style="width:2px"></div><div class="bc-bar" style="width:2px;opacity:0"></div><div class="bc-bar" style="width:4px"></div><div class="bc-bar" style="width:1px;opacity:0"></div><div class="bc-bar" style="width:1px"></div><div class="bc-bar" style="width:3px;opacity:0"></div><div class="bc-bar" style="width:3px"></div><div class="bc-bar" style="width:1px;opacity:0"></div><div class="bc-bar" style="width:2px"></div><div class="bc-bar" style="width:2px;opacity:0"></div><div class="bc-bar" style="width:1px"></div><div class="bc-bar" style="width:1px;opacity:0"></div><div class="bc-bar" style="width:4px"></div><div class="bc-bar" style="width:2px;opacity:0"></div><div class="bc-bar" style="width:2px"></div><div class="bc-bar" style="width:1px;opacity:0"></div><div class="bc-bar" style="width:3px"></div><div class="bc-bar" style="width:2px;opacity:0"></div><div class="bc-bar" style="width:1px"></div><div class="bc-bar" style="width:1px;opacity:0"></div><div class="bc-bar" style="width:4px"></div><div class="bc-bar" style="width:2px;opacity:0"></div><div class="bc-bar" style="width:2px"></div>
+              </div>
+              <div class="bc-roll">XP-2026-0847</div>
+              <div class="bc-brand">XPEL Ultimate Plus</div>
+              <div class="bc-details">
+                <div class="bc-detail-row"><span class="label">النوع</span><span class="val">PPF — فيلم حماية طلاء</span></div>
+                <div class="bc-detail-row"><span class="label">الحجم</span><span class="val" style="direction:ltr">60&quot; &times; 100ft</span></div>
+                <div class="bc-detail-row"><span class="label">تاريخ الإنتاج</span><span class="val" style="direction:ltr">15/01/2026</span></div>
+                <div class="bc-detail-row"><span class="label">تاريخ الانتهاء</span><span class="val" style="direction:ltr">15/01/2029</span></div>
+                <div class="bc-detail-row"><span class="label">المركبة</span><span class="val">GMC Yukon XL — أ ب ح 1234</span></div>
+              </div>
+              <div class="bc-status-badge">&#10003; مادة معتمدة — XPEL Certified Installer</div>
+            </div>
+          </div>
+          <div>
+            <div class="timeline">
+              <div class="timeline-title">سلسلة التوريد والتتبع</div>
+              <div class="tl-items">
+                <div class="tl-item"><span class="tl-dot"></span><div class="tl-location">المصنع</div><div class="tl-detail">XPEL Inc, San Antonio, Texas</div><span class="tl-date">15/01/2026</span></div>
+                <div class="tl-item"><span class="tl-dot"></span><div class="tl-location">المستودع الرئيسي</div><div class="tl-detail">مستودع NICK — المنطقة الصناعية، الرياض</div><span class="tl-date">28/01/2026</span></div>
+                <div class="tl-item"><span class="tl-dot"></span><div class="tl-location">الفرع</div><div class="tl-detail">فرع النرجس — أنس بن مالك، الرياض</div><span class="tl-date">05/02/2026</span></div>
+                <div class="tl-item"><span class="tl-dot"></span><div class="tl-location">تم التركيب على المركبة</div><div class="tl-detail">GMC Yukon XL 2024 — أ ب ح 1234 — الفني: يوسف</div><span class="tl-date">13/04/2026</span></div>
+              </div>
+            </div>
+            <div class="bc-warranty"><div class="bc-warranty-label">الضمان</div><div class="bc-warranty-val">10 سنوات — XPEL Official Warranty</div><div class="bc-warranty-dates" style="direction:ltr;text-align:right">13/04/2026 &rarr; 13/04/2036</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 07 WHATSAPP ==================== -->
+<section class="screen-section">
+  <div class="screen-label"><div class="screen-num">07</div><h2>تجربة العميل — تتبع الحالة</h2><p>رابط مباشر يُرسل للعميل عبر WhatsApp لمتابعة حالة مركبته لحظة بلحظة</p></div>
+  <div class="browser" style="max-width:900px;margin:0 auto">
+    <div class="browser-bar"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-bar">nick.sa/track/NRJ-0847</div></div>
+    <div style="background:var(--bg);padding:40px;display:flex;justify-content:center">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="wa-header"><div class="wa-avatar">N</div><div><div class="wa-name">NICK حماية السيارات</div><div class="wa-subtitle">تتبع حالة مركبتك</div></div></div>
+          <div class="wa-body">
+            <div class="wa-bubble">
+              <p>مرحباً <strong>محمد</strong>!</p>
+              <p>تم استلام مركبتكم <strong>GMC Yukon XL</strong> بنجاح في فرع النرجس</p>
+              <p>رقم الطلب: <span class="order-id">#NRJ-0847</span></p>
+              <div class="wa-time">10:02 AM</div>
+            </div>
+            <div class="wa-bubble">
+              <p style="font-weight:700;margin-bottom:10px">حالة الخدمة:</p>
+              <div class="wa-status-list">
+                <div class="wa-status-item"><span class="wa-status-dot done">&#10003;</span><span class="wa-status-label done">تم الاستلام</span><span class="wa-status-time">10:00</span></div>
+                <div class="wa-status-item"><span class="wa-status-dot done">&#10003;</span><span class="wa-status-label done">بدأت الخدمة</span><span class="wa-status-time">10:30</span></div>
+                <div class="wa-status-item"><span class="wa-status-dot current">&#9679;</span><span class="wa-status-label current">جاري العمل — PPF حماية كاملة</span><span class="wa-status-time"></span></div>
+                <div class="wa-status-item"><span class="wa-status-dot pending">&#9675;</span><span class="wa-status-label pending">فحص الجودة</span><span class="wa-status-time"></span></div>
+                <div class="wa-status-item"><span class="wa-status-dot pending">&#9675;</span><span class="wa-status-label pending">جاهز للتسليم</span><span class="wa-status-time"></span></div>
+              </div>
+              <div class="wa-time">01:45 PM</div>
+            </div>
+            <div class="wa-eta">الوقت المتوقع للتسليم: <strong>4:00 م اليوم</strong></div>
+            <button class="wa-track-btn">تحديث الحالة &#8635;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="page-footer">
+  <div class="gold-line" style="margin-bottom:24px"></div>
+  <p>Eclipse Agency &mdash; <a href="https://eclipseagency.net" dir="ltr">eclipseagency.net</a></p>
+  <p style="margin-top:6px;font-size:11px;color:rgba(255,255,255,0.15)">2026</p>
+</footer>
+
+</body>
+</html>

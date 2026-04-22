@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import { getAdminClient } from "@/lib/supabase";
 import { signToken, getSession, COOKIE_NAME } from "@/lib/auth";
 
@@ -9,16 +10,31 @@ export async function POST(req: NextRequest) {
   }
 
   const db = getAdminClient();
-  const { data: valid } = await db.rpc("nick_check_password", {
-    p_username: username,
-    p_password: password,
-  });
+  // Try the full select first; if PostgREST's schema cache hasn't picked up
+  // newly-added columns yet (happens for ~1-10 min after migrations), fall
+  // back to the minimal select so login keeps working.
+  let admin: { username: string; password_hash: string; is_active?: boolean } | null = null;
+  const full = await db
+    .from("nick_admins")
+    .select("username, password_hash, is_active")
+    .eq("username", username)
+    .maybeSingle();
+  if (full.error) {
+    const basic = await db
+      .from("nick_admins")
+      .select("username, password_hash")
+      .eq("username", username)
+      .maybeSingle();
+    admin = basic.data;
+  } else {
+    admin = full.data;
+  }
 
-  if (!valid) {
+  if (!admin || admin.is_active === false || !(await bcrypt.compare(password, admin.password_hash))) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  const token = await signToken(username);
+  const token = await signToken(admin.username);
   const res = NextResponse.json({ ok: true });
   res.cookies.set(COOKIE_NAME, token, {
     httpOnly: true,
@@ -35,7 +51,40 @@ export async function GET() {
   if (!session) {
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
-  return NextResponse.json({ authenticated: true, username: session.username });
+
+  const db = getAdminClient();
+  let me: {
+    id: string;
+    username: string;
+    role?: string;
+    full_name?: string | null;
+    branch_id?: string | null;
+    is_active?: boolean;
+  } | null = null;
+  const full = await db
+    .from("nick_admins")
+    .select("id, username, role, full_name, branch_id, is_active")
+    .eq("username", session.username)
+    .maybeSingle();
+  if (full.error) {
+    const basic = await db.from("nick_admins").select("id, username").eq("username", session.username).maybeSingle();
+    me = basic.data;
+  } else {
+    me = full.data;
+  }
+
+  if (!me || me.is_active === false) {
+    return NextResponse.json({ authenticated: false }, { status: 401 });
+  }
+
+  return NextResponse.json({
+    authenticated: true,
+    username: me.username,
+    id: me.id,
+    role: me.role ?? "super_admin",
+    full_name: me.full_name ?? null,
+    branch_id: me.branch_id ?? null,
+  });
 }
 
 export async function DELETE() {

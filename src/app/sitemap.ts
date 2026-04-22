@@ -58,5 +58,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
         languages: { en: `${siteUrl}/contact`, ar: `${siteUrl}/contact?lang=ar` },
       },
     },
+    {
+      url: `${siteUrl}/track`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${siteUrl}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+      alternates: {
+        languages: { en: `${siteUrl}/privacy`, ar: `${siteUrl}/privacy?lang=ar` },
+      },
+    },
+    {
+      url: `${siteUrl}/terms`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+      alternates: {
+        languages: { en: `${siteUrl}/terms`, ar: `${siteUrl}/terms?lang=ar` },
+      },
+    },
   ];
 }

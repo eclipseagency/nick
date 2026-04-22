@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     "Learn about NICK's 27-year journey in automotive protection. Own manufacturing facility in Riyadh, Saudi Arabia. From raw materials to finished product — PPF, ceramic coating, thermal insulation.",
   alternates: {
     canonical: `${siteUrl}/about`,
-    languages: { en: `${siteUrl}/about`, ar: `${siteUrl}/about?lang=ar` },
+    languages: { en: `${siteUrl}/about`, ar: `${siteUrl}/about?lang=ar`, "x-default": `${siteUrl}/about` },
   },
   openGraph: {
     title: "About NICK — 27 Years of Automotive Protection",

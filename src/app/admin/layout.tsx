@@ -2,32 +2,66 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  CalendarCheck,
+  Wrench,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+} from "lucide-react";
+import { ToastProvider } from "./_ui";
+import CommandPalette from "./_command-palette";
+
+type Role = "super_admin" | "manager" | "reception" | "technician";
+
+interface Me {
+  username: string;
+  full_name: string | null;
+  role: Role;
+}
+
+const ROLE_LABELS: Record<Role, string> = {
+  super_admin: "Super Admin",
+  manager: "Manager",
+  reception: "Reception",
+  technician: "Technician",
+};
 
 const NAV_ITEMS = [
-  { label: "Dashboard", href: "/admin" },
-  { label: "Bookings", href: "/admin/bookings" },
-  { label: "Services", href: "/admin/services" },
-  { label: "Settings", href: "/admin/settings" },
+  { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Bookings", href: "/admin/bookings", icon: CalendarCheck },
+  { label: "Services", href: "/admin/services", icon: Wrench },
+  { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [authed, setAuthed] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [authed, setAuthed] = useState(false);
+  const [me, setMe] = useState<Me | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    fetch("/api/auth")
-      .then((r) => {
-        if (!r.ok) {
-          router.replace("/login");
-          return;
-        }
-        setAuthed(true);
-      })
-      .catch(() => router.replace("/login"))
-      .finally(() => setChecking(false));
+    const verify = (initial: boolean) =>
+      fetch("/api/auth")
+        .then(async (r) => {
+          if (!r.ok) {
+            router.replace("/login");
+            return;
+          }
+          const data = await r.json();
+          setMe(data);
+          setAuthed(true);
+        })
+        .catch(() => { if (initial) router.replace("/login"); })
+        .finally(() => { if (initial) setChecking(false); });
+
+    verify(true);
+    const id = setInterval(() => verify(false), 5 * 60 * 1000);
+    return () => clearInterval(id);
   }, [router]);
 
   async function handleLogout() {
@@ -35,29 +69,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.replace("/login");
   }
 
-  if (checking || !authed) {
+  if (checking || !authed || !me) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#020202",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+      <div className="admin-theme min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
           <div
-            style={{
-              width: 32,
-              height: 32,
-              border: "2px solid rgba(246,190,0,0.3)",
-              borderTopColor: "#F6BE00",
-              borderRadius: "50%",
-              animation: "spin 0.8s linear infinite",
-            }}
+            className="w-8 h-8 rounded-full border-2 border-[color:rgba(246,190,0,0.25)] border-t-[var(--ad-accent)]"
+            style={{ animation: "spin 0.8s linear infinite" }}
           />
-          <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 14 }}>Loading...</span>
+          <span className="text-[13px] text-[var(--ad-fg-subtle)]">Loading...</span>
         </div>
       </div>
     );
@@ -68,303 +88,112 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return pathname.startsWith(href);
   }
 
+  const initials = (me.full_name || me.username).trim().split(/\s+/).map((p) => p[0]).slice(0, 2).join("").toUpperCase() || "A";
+
   return (
-    <div dir="ltr" className="flex min-h-screen" style={{ background: "#020202" }}>
-      {/* Mobile overlay backdrop */}
-      {sidebarOpen && (
-        <div
-          onClick={() => setSidebarOpen(false)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.6)",
-            zIndex: 40,
-          }}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={`fixed top-0 left-0 bottom-0 z-50 flex flex-col admin-sidebar-hidden admin-sidebar-visible${sidebarOpen ? " admin-sidebar-show" : ""}`}
-        style={{
-          width: 220,
-          background: "#0a0a0a",
-          borderRight: "1px solid rgba(255,255,255,0.06)",
-          transition: "transform 0.2s ease-out",
-        }}
-      >
-        {/* Logo */}
-        <div style={{ padding: "8px 24px 28px" }}>
-          <span
-            style={{
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontSize: 28,
-              fontWeight: 700,
-              color: "#F6BE00",
-              display: "block",
-            }}
-          >
-            NICK
-          </span>
-        </div>
-
-        {/* Nav */}
-        <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-          {NAV_ITEMS.map((item) => {
-            const active = isActive(item.href);
-            return (
-              <a
-                key={item.href}
-                href={item.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push(item.href);
-                  setSidebarOpen(false);
-                }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: "10px 24px",
-                  fontSize: 13.5,
-                  fontWeight: active ? 700 : 500,
-                  color: active ? "#F6BE00" : "rgba(255,255,255,0.55)",
-                  background: active ? "rgba(246,190,0,0.08)" : "transparent",
-                  borderLeft: `3px solid ${active ? "#F6BE00" : "transparent"}`,
-                  textDecoration: "none",
-                  transition: "all 0.2s",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  if (!active) {
-                    (e.currentTarget as HTMLAnchorElement).style.color = "#ffffff";
-                    (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.02)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!active) {
-                    (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)";
-                    (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-                  }
-                }}
-              >
-                <span
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 3,
-                    flexShrink: 0,
-                    background: active ? "#F6BE00" : "rgba(255,255,255,0.1)",
-                    transition: "background 0.2s",
-                  }}
-                />
-                {item.label}
-              </a>
-            );
-          })}
-        </nav>
-
-        {/* Bottom status */}
-        <div
-          style={{
-            padding: "16px 24px",
-            borderTop: "1px solid rgba(255,255,255,0.06)",
-            fontSize: 12,
-            color: "rgba(255,255,255,0.3)",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              background: "#10B981",
-              flexShrink: 0,
-            }}
+    <ToastProvider>
+      <div dir="ltr" className="admin-theme flex min-h-screen">
+        {/* Mobile backdrop */}
+        {sidebarOpen && (
+          <div
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 bg-black/60 z-40 lg:hidden"
           />
-          Connected
-        </div>
-      </aside>
+        )}
 
-      {/* Main area */}
-      <div className="flex-1 min-w-0 admin-content">
-        {/* Mobile top bar — hidden on desktop via admin-topbar class */}
-        <div
-          className="admin-topbar"
-          style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 30,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "12px 16px",
-            background: "#0a0a0a",
-            borderBottom: "1px solid rgba(255,255,255,0.06)",
-          }}
+        {/* Sidebar */}
+        <aside
+          className={`fixed top-0 left-0 bottom-0 z-50 w-[240px] flex flex-col bg-[var(--ad-surface)] border-r border-[var(--ad-border)] admin-sidebar-hidden admin-sidebar-visible${sidebarOpen ? " admin-sidebar-show" : ""}`}
+          style={{ transition: "transform 0.2s ease-out" }}
         >
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "#ffffff",
-              cursor: "pointer",
-              padding: 4,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
-          <span style={{ fontWeight: 700, color: "#F6BE00", letterSpacing: "0.05em" }}>NICK Admin</span>
-          <button
-            onClick={handleLogout}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "rgba(255,255,255,0.5)",
-              cursor: "pointer",
-              fontSize: 11,
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-            }}
-          >
-            Logout
-          </button>
-        </div>
-
-        {/* Desktop top bar — hidden on mobile via admin-desktop-topbar class */}
-        <div
-          className="admin-desktop-topbar"
-          style={{
-            alignItems: "center",
-            justifyContent: "flex-end",
-            padding: "16px 28px",
-            gap: 12,
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
-          {/* Search */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.06)",
-              borderRadius: 8,
-              padding: "8px 14px",
-              minWidth: 200,
-            }}
-          >
-            <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>🔍 Search...</span>
-          </div>
-
-          {/* Notification bell */}
-          <div
-            style={{
-              position: "relative",
-              width: 36,
-              height: 36,
-              borderRadius: 8,
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.06)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "rgba(255,255,255,0.55)",
-              fontSize: 16,
-              cursor: "pointer",
-              flexShrink: 0,
-            }}
-          >
-            🔔
+          {/* Logo */}
+          <div className="px-6 pt-6 pb-7">
             <span
-              style={{
-                position: "absolute",
-                top: 6,
-                right: 6,
-                width: 7,
-                height: 7,
-                borderRadius: "50%",
-                background: "#ef4444",
-              }}
-            />
-          </div>
-
-          {/* User pill */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.06)",
-              borderRadius: 8,
-              padding: "6px 12px 6px 8px",
-              cursor: "pointer",
-            }}
-          >
-            <div
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #F6BE00, #D4A300)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 12,
-                fontWeight: 700,
-                color: "#000",
-                flexShrink: 0,
-              }}
+              className="block text-[26px] font-bold text-[var(--ad-accent)] tracking-tight"
+              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              A
-            </div>
-            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>Admin</span>
+              NICK
+            </span>
+            <span className="block text-[11px] uppercase tracking-[0.2em] text-[var(--ad-fg-faint)] mt-0.5">
+              Admin
+            </span>
           </div>
 
-          {/* Logout */}
-          <button
-            onClick={handleLogout}
-            style={{
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.06)",
-              borderRadius: 8,
-              padding: "8px 14px",
-              fontSize: 13,
-              color: "rgba(255,255,255,0.4)",
-              cursor: "pointer",
-              transition: "all 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.color = "#ffffff";
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.15)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.4)";
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.06)";
-            }}
-          >
-            Logout
-          </button>
-        </div>
+          {/* Nav */}
+          <nav className="flex-1 px-3 flex flex-col gap-1">
+            {NAV_ITEMS.map((item) => {
+              const active = isActive(item.href);
+              const Icon = item.icon;
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push(item.href);
+                    setSidebarOpen(false);
+                  }}
+                  className={`flex items-center gap-3 h-10 px-3 rounded-[8px] text-[13px] font-medium transition-colors ${
+                    active
+                      ? "bg-[var(--ad-accent-bg)] text-[var(--ad-accent)]"
+                      : "text-[var(--ad-fg-muted)] hover:text-[var(--ad-fg)] hover:bg-[var(--ad-surface-2)]"
+                  }`}
+                >
+                  <Icon className="w-4 h-4 flex-shrink-0" />
+                  {item.label}
+                </a>
+              );
+            })}
+          </nav>
 
-        {/* Page content */}
-        <main style={{ padding: "0 28px 28px", position: "relative", zIndex: 1 }}>
-          {children}
-        </main>
+          {/* User identity at bottom */}
+          <div className="mx-3 mb-4 p-3 rounded-[10px] bg-[var(--ad-surface-2)] border border-[var(--ad-border)]">
+            <div className="flex items-center gap-2.5">
+              <div
+                className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-black flex-shrink-0"
+                style={{ background: "linear-gradient(135deg, #F6BE00, #D4A300)" }}
+              >
+                {initials}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-[13px] font-medium text-[var(--ad-fg)] truncate">
+                  {me.full_name || me.username}
+                </div>
+                <div className="text-[11px] text-[var(--ad-fg-subtle)] truncate">
+                  {ROLE_LABELS[me.role]}
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="mt-2.5 w-full flex items-center justify-center gap-2 h-8 rounded-[6px] text-[12px] font-medium text-[var(--ad-fg-muted)] hover:text-[var(--ad-fg)] hover:bg-[var(--ad-surface-hover)] border border-[var(--ad-border)] transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Sign out
+            </button>
+          </div>
+        </aside>
+
+        {/* Main */}
+        <div className="flex-1 min-w-0 admin-content">
+          {/* Mobile topbar */}
+          <div className="admin-topbar sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[var(--ad-surface)] border-b border-[var(--ad-border)]">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="text-[var(--ad-fg)] w-9 h-9 inline-flex items-center justify-center rounded-[8px] hover:bg-[var(--ad-surface-2)]"
+              aria-label="Open menu"
+            >
+              {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+            <span className="text-[14px] font-bold text-[var(--ad-accent)] tracking-wider">NICK Admin</span>
+            <div className="w-9 h-9" />
+          </div>
+
+          {/* Page content */}
+          <main className="px-5 lg:px-10 pt-2 lg:pt-4 pb-16 max-w-[1400px] mx-auto">{children}</main>
+        </div>
+        <CommandPalette />
       </div>
-    </div>
+    </ToastProvider>
   );
 }

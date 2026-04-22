@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     "Professional automotive protection services: Paint Protection Film (PPF) with 10-year warranty, nano ceramic coating, thermal insulation tinting, and color wrapping. Expert installation in Riyadh.",
   alternates: {
     canonical: `${siteUrl}/services`,
-    languages: { en: `${siteUrl}/services`, ar: `${siteUrl}/services?lang=ar` },
+    languages: { en: `${siteUrl}/services`, ar: `${siteUrl}/services?lang=ar`, "x-default": `${siteUrl}/services` },
   },
   openGraph: {
     title: "NICK Services — Complete Automotive Protection",

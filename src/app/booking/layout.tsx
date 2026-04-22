@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     "Book your automotive protection service online. Choose from PPF, ceramic coating, thermal insulation tinting, and color wrapping. Instant confirmation.",
   alternates: {
     canonical: `${siteUrl}/booking`,
-    languages: { en: `${siteUrl}/booking`, ar: `${siteUrl}/booking?lang=ar` },
+    languages: { en: `${siteUrl}/booking`, ar: `${siteUrl}/booking?lang=ar`, "x-default": `${siteUrl}/booking` },
   },
   openGraph: {
     title: "Book a Service — NICK Automotive Protection",

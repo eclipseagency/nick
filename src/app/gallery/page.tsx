@@ -44,7 +44,7 @@ export default function GalleryPage() {
     { src: "/images/DSC03261.jpg", alt: isAr ? "الفريق مع أودي" : "Team with Audi", category: "factory" as Category },
     { src: "/images/DSC03060.jpg", alt: isAr ? "ورشة العمل" : "Workshop", category: "factory" as Category },
     { src: "/images/IMG_9912.JPG", alt: isAr ? "بيئة العمل" : "Work Environment", category: "factory" as Category },
-    { src: "/images/IMG_9536.PNG", alt: isAr ? "فريق NICK" : "NICK Team", category: "factory" as Category },
+    { src: "/images/IMG_9536.webp", alt: isAr ? "فريق NICK" : "NICK Team", category: "factory" as Category },
   ], [isAr]);
 
   const filtered = useMemo(() =>
