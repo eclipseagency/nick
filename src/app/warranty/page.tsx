@@ -247,7 +247,19 @@ export default function WarrantyPage() {
                     </p>
                     {/* First condition as standalone line */}
                     {group.conditions.length > 0 && (
-                      <p style={{ color: "rgba(255,255,255,0.65)", fontSize: 13, lineHeight: 1.7, marginBottom: 8 }}>
+                      <p style={{
+                        color: "rgba(255,255,255,0.85)",
+                        fontSize: 14,
+                        fontWeight: 600,
+                        lineHeight: 1.7,
+                        marginBottom: 10,
+                        padding: "10px 14px",
+                        background: "rgba(246,190,0,0.05)",
+                        borderRadius: 10,
+                        border: "1px solid rgba(246,190,0,0.12)",
+                        borderRight: dir === "rtl" ? "3px solid rgba(246,190,0,0.5)" : "none",
+                        borderLeft: dir === "ltr" ? "3px solid rgba(246,190,0,0.5)" : "none",
+                      }}>
                         {group.conditions[0]}
                       </p>
                     )}
