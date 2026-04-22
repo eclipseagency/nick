@@ -246,26 +246,24 @@ export default function WarrantyPage() {
                     <p style={{ color: gold, fontWeight: 700, fontSize: 13, marginBottom: 10, fontFamily: fontDisplay }}>
                       {d("الشروط والأحكام", "Terms & Conditions")}
                     </p>
-                    {/* First condition as standalone line */}
-                    {group.conditions.length > 0 && (
-                      <p style={{
-                        color: "rgba(255,255,255,0.85)",
-                        fontSize: 14,
-                        fontWeight: 600,
-                        lineHeight: 1.7,
-                        marginBottom: 10,
-                        padding: "10px 14px",
-                        background: "rgba(246,190,0,0.05)",
-                        borderRadius: 10,
-                        border: "1px solid rgba(246,190,0,0.12)",
-                        borderRight: dir === "rtl" ? "3px solid rgba(246,190,0,0.5)" : "none",
-                        borderLeft: dir === "ltr" ? "3px solid rgba(246,190,0,0.5)" : "none",
-                      }}>
-                        {group.conditions[0]}
-                      </p>
-                    )}
-                    {/* Remaining conditions as bullet points */}
-                    {group.conditions.slice(1).map((c, i) => (
+                    {/* Warranty exclusion title */}
+                    <p style={{
+                      color: "rgba(255,255,255,0.85)",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      lineHeight: 1.7,
+                      marginBottom: 10,
+                      padding: "10px 14px",
+                      background: "rgba(246,190,0,0.05)",
+                      borderRadius: 10,
+                      border: "1px solid rgba(246,190,0,0.12)",
+                      borderRight: dir === "rtl" ? "3px solid rgba(246,190,0,0.5)" : "none",
+                      borderLeft: dir === "ltr" ? "3px solid rgba(246,190,0,0.5)" : "none",
+                    }}>
+                      {d("لا يسري الضمان في حالة:", "Warranty does not apply in case of:")}
+                    </p>
+                    {/* All conditions as bullet points */}
+                    {group.conditions.map((c, i) => (
                       <p key={i} style={{ color: "rgba(255,255,255,0.65)", fontSize: 13, lineHeight: 1.7, margin: i > 0 ? "8px 0 0" : 0, display: "flex", gap: 8 }}>
                         <span style={{ color: gold, flexShrink: 0 }}>&#x2022;</span>
                         <span>{c}</span>
