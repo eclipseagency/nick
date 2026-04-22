@@ -62,7 +62,7 @@ export default function WarrantyPage() {
         d("يسري الضمان حصراً في حال التركيب في مراكز NICK المعتمدة للعناية بالسيارات وفقاً لإجراءات التركيب الموصي بها . ويمكن التنازل عن هذا الضمان. شريطة أن يمتلك المالك مستندات الضمان الأصلية.", "The warranty applies exclusively when installation is performed at NICK authorized care centers following recommended installation procedures. The warranty is transferable, provided the owner possesses the original warranty documents."),
         d("ضمان أفلام الحماية لمدة 10 سنوات أو حتى 300,000 كم أيهما أسبق.", "Protection film warranty for 10 years or up to 300,000 km, whichever comes first."),
         d("عدم غسيل السيارة بعد التركيب لمدة لا تقل عن 7 أيام من التركيب.", "Do not wash the car for at least 7 days after installation."),
-        d("الفلم يخضع للمعالجة الذاتية في فترة 15 يوم على الأقل.", "The film undergoes self-healing within a period of at least 15 days."),
+        d("الفلم يخضع للمعالجة الذاتية لمدة 5 أيام على الأقل تحت أشعة الشمس.", "The film undergoes self-healing within 5 days under sunlight."),
       ],
       qualityTips: [
         d("يرجى عدم السفر بالسيارة مباشرة بعد التركيب.", "Please do not travel with the car immediately after installation."),
